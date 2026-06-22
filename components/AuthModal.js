@@ -2,8 +2,10 @@
 // components/AuthModal.js
 import { useState } from "react";
 import { registerUser, loginUser } from "../lib/store";
+import { useLang, t } from "../lib/i18n";
 
 export default function AuthModal({ onClose, onAuth }) {
+  const lang = useLang();
   const [mode, setMode] = useState("register"); // "register" | "login"
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -15,11 +17,11 @@ export default function AuthModal({ onClose, onAuth }) {
     setError("");
     if (mode === "register") {
       if (!name || !email || !password) {
-        setError("Please fill in every field.");
+        setError(t(lang, "auth.fillFields"));
         return;
       }
       if (password.length < 6) {
-        setError("Password must be at least 6 characters.");
+        setError(t(lang, "auth.passwordLength"));
         return;
       }
       const res = await registerUser(name, email, password);
@@ -46,28 +48,28 @@ export default function AuthModal({ onClose, onAuth }) {
             onClick={() => setMode("register")}
             type="button"
           >
-            Sign up
+            {t(lang, "auth.signup")}
           </button>
           <button
             className={mode === "login" ? "active" : ""}
             onClick={() => setMode("login")}
             type="button"
           >
-            Log in
+            {t(lang, "auth.login")}
           </button>
         </div>
 
-        <h2>{mode === "register" ? "Join the pool" : "Welcome back"}</h2>
+        <h2>{mode === "register" ? t(lang, "auth.joinPool") : t(lang, "auth.welcomeBack")}</h2>
 
         <form onSubmit={submit}>
           {mode === "register" && (
             <div className="field">
-              <label>Full name</label>
+              <label>{t(lang, "auth.fullName")}</label>
               <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Jane Doe" />
             </div>
           )}
           <div className="field">
-            <label>Email</label>
+            <label>{t(lang, "auth.email")}</label>
             <input
               type="email"
               value={email}
@@ -76,7 +78,7 @@ export default function AuthModal({ onClose, onAuth }) {
             />
           </div>
           <div className="field">
-            <label>Password</label>
+            <label>{t(lang, "auth.password")}</label>
             <input
               type="password"
               value={password}
@@ -89,16 +91,16 @@ export default function AuthModal({ onClose, onAuth }) {
 
           <div className="modal-actions">
             <button type="submit" className="btn">
-              {mode === "register" ? "Create account & play" : "Log in"}
+              {mode === "register" ? t(lang, "auth.createAccount") : t(lang, "auth.login")}
             </button>
             <button type="button" className="btn btn-ghost" onClick={onClose}>
-              Cancel
+              {t(lang, "auth.cancel")}
             </button>
           </div>
         </form>
 
-        <a href="/contact" className="modal-help-link">
-          Need help? Contact us.
+        <a href={lang === "es" ? "/es/contact" : "/contact"} className="modal-help-link">
+          {t(lang, "auth.needHelp")}
         </a>
       </div>
     </div>

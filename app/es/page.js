@@ -33,10 +33,20 @@ export default function SpanishLanding() {
           <li>Te registras gratis con tu nombre y correo.</li>
           <li>En cada una de las 21 etapas, eliges al corredor que crees que ganará.</li>
           <li><strong>10 puntos</strong> si aciertas al ganador, <strong>5 puntos</strong> si tu corredor llega 2º, <strong>2 puntos</strong> si llega 3º.</li>
-          <li>También puedes pronosticar quién se lleva el maillot Amarillo, Verde, de Topos y Blanco al final del Tour.</li>
+          <li>También puedes pronosticar quién se lleva el maillot Amarillo, Verde, de Topos y Blanco al final del Tour — <strong>10 puntos</strong> por cada uno que aciertes.</li>
           <li>Habrá <strong>3 premios</strong> de material de ciclismo para los primeros clasificados.</li>
         </ul>
       </div>
+
+      <a href="/es/final-classification" className="jersey-banner">
+        <span className="jersey-banner-icon">🏆</span>
+        <span>
+          <strong>Asegura ya tus pronósticos de maillots.</strong> Las predicciones de los
+          maillots Amarillo, Verde, de Topos y Blanco se bloquean 1 hora antes de la salida de
+          la Etapa 1 (4 de julio) — una vez empiece el Tour, ya no podrás cambiarlas.
+        </span>
+        <span className="jersey-banner-arrow">→</span>
+      </a>
 
       <div className="card" style={{ marginTop: 16 }}>
         <h3 style={{ fontSize: 16 }}>El Tour de Francia 2026, en cifras</h3>
@@ -50,8 +60,8 @@ export default function SpanishLanding() {
       <div className="card" style={{ marginTop: 16, textAlign: "center" }}>
         <h3 style={{ fontSize: 16 }}>Apunta a tus amigos a la porra</h3>
         <p className="subtitle" style={{ marginTop: 10 }}>
-          La aplicación para jugar está en inglés por ahora, pero registrarse y elegir tus
-          corredores es muy sencillo aunque no domines el idioma.
+          Regístrate, elige tus corredores para cada etapa, y compite con tus amigos en la
+          clasificación — toda la aplicación está disponible en español.
         </p>
         <a href="/es/predictions" className="btn" style={{ marginTop: 16, display: "inline-block" }}>
           Jugar ahora

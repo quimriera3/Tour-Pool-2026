@@ -19,6 +19,8 @@ export default function sitemap() {
     "/es/leaderboard",
     "/es/rules",
     "/es/preview",
+    "/es/privacy",
+    "/es/contact",
     "/fr",
     "/fr/preview",
     "/it",

@@ -3,6 +3,7 @@ import Nav from "../components/Nav";
 import CtaBar from "../components/CtaBar";
 import DisclaimerBanner from "../components/DisclaimerBanner";
 import CookieBanner from "../components/CookieBanner";
+import Footer from "../components/Footer";
 import { Analytics } from "@vercel/analytics/react";
 
 // Set this to your real domain once you have one (or your *.vercel.app URL for now).
@@ -79,24 +80,7 @@ export default function RootLayout({ children }) {
         <CtaBar />
         <DisclaimerBanner />
         <main className="container">{children}</main>
-        <p className="footer-note container">
-          © 2026 Sports Pools 26. All rights reserved.
-          <br />
-          <span style={{ marginTop: 6, display: "inline-block" }}>
-            <a href="/privacy" style={{ textDecoration: "underline" }}>Privacy policy</a>{" · "}
-            <a href="/contact" style={{ textDecoration: "underline" }}>Contact</a>
-          </span>
-          <br />
-          <span style={{ marginTop: 6, display: "inline-block" }}>
-            Also in:{" "}
-            <a href="/" style={{ textDecoration: "underline" }}>English</a>{" · "}
-            <a href="/es" style={{ textDecoration: "underline" }}>Español</a>{" · "}
-            <a href="/fr" style={{ textDecoration: "underline" }}>Français</a>{" · "}
-            <a href="/it" style={{ textDecoration: "underline" }}>Italiano</a>{" · "}
-            <a href="/nl" style={{ textDecoration: "underline" }}>Nederlands</a>{" · "}
-            <a href="/ca" style={{ textDecoration: "underline" }}>Català</a>
-          </span>
-        </p>
+        <Footer />
         <CookieBanner />
         <Analytics />
       </body>

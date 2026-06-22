@@ -99,6 +99,50 @@ h3 {
   font-weight: 700;
 }
 
+.jersey-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--black);
+  border: 2px solid var(--yellow);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-top: 18px;
+  text-decoration: none;
+  color: #e8e8e8;
+}
+
+.jersey-banner strong {
+  color: var(--yellow);
+}
+
+.jersey-banner-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.jersey-banner span:not(.jersey-banner-icon):not(.jersey-banner-arrow) {
+  font-size: 13px;
+  line-height: 1.5;
+  flex: 1;
+}
+
+.jersey-banner-arrow {
+  font-size: 20px;
+  color: var(--yellow);
+  flex-shrink: 0;
+}
+
+@media (max-width: 600px) {
+  .jersey-banner {
+    padding: 12px 14px;
+  }
+
+  .jersey-banner span:not(.jersey-banner-icon):not(.jersey-banner-arrow) {
+    font-size: 12px;
+  }
+}
+
 .lang-switcher-btn {
   background: none;
   border: none;

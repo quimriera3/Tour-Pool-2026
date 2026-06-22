@@ -17,6 +17,8 @@ import {
   totalKm,
   kmCompleted,
   stageStartDate,
+  jerseyLockDate,
+  jerseyPredictionsLocked,
   TYPE_LABEL,
 } from "../lib/data";
 import { computeLeaderboard, getResults, useSession } from "../lib/store";
@@ -230,6 +232,24 @@ export default function Dashboard() {
         </div>
       )}
 
+      {mounted && !jerseyPredictionsLocked() && (
+        <a href="/final-classification" className="jersey-banner">
+          <span className="jersey-banner-icon">🏆</span>
+          <span>
+            <strong>Lock in your jersey predictions now.</strong> Yellow, Green, Polka Dot &
+            White jersey picks close{" "}
+            {(() => {
+              const d = jerseyLockDate();
+              const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+              const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+              return days[d.getDay()] + " " + d.getDate() + " " + months[d.getMonth()] + " at " + d.toTimeString().slice(0, 5);
+            })()}{" "}
+            — once the Tour starts, it&apos;s too late.
+          </span>
+          <span className="jersey-banner-arrow">→</span>
+        </a>
+      )}
+
       <p style={{ textAlign: "center", marginTop: 10 }}>
         <a href="/preview" style={{ fontSize: 13, fontWeight: 700, color: "var(--red)", textDecoration: "underline" }}>
           Read our 2026 Tour de France preview: favourites, sprinters & outsiders →
@@ -259,7 +279,7 @@ export default function Dashboard() {
         <h3 style={{ fontSize: 16 }}>How scoring works</h3>
         <p className="subtitle" style={{ marginTop: 10 }}>
           10 points for a correct winner, 5 if your rider finishes 2nd, 2 if they finish 3rd —
-          plus 20 points for every jersey you call correctly. See
+          plus 10 points for every jersey you call correctly. See
           the <a href="/rules" style={{ textDecoration: "underline", color: "var(--black)" }}>full rules</a> for jerseys and prizes.
         </p>
       </div>

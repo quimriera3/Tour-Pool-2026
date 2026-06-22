@@ -11,10 +11,21 @@ import { useLang, t } from "../../lib/i18n";
 
 const WEEK_KEYS = ["week.1", "week.2", "week.3"];
 
-function lockTimeLabel(stage) {
+const EN_DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const EN_MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const ES_DAYS = ["dom", "lun", "mar", "mié", "jue", "vie", "sáb"];
+const ES_MONTHS = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+
+function lockTimeLabel(stage, lang) {
   const start = stageStartDate(stage);
   const lock = new Date(start.getTime() - 60 * 60 * 1000);
-  return lock.toTimeString().slice(0, 5);
+  const time = lock.toTimeString().slice(0, 5);
+  // Always show the date too, explicitly -- the lock is the same calendar
+  // day as the stage itself, but spelling it out avoids any ambiguity.
+  if (lang === "es") {
+    return ES_DAYS[lock.getDay()] + " " + lock.getDate() + " " + ES_MONTHS[lock.getMonth()] + ", " + time;
+  }
+  return EN_DAYS[lock.getDay()] + " " + lock.getDate() + " " + EN_MONTHS[lock.getMonth()] + ", " + time;
 }
 
 function StageCard({ stage, pick, onPick, result, lang, stagePrefix }) {
@@ -67,7 +78,7 @@ function StageCard({ stage, pick, onPick, result, lang, stagePrefix }) {
           />
           {!locked && (
             <p className="stage-meta" style={{ marginTop: 6 }}>
-              {t(lang, "predictions.closesAt")} {lockTimeLabel(stage)}
+              {t(lang, "predictions.closesAt")} {lockTimeLabel(stage, lang)}
             </p>
           )}
           {locked && (

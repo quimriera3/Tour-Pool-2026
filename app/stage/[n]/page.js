@@ -6,10 +6,9 @@
 // there is always the same pick -- there's only one source of truth
 // (Supabase), not two states to keep in sync.
 //
-// NOTE on translation: structural labels (headers, nav, points) are
-// translated via lib/i18n.js. The 21 stage.preview paragraphs themselves are
-// still English-only -- translating 21 original paragraphs well is a
-// separate, sizeable writing task, not just a label swap.
+// NOTE on translation: structural labels are translated via lib/i18n.js. The
+// 21 stage.preview paragraphs have their own Spanish version in
+// stage.previewEs (set in lib/data.js).
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { STAGES, riderById, pointsForPick, stageIsLocked, stageStartDate, TYPE_LABEL } from "../../../lib/data";
@@ -20,10 +19,19 @@ import TeamRiderPicker from "../../../components/TeamRiderPicker";
 import Podium from "../../../components/Podium";
 import { useLang, t } from "../../../lib/i18n";
 
-function lockTimeLabel(stage) {
+const EN_DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const EN_MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const ES_DAYS = ["dom", "lun", "mar", "mié", "jue", "vie", "sáb"];
+const ES_MONTHS = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+
+function lockTimeLabel(stage, lang) {
   const start = stageStartDate(stage);
   const lock = new Date(start.getTime() - 60 * 60 * 1000);
-  return lock.toTimeString().slice(0, 5);
+  const time = lock.toTimeString().slice(0, 5);
+  if (lang === "es") {
+    return ES_DAYS[lock.getDay()] + " " + lock.getDate() + " " + ES_MONTHS[lock.getMonth()] + ", " + time;
+  }
+  return EN_DAYS[lock.getDay()] + " " + lock.getDate() + " " + EN_MONTHS[lock.getMonth()] + ", " + time;
 }
 
 export default function StageDetail() {
@@ -156,7 +164,7 @@ export default function StageDetail() {
             />
             {!locked && (
               <p className="stage-meta" style={{ marginTop: 8 }}>
-                {t(lang, "predictions.closesAt")} {lockTimeLabel(stage)}
+                {t(lang, "predictions.closesAt")} {lockTimeLabel(stage, lang)}
               </p>
             )}
             {locked && <p className="stage-meta" style={{ marginTop: 8 }}>{t(lang, "predictions.locked")}</p>}
@@ -180,7 +188,7 @@ export default function StageDetail() {
           English-only for now; see the note at the top of this file. */}
       <div className="card" style={{ marginTop: 16 }}>
         <h3 style={{ fontSize: 15 }}>{t(lang, "stage.stagePreview")}</h3>
-        <p className="subtitle" style={{ marginTop: 10 }}>{stage.preview}</p>
+        <p className="subtitle" style={{ marginTop: 10 }}>{lang === "es" && stage.previewEs ? stage.previewEs : stage.preview}</p>
       </div>
 
       {/* Elevation profile -- this part is real, not a placeholder */}

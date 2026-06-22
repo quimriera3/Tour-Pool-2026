@@ -1,8 +1,10 @@
 "use client";
 // components/CookieBanner.js
 import { useEffect, useState } from "react";
+import { useLang, t } from "../lib/i18n";
 
 export default function CookieBanner() {
+  const lang = useLang();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -22,11 +24,12 @@ export default function CookieBanner() {
     <div className="cookie-banner">
       <div className="container cookie-banner-inner">
         <p>
-          We use cookies for basic analytics and to show ads. See our{" "}
-          <a href="/privacy" style={{ textDecoration: "underline" }}>privacy policy</a> for details.
+          {t(lang, "cookie.text")}{" "}
+          <a href={lang === "es" ? "/es/privacy" : "/privacy"} style={{ textDecoration: "underline" }}>{t(lang, "cookie.privacyLink")}</a>{" "}
+          {t(lang, "cookie.forDetails")}
         </p>
         <button className="btn" onClick={accept} style={{ flexShrink: 0 }}>
-          Got it
+          {t(lang, "cookie.gotIt")}
         </button>
       </div>
     </div>
