@@ -10,6 +10,7 @@ export default function AuthModal({ onClose, onAuth }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [emailOptIn, setEmailOptIn] = useState(true);
   const [error, setError] = useState("");
 
   async function submit(e) {
@@ -24,7 +25,7 @@ export default function AuthModal({ onClose, onAuth }) {
         setError(t(lang, "auth.passwordLength"));
         return;
       }
-      const res = await registerUser(name, email, password);
+      const res = await registerUser(name, email, password, emailOptIn);
       if (!res.ok) {
         setError(res.error);
         return;
@@ -86,6 +87,17 @@ export default function AuthModal({ onClose, onAuth }) {
               placeholder="••••••••"
             />
           </div>
+
+          {mode === "register" && (
+            <label className="checkbox-field">
+              <input
+                type="checkbox"
+                checked={emailOptIn}
+                onChange={(e) => setEmailOptIn(e.target.checked)}
+              />
+              <span>{t(lang, "auth.optIn")}</span>
+            </label>
+          )}
 
           {error && <p className="error-text">{error}</p>}
 
