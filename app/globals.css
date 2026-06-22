@@ -604,6 +604,19 @@ table.leaderboard tr:first-child td {
   flex-shrink: 0;
 }
 
+.link-button {
+  background: none;
+  border: none;
+  color: var(--red);
+  font-size: 12.5px;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+  margin-top: 8px;
+  display: block;
+}
+
 .field label {
   display: block;
   font-size: 12px;

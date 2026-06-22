@@ -1,21 +1,37 @@
 "use client";
 // components/AuthModal.js
 import { useState } from "react";
-import { registerUser, loginUser } from "../lib/store";
+import { registerUser, loginUser, requestPasswordReset } from "../lib/store";
 import { useLang, t } from "../lib/i18n";
 
 export default function AuthModal({ onClose, onAuth }) {
   const lang = useLang();
-  const [mode, setMode] = useState("register"); // "register" | "login"
+  const [mode, setMode] = useState("register"); // "register" | "login" | "forgot"
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [emailOptIn, setEmailOptIn] = useState(true);
   const [error, setError] = useState("");
+  const [resetSent, setResetSent] = useState(false);
 
   async function submit(e) {
     e.preventDefault();
     setError("");
+
+    if (mode === "forgot") {
+      if (!email) {
+        setError(t(lang, "auth.fillFields"));
+        return;
+      }
+      const res = await requestPasswordReset(email);
+      if (!res.ok) {
+        setError(res.error);
+        return;
+      }
+      setResetSent(true);
+      return;
+    }
+
     if (mode === "register") {
       if (!name || !email || !password) {
         setError(t(lang, "auth.fillFields"));
@@ -30,6 +46,12 @@ export default function AuthModal({ onClose, onAuth }) {
         setError(res.error);
         return;
       }
+      // Best-effort welcome email -- never blocks sign-up if it fails.
+      fetch("/api/send-welcome-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, lang }),
+      }).catch(() => {});
     } else {
       const res = await loginUser(email, password);
       if (!res.ok) {
@@ -40,76 +62,119 @@ export default function AuthModal({ onClose, onAuth }) {
     onAuth();
   }
 
+  function switchMode(next) {
+    setMode(next);
+    setError("");
+    setResetSent(false);
+  }
+
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
-        <div className="tab-switch">
-          <button
-            className={mode === "register" ? "active" : ""}
-            onClick={() => setMode("register")}
-            type="button"
-          >
-            {t(lang, "auth.signup")}
-          </button>
-          <button
-            className={mode === "login" ? "active" : ""}
-            onClick={() => setMode("login")}
-            type="button"
-          >
-            {t(lang, "auth.login")}
-          </button>
-        </div>
+        {mode !== "forgot" && (
+          <div className="tab-switch">
+            <button
+              className={mode === "register" ? "active" : ""}
+              onClick={() => switchMode("register")}
+              type="button"
+            >
+              {t(lang, "auth.signup")}
+            </button>
+            <button
+              className={mode === "login" ? "active" : ""}
+              onClick={() => switchMode("login")}
+              type="button"
+            >
+              {t(lang, "auth.login")}
+            </button>
+          </div>
+        )}
 
-        <h2>{mode === "register" ? t(lang, "auth.joinPool") : t(lang, "auth.welcomeBack")}</h2>
+        <h2>
+          {mode === "register" && t(lang, "auth.joinPool")}
+          {mode === "login" && t(lang, "auth.welcomeBack")}
+          {mode === "forgot" && t(lang, "auth.resetPassword")}
+        </h2>
 
-        <form onSubmit={submit}>
-          {mode === "register" && (
-            <div className="field">
-              <label>{t(lang, "auth.fullName")}</label>
-              <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Jane Doe" />
+        {mode === "forgot" && resetSent ? (
+          <div>
+            <p className="subtitle" style={{ marginTop: 10 }}>
+              {t(lang, "auth.resetSent")} <strong>{email}</strong>.
+            </p>
+            <div className="modal-actions">
+              <button type="button" className="btn" onClick={() => switchMode("login")}>
+                {t(lang, "auth.backToLogin")}
+              </button>
             </div>
-          )}
-          <div className="field">
-            <label>{t(lang, "auth.email")}</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@email.com"
-            />
           </div>
-          <div className="field">
-            <label>{t(lang, "auth.password")}</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-            />
-          </div>
-
-          {mode === "register" && (
-            <label className="checkbox-field">
+        ) : (
+          <form onSubmit={submit}>
+            {mode === "register" && (
+              <div className="field">
+                <label>{t(lang, "auth.fullName")}</label>
+                <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Jane Doe" />
+              </div>
+            )}
+            <div className="field">
+              <label>{t(lang, "auth.email")}</label>
               <input
-                type="checkbox"
-                checked={emailOptIn}
-                onChange={(e) => setEmailOptIn(e.target.checked)}
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@email.com"
               />
-              <span>{t(lang, "auth.optIn")}</span>
-            </label>
-          )}
+            </div>
+            {mode !== "forgot" && (
+              <div className="field">
+                <label>{t(lang, "auth.password")}</label>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                />
+              </div>
+            )}
 
-          {error && <p className="error-text">{error}</p>}
+            {mode === "login" && (
+              <button
+                type="button"
+                onClick={() => switchMode("forgot")}
+                className="link-button"
+              >
+                {t(lang, "auth.forgotPassword")}
+              </button>
+            )}
 
-          <div className="modal-actions">
-            <button type="submit" className="btn">
-              {mode === "register" ? t(lang, "auth.createAccount") : t(lang, "auth.login")}
-            </button>
-            <button type="button" className="btn btn-ghost" onClick={onClose}>
-              {t(lang, "auth.cancel")}
-            </button>
-          </div>
-        </form>
+            {mode === "register" && (
+              <label className="checkbox-field">
+                <input
+                  type="checkbox"
+                  checked={emailOptIn}
+                  onChange={(e) => setEmailOptIn(e.target.checked)}
+                />
+                <span>{t(lang, "auth.optIn")}</span>
+              </label>
+            )}
+
+            {error && <p className="error-text">{error}</p>}
+
+            <div className="modal-actions">
+              <button type="submit" className="btn">
+                {mode === "register" && t(lang, "auth.createAccount")}
+                {mode === "login" && t(lang, "auth.login")}
+                {mode === "forgot" && t(lang, "auth.sendResetLink")}
+              </button>
+              <button
+                type="button"
+                className="btn btn-ghost"
+                onClick={mode === "forgot" ? () => switchMode("login") : onClose}
+              >
+                {mode === "forgot" ? t(lang, "auth.backToLogin") : t(lang, "auth.cancel")}
+              </button>
+            </div>
+          </form>
+        )}
 
         <a href={lang === "es" ? "/es/contact" : "/contact"} className="modal-help-link">
           {t(lang, "auth.needHelp")}

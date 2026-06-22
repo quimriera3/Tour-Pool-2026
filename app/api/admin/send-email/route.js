@@ -5,6 +5,7 @@
 // to be set in Vercel's environment variables.
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "../../../../lib/supabaseAdmin";
+import { buildEmailHtml, textToHtmlParagraphs } from "../../../../lib/emailTemplate";
 
 export async function POST(request) {
   const { password, subject, message } = await request.json();
@@ -66,7 +67,7 @@ export async function POST(request) {
       from: FROM,
       to: [r.email],
       subject,
-      html: "<p>Hi " + (r.name || "there") + ",</p>" + message.split("\n").map((line) => "<p>" + line + "</p>").join(""),
+      html: buildEmailHtml({ name: r.name, bodyHtml: textToHtmlParagraphs(message) }),
     }));
 
     const res = await fetch("https://api.resend.com/emails/batch", {
