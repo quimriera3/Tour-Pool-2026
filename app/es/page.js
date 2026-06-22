@@ -53,7 +53,7 @@ export default function SpanishLanding() {
           La aplicación para jugar está en inglés por ahora, pero registrarse y elegir tus
           corredores es muy sencillo aunque no domines el idioma.
         </p>
-        <a href="/predictions" className="btn" style={{ marginTop: 16, display: "inline-block" }}>
+        <a href="/es/predictions" className="btn" style={{ marginTop: 16, display: "inline-block" }}>
           Jugar ahora
         </a>
       </div>

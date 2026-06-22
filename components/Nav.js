@@ -8,24 +8,27 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import AuthModal from "./AuthModal";
 import { useSession, logoutUser } from "../lib/store";
+import { useLang, t } from "../lib/i18n";
 
 // Stage/Jersey Predictions already get their own big buttons in the sitewide
 // CTA bar (components/CtaBar.js) -- no need to repeat them here too.
-const NAV_LINKS = [
-  { href: "/", label: "Home" },
-  { href: "/preview", label: "Preview" },
-  { href: "/riders", label: "Riders" },
-  { href: "/leaderboard", label: "Leaderboard" },
-  { href: "/rules", label: "Rules" },
-];
+function navLinks(lang) {
+  const prefix = lang === "es" ? "/es" : "";
+  return [
+    { href: prefix || "/", key: "nav.home" },
+    { href: prefix + "/riders", key: "nav.riders" },
+    { href: prefix + "/leaderboard", key: "nav.leaderboard" },
+    { href: prefix + "/rules", key: "nav.rules" },
+  ];
+}
 
 const LANGUAGES = [
-  { code: "en", label: "English", href: "/" },
-  { code: "es", label: "Español", href: "/es" },
-  { code: "fr", label: "Français", href: "/fr" },
-  { code: "it", label: "Italiano", href: "/it" },
-  { code: "nl", label: "Nederlands", href: "/nl" },
-  { code: "ca", label: "Català", href: "/ca" },
+  { code: "en", short: "ENG", label: "English", href: "/" },
+  { code: "es", short: "ESP", label: "Español", href: "/es" },
+  { code: "fr", short: "FRA", label: "Français", href: "/fr" },
+  { code: "it", short: "ITA", label: "Italiano", href: "/it" },
+  { code: "nl", short: "NLD", label: "Nederlands", href: "/nl" },
+  { code: "ca", short: "CAT", label: "Català", href: "/ca" },
 ];
 
 function currentLangCode(pathname) {
@@ -36,17 +39,16 @@ function currentLangCode(pathname) {
 function LangSwitcher({ pathname }) {
   const [open, setOpen] = useState(false);
   const current = currentLangCode(pathname);
-  const currentLabel = LANGUAGES.find((l) => l.code === current)?.label || "English";
+  const currentShort = LANGUAGES.find((l) => l.code === current)?.short || "ENG";
 
   return (
     <div style={{ position: "relative" }}>
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="nav-btn secondary"
-        style={{ display: "flex", alignItems: "center", gap: 5 }}
+        className="lang-switcher-btn"
       >
-        {currentLabel} {open ? "▲" : "▼"}
+        {currentShort} <span style={{ fontSize: 9 }}>{open ? "▲" : "▼"}</span>
       </button>
       {open && (
         <div
@@ -88,6 +90,7 @@ function LangSwitcher({ pathname }) {
 
 export default function Nav() {
   const pathname = usePathname();
+  const lang = useLang();
   const session = useSession();
   const [showModal, setShowModal] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -97,10 +100,13 @@ export default function Nav() {
     setMenuOpen(false);
   }, [pathname]);
 
+  const links = navLinks(lang);
+  const logoHref = lang === "es" ? "/es" : "/";
+
   return (
     <nav className="nav">
       <div className="nav-inner">
-        <a href="/" className="logo-link">
+        <a href={logoHref} className="logo-link">
           <span className={"brand" + (menuOpen ? " brand-hidden-mobile" : "")}>
             <span style={{ color: "var(--yellow)" }}>TOUR DE FRANCE</span>{" "}
             <span style={{ color: "var(--white)" }}>POOL</span>
@@ -129,9 +135,9 @@ export default function Nav() {
         </button>
 
         <div className={"nav-links" + (menuOpen ? " open" : "")}>
-          {NAV_LINKS.map((l) => (
+          {links.map((l) => (
             <a key={l.href} href={l.href} className={"nav-btn secondary" + (pathname === l.href ? " active" : "")}>
-              {l.label}
+              {t(lang, l.key)}
             </a>
           ))}
           <LangSwitcher pathname={pathname} />
@@ -142,12 +148,12 @@ export default function Nav() {
             <>
               <span>{session.name}</span>
               <button className="btn btn-ghost" onClick={() => logoutUser()}>
-                Log out
+                {t(lang, "nav.logout")}
               </button>
             </>
           ) : (
             <button className="btn" onClick={() => setShowModal(true)}>
-              Sign up / Log in
+              {t(lang, "nav.signup")}
             </button>
           )}
         </div>

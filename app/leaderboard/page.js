@@ -3,8 +3,10 @@
 import { useEffect, useState } from "react";
 import { computeLeaderboard, useSession } from "../../lib/store";
 import Podium from "../../components/Podium";
+import { useLang, t } from "../../lib/i18n";
 
 export default function Leaderboard() {
+  const lang = useLang();
   const session = useSession();
   const [board, setBoard] = useState([]);
   const [search, setSearch] = useState("");
@@ -29,9 +31,9 @@ export default function Leaderboard() {
   return (
     <div>
       <div className="page-header">
-        <span className="eyebrow">Overall standings</span>
-        <h1>Leaderboard</h1>
-        <p className="subtitle">10 points for the right winner, 5 if your pick finishes 2nd, 2 if they finish 3rd — plus 20 points for every jersey you call correctly.</p>
+        <span className="eyebrow">{t(lang, "leaderboard.eyebrow")}</span>
+        <h1>{t(lang, "leaderboard.title")}</h1>
+        <p className="subtitle">{t(lang, "leaderboard.subtitle")}</p>
       </div>
 
       {board.length > 0 && (
@@ -44,7 +46,7 @@ export default function Leaderboard() {
         type="text"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        placeholder="Find your name..."
+        placeholder={t(lang, "leaderboard.searchPlaceholder")}
         className="rider-search"
         style={{ marginTop: 16 }}
       />
@@ -55,10 +57,10 @@ export default function Leaderboard() {
           <thead>
             <tr>
               <th>#</th>
-              <th>Name</th>
-              <th><span className="th-full">Total points</span><span className="th-short">Pts</span></th>
-              <th><span className="th-full">Stages correct</span><span className="th-short">Stages</span></th>
-              <th><span className="th-full">Last 5</span><span className="th-short">L5</span></th>
+              <th>{t(lang, "leaderboard.colName")}</th>
+              <th><span className="th-full">{t(lang, "leaderboard.colPointsFull")}</span><span className="th-short">{t(lang, "leaderboard.colPointsShort")}</span></th>
+              <th><span className="th-full">{t(lang, "leaderboard.colStagesFull")}</span><span className="th-short">{t(lang, "leaderboard.colStagesShort")}</span></th>
+              <th><span className="th-full">{t(lang, "leaderboard.colLastFull")}</span><span className="th-short">{t(lang, "leaderboard.colLastShort")}</span></th>
             </tr>
           </thead>
           <tbody>
@@ -77,12 +79,12 @@ export default function Leaderboard() {
             ))}
             {board.length === 0 && (
               <tr>
-                <td colSpan={5}>No users registered yet.</td>
+                <td colSpan={5}>{t(lang, "leaderboard.noUsers")}</td>
               </tr>
             )}
             {board.length > 0 && visibleRest.length === 0 && query && (
               <tr>
-                <td colSpan={5}>No one matching &quot;{search}&quot; found.</td>
+                <td colSpan={5}>{t(lang, "leaderboard.noResultsFor")} &quot;{search}&quot; {t(lang, "leaderboard.found")}</td>
               </tr>
             )}
           </tbody>

@@ -5,6 +5,11 @@
 // (lib/store.js) as the main /predictions page, so a pick made here or
 // there is always the same pick -- there's only one source of truth
 // (Supabase), not two states to keep in sync.
+//
+// NOTE on translation: structural labels (headers, nav, points) are
+// translated via lib/i18n.js. The 21 stage.preview paragraphs themselves are
+// still English-only -- translating 21 original paragraphs well is a
+// separate, sizeable writing task, not just a label swap.
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { STAGES, riderById, pointsForPick, stageIsLocked, stageStartDate, TYPE_LABEL } from "../../../lib/data";
@@ -13,6 +18,7 @@ import StageProfile from "../../../components/StageProfile";
 import StageTypeIcon from "../../../components/StageTypeIcon";
 import TeamRiderPicker from "../../../components/TeamRiderPicker";
 import Podium from "../../../components/Podium";
+import { useLang, t } from "../../../lib/i18n";
 
 function lockTimeLabel(stage) {
   const start = stageStartDate(stage);
@@ -21,6 +27,8 @@ function lockTimeLabel(stage) {
 }
 
 export default function StageDetail() {
+  const lang = useLang();
+  const prefix = lang === "es" ? "/es" : "";
   const params = useParams();
   const n = parseInt(params.n, 10);
   const stage = STAGES.find((s) => s.n === n);
@@ -56,10 +64,14 @@ export default function StageDetail() {
   if (!stage) {
     return (
       <div className="page-header">
-        <h1>Stage not found</h1>
-        <p className="subtitle">There&apos;s no stage number {params.n}. There are 21 stages in total.</p>
-        <a href="/predictions" className="btn" style={{ marginTop: 14, display: "inline-block" }}>
-          Back to all stages
+        <h1>{t(lang, "stage.notFound")}</h1>
+        <p className="subtitle">
+          {lang === "es"
+            ? "No existe la etapa número " + params.n + ". Hay 21 etapas en total."
+            : "There's no stage number " + params.n + ". There are 21 stages in total."}
+        </p>
+        <a href={prefix + "/predictions"} className="btn" style={{ marginTop: 14, display: "inline-block" }}>
+          {lang === "es" ? "Volver a todas las etapas" : "Back to all stages"}
         </a>
       </div>
     );
@@ -67,7 +79,7 @@ export default function StageDetail() {
 
   async function handlePick(stageN, riderId) {
     if (!session) {
-      alert("You need to sign up or log in to make predictions.");
+      alert(lang === "es" ? "Necesitas registrarte o iniciar sesión para hacer predicciones." : "You need to sign up or log in to make predictions.");
       return;
     }
     setPick(riderId);
@@ -88,44 +100,50 @@ export default function StageDetail() {
       ]
     : null;
 
+  const navBlock = (
+    <div className="stage-nav">
+      {prevStage ? (
+        <a href={prefix + "/stage/" + prevStage.n} className="stage-nav-link">
+          ← {lang === "es" ? "Etapa" : "Stage"} {prevStage.n}
+        </a>
+      ) : (
+        <span className="stage-nav-link disabled">← {lang === "es" ? "Etapa" : "Stage"} {n}</span>
+      )}
+      <a href={prefix + "/predictions"} className="stage-nav-link center">
+        {t(lang, "stage.allStages")}
+      </a>
+      {nextStage ? (
+        <a href={prefix + "/stage/" + nextStage.n} className="stage-nav-link">
+          {lang === "es" ? "Etapa" : "Stage"} {nextStage.n} →
+        </a>
+      ) : (
+        <span className="stage-nav-link disabled">{lang === "es" ? "Etapa" : "Stage"} {n} →</span>
+      )}
+    </div>
+  );
+
   return (
     <div>
-      {/* Quick prev/next navigation between the 21 stages */}
-      <div className="stage-nav">
-        {prevStage ? (
-          <a href={"/stage/" + prevStage.n} className="stage-nav-link">
-            ← Stage {prevStage.n}
-          </a>
-        ) : (
-          <span className="stage-nav-link disabled">← Stage {n}</span>
-        )}
-        <a href="/predictions" className="stage-nav-link center">
-          All 21 stages
-        </a>
-        {nextStage ? (
-          <a href={"/stage/" + nextStage.n} className="stage-nav-link">
-            Stage {nextStage.n} →
-          </a>
-        ) : (
-          <span className="stage-nav-link disabled">Stage {n} →</span>
-        )}
-      </div>
+      {navBlock}
 
       <div className="page-header">
-        <span className="eyebrow">Stage {stage.n} of 21 · {stage.date.split("-").reverse().join("/")}</span>
+        <span className="eyebrow">
+          {lang === "es" ? "Etapa " + stage.n + " de 21" : "Stage " + stage.n + " of 21"} · {stage.date.split("-").reverse().join("/")}
+        </span>
         <h1>{stage.from} → {stage.to}</h1>
         <p className="subtitle" style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
           <span className={"stage-type type-" + stage.type} style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
             <StageTypeIcon type={stage.type} size={13} />
             {TYPE_LABEL[stage.type]}
           </span>
-          · {stage.km} km · ↗ {stage.elevationGain} m of climbing
-          {stage.profileScore && <> · Difficulty score: {stage.profileScore}</>}
+          · {stage.km} km · ↗ {stage.elevationGain} m {lang === "es" ? "de desnivel" : "of climbing"}
+          {stage.profileScore && <> · {lang === "es" ? "Dificultad" : "Difficulty score"}: {stage.profileScore}</>}
         </p>
       </div>
 
       <div className="card">
-        <h3 style={{ fontSize: 15 }}>Make your pick</h3>
+        <h3 style={{ fontSize: 15 }}>{t(lang, "stage.makeYourPick")}</h3>
+        <p className="scoring-note" style={{ marginBottom: 12 }}>{t(lang, "scoring.stageShort")}</p>
 
         {!result && (
           <>
@@ -138,10 +156,10 @@ export default function StageDetail() {
             />
             {!locked && (
               <p className="stage-meta" style={{ marginTop: 8 }}>
-                Predictions close at {lockTimeLabel(stage)}
+                {t(lang, "predictions.closesAt")} {lockTimeLabel(stage)}
               </p>
             )}
-            {locked && <p className="stage-meta" style={{ marginTop: 8 }}>This stage is locked.</p>}
+            {locked && <p className="stage-meta" style={{ marginTop: 8 }}>{t(lang, "predictions.locked")}</p>}
           </>
         )}
 
@@ -149,24 +167,25 @@ export default function StageDetail() {
           <>
             <Podium items={podiumItems} />
             <p className="stage-meta" style={{ marginTop: 8, textAlign: "center" }}>
-              Your pick: {pick ? riderById(pick)?.name : "— none —"}
+              {t(lang, "stage.yourPick")} {pick ? riderById(pick)?.name : "— " + t(lang, "stage.none") + " —"}
             </p>
             <div style={{ textAlign: "center" }}>
-              <span className={"points-pill points-" + pts}>{pts} points</span>
+              <span className={"points-pill points-" + pts}>{pts} {t(lang, "stage.points")}</span>
             </div>
           </>
         )}
       </div>
 
-      {/* Real, original stage preview text -- good for SEO, not a placeholder */}
+      {/* Real, original stage preview text -- good for SEO, not a placeholder.
+          English-only for now; see the note at the top of this file. */}
       <div className="card" style={{ marginTop: 16 }}>
-        <h3 style={{ fontSize: 15 }}>Stage preview</h3>
+        <h3 style={{ fontSize: 15 }}>{t(lang, "stage.stagePreview")}</h3>
         <p className="subtitle" style={{ marginTop: 10 }}>{stage.preview}</p>
       </div>
 
       {/* Elevation profile -- this part is real, not a placeholder */}
       <div className="card" style={{ marginTop: 16 }}>
-        <h3 style={{ fontSize: 15 }}>Elevation profile</h3>
+        <h3 style={{ fontSize: 15 }}>{t(lang, "stage.elevationProfile")}</h3>
         <StageProfile type={stage.type} elevationGain={stage.elevationGain} />
         <a
           href={stage.officialUrl}
@@ -174,29 +193,11 @@ export default function StageDetail() {
           rel="noopener noreferrer"
           style={{ display: "inline-block", marginTop: 10, fontSize: 12, fontWeight: 700, color: "var(--red)" }}
         >
-          More detailed stage info ↗
+          {t(lang, "stage.moreInfo")} ↗
         </a>
       </div>
 
-      <div className="stage-nav" style={{ marginTop: 16 }}>
-        {prevStage ? (
-          <a href={"/stage/" + prevStage.n} className="stage-nav-link">
-            ← Stage {prevStage.n}
-          </a>
-        ) : (
-          <span className="stage-nav-link disabled">← Stage {n}</span>
-        )}
-        <a href="/predictions" className="stage-nav-link center">
-          All 21 stages
-        </a>
-        {nextStage ? (
-          <a href={"/stage/" + nextStage.n} className="stage-nav-link">
-            Stage {nextStage.n} →
-          </a>
-        ) : (
-          <span className="stage-nav-link disabled">Stage {n} →</span>
-        )}
-      </div>
+      <div style={{ marginTop: 16 }}>{navBlock}</div>
     </div>
   );
 }

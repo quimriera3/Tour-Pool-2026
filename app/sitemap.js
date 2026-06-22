@@ -13,6 +13,11 @@ export default function sitemap() {
     "/rules",
     "/preview",
     "/es",
+    "/es/predictions",
+    "/es/riders",
+    "/es/final-classification",
+    "/es/leaderboard",
+    "/es/rules",
     "/es/preview",
     "/fr",
     "/fr/preview",
@@ -24,7 +29,7 @@ export default function sitemap() {
     "/ca/preview",
   ];
 
-  const stageRoutes = STAGES.map((s) => "/stage/" + s.n);
+  const stageRoutes = STAGES.flatMap((s) => ["/stage/" + s.n, "/es/stage/" + s.n]);
 
   return [...routes, ...stageRoutes].map((route) => ({
     url: SITE_URL + route,

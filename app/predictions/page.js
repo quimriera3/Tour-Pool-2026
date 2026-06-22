@@ -7,6 +7,9 @@ import StageProfile from "../../components/StageProfile";
 import StageTypeIcon from "../../components/StageTypeIcon";
 import TeamRiderPicker from "../../components/TeamRiderPicker";
 import Podium from "../../components/Podium";
+import { useLang, t } from "../../lib/i18n";
+
+const WEEK_KEYS = ["week.1", "week.2", "week.3"];
 
 function lockTimeLabel(stage) {
   const start = stageStartDate(stage);
@@ -14,7 +17,7 @@ function lockTimeLabel(stage) {
   return lock.toTimeString().slice(0, 5);
 }
 
-function StageCard({ stage, pick, onPick, result }) {
+function StageCard({ stage, pick, onPick, result, lang, stagePrefix }) {
   const locked = stageIsLocked(stage);
   const pts = result ? pointsForPick(pick, result) : null;
   const pickedRider = pick ? riderById(pick) : null;
@@ -47,10 +50,10 @@ function StageCard({ stage, pick, onPick, result }) {
       <StageProfile type={stage.type} elevationGain={stage.elevationGain} />
 
       <a
-        href={"/stage/" + stage.n}
+        href={stagePrefix + "/stage/" + stage.n}
         style={{ fontSize: 12, fontWeight: 700, color: "var(--red)" }}
       >
-        See full stage details ↗
+        {t(lang, "predictions.seeDetails")} ↗
       </a>
 
       {!result && (
@@ -64,7 +67,12 @@ function StageCard({ stage, pick, onPick, result }) {
           />
           {!locked && (
             <p className="stage-meta" style={{ marginTop: 6 }}>
-              Predictions close at {lockTimeLabel(stage)}
+              {t(lang, "predictions.closesAt")} {lockTimeLabel(stage)}
+            </p>
+          )}
+          {locked && (
+            <p className="stage-meta" style={{ marginTop: 6 }}>
+              {t(lang, "predictions.locked")}
             </p>
           )}
         </>
@@ -74,10 +82,10 @@ function StageCard({ stage, pick, onPick, result }) {
         <>
           <Podium items={podiumItems} />
           <p className="stage-meta" style={{ marginTop: 8, textAlign: "center" }}>
-            Your pick: {pick ? riderById(pick)?.name : "— none —"}
+            {t(lang, "stage.yourPick")} {pick ? riderById(pick)?.name : "— " + t(lang, "stage.none") + " —"}
           </p>
           <div style={{ textAlign: "center" }}>
-            <span className={"points-pill points-" + pts}>{pts} points</span>
+            <span className={"points-pill points-" + pts}>{pts} {t(lang, "stage.points")}</span>
           </div>
         </>
       )}
@@ -86,6 +94,8 @@ function StageCard({ stage, pick, onPick, result }) {
 }
 
 export default function Predictions() {
+  const lang = useLang();
+  const stagePrefix = lang === "es" ? "/es" : "";
   const session = useSession();
   const [picks, setPicks] = useState({});
   const [results, setResults] = useState({});
@@ -111,7 +121,7 @@ export default function Predictions() {
 
   async function handlePick(stageN, riderId) {
     if (!session) {
-      alert("You need to sign up or log in to make predictions.");
+      alert(lang === "es" ? "Necesitas registrarte o iniciar sesión para hacer predicciones." : "You need to sign up or log in to make predictions.");
       return;
     }
     setPicks((prev) => ({ ...prev, [stageN]: riderId }));
@@ -123,19 +133,17 @@ export default function Predictions() {
   return (
     <div>
       <div className="page-header">
-        <span className="eyebrow">21 stages</span>
-        <h1>Stage Predictions</h1>
-        <p className="subtitle">
-          Pick who you think will win each stage. Riders are listed from most to least favourite
-          based on the stage profile. You can change your pick until the stage starts.
-        </p>
+        <span className="eyebrow">{t(lang, "predictions.eyebrow")}</span>
+        <h1>{t(lang, "predictions.title")}</h1>
+        <p className="subtitle">{t(lang, "predictions.subtitle")}</p>
+        <p className="scoring-note">{t(lang, "scoring.stage")}</p>
       </div>
 
-      {WEEKS.map((week) => (
+      {WEEKS.map((week, i) => (
         <div key={week.title}>
           <div className="week-header">
-            <h2>{week.title}</h2>
-            <p>{week.subtitle}</p>
+            <h2>{t(lang, WEEK_KEYS[i] + ".title")}</h2>
+            <p>{t(lang, WEEK_KEYS[i] + ".subtitle")}</p>
           </div>
           <div className="grid grid-3">
             {STAGES.filter((s) => s.n >= week.from && s.n <= week.to).map((stage) => (
@@ -145,6 +153,8 @@ export default function Predictions() {
                 pick={picks[stage.n]}
                 onPick={handlePick}
                 result={results[stage.n]}
+                lang={lang}
+                stagePrefix={stagePrefix}
               />
             ))}
           </div>

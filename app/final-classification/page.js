@@ -5,17 +5,19 @@ import { riderById, isWhiteJerseyEligible } from "../../lib/data";
 import { useSession, saveFinals, getFinalsFor } from "../../lib/store";
 import JerseyIcon from "../../components/JerseyIcon";
 import TeamRiderPicker from "../../components/TeamRiderPicker";
+import { useLang, t } from "../../lib/i18n";
 
 const TOUR_START = new Date("2026-07-04T07:00:00");
 
 const QUESTIONS = [
-  { key: "yellow", jersey: "yellow", label: "Yellow Jersey", sub: "Overall winner", sortType: "mountains" },
-  { key: "green", jersey: "green", label: "Green Jersey", sub: "Points / consistency", sortType: "flat" },
-  { key: "polka", jersey: "polka", label: "Polka Dot Jersey", sub: "Best climber", sortType: "mountains" },
-  { key: "white", jersey: "white", label: "White Jersey", sub: "Best young rider (25 or under)", sortType: null, riderFilter: isWhiteJerseyEligible },
+  { key: "yellow", jersey: "yellow", labelKey: "jersey.yellow", subKey: "jersey.yellowSub", sortType: "mountains" },
+  { key: "green", jersey: "green", labelKey: "jersey.green", subKey: "jersey.greenSub", sortType: "flat" },
+  { key: "polka", jersey: "polka", labelKey: "jersey.polka", subKey: "jersey.polkaSub", sortType: "mountains" },
+  { key: "white", jersey: "white", labelKey: "jersey.white", subKey: "jersey.whiteSub", sortType: null, riderFilter: isWhiteJerseyEligible },
 ];
 
 export default function FinalClassification() {
+  const lang = useLang();
   const session = useSession();
   const [answers, setAnswers] = useState({});
   const [open, setOpen] = useState(null);
@@ -36,7 +38,7 @@ export default function FinalClassification() {
 
   async function update(key, value) {
     if (!session) {
-      alert("You need to sign up or log in to make predictions.");
+      alert(lang === "es" ? "Necesitas registrarte o iniciar sesión para hacer predicciones." : "You need to sign up or log in to make predictions.");
       return;
     }
     const next = { ...answers, [key]: value };
@@ -47,12 +49,10 @@ export default function FinalClassification() {
   return (
     <div>
       <div className="page-header">
-        <span className="eyebrow">Locks on 4 July</span>
-        <h1>Jersey Predictions</h1>
-        <p className="subtitle">
-          Predict who takes home each jersey at the end of the Tour. Tap a jersey to make your
-          pick. These predictions lock when the race starts.
-        </p>
+        <span className="eyebrow">{t(lang, "jersey.eyebrow")}</span>
+        <h1>{t(lang, "jersey.title")}</h1>
+        <p className="subtitle">{t(lang, "jersey.subtitle")}</p>
+        <p className="scoring-note">{t(lang, "scoring.jersey")}</p>
       </div>
 
       <div className="jersey-row">
@@ -66,10 +66,10 @@ export default function FinalClassification() {
               onClick={() => !locked && setOpen(isOpen ? null : q.key)}
             >
               <JerseyIcon kind={q.jersey} size={48} />
-              <div className="jlabel">{q.label}</div>
-              <div className="jpick">{q.sub}</div>
+              <div className="jlabel">{t(lang, q.labelKey)}</div>
+              <div className="jpick">{t(lang, q.subKey)}</div>
               <div className="jpick" style={{ marginTop: 6, fontWeight: 700, color: "var(--black)" }}>
-                {pickedRider ? pickedRider.name : "Tap to pick"}
+                {pickedRider ? pickedRider.name : t(lang, "jersey.tapToPick")}
               </div>
 
               {isOpen && (
@@ -91,7 +91,7 @@ export default function FinalClassification() {
 
       {locked && (
         <p className="lock-note" style={{ marginTop: 16 }}>
-          The Tour has already started: these predictions are locked.
+          {lang === "es" ? "El Tour ya ha empezado: estas predicciones están bloqueadas." : "The Tour has already started: these predictions are locked."}
         </p>
       )}
     </div>

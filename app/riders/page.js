@@ -2,10 +2,12 @@
 // app/riders/page.js
 import { useState } from "react";
 import { teamsList, teamColor, teamPastelBg, pcsUrl, riderSpecialty } from "../../lib/data";
+import { useLang, t } from "../../lib/i18n";
 
 const SPECIALTIES = ["All", "Climber", "Puncheur", "Sprinter", "Time triallist"];
 
 export default function Riders() {
+  const lang = useLang();
   const teams = teamsList();
   const [filter, setFilter] = useState("All");
   const [openTeam, setOpenTeam] = useState(null);
@@ -26,15 +28,15 @@ export default function Riders() {
     return (
       <div>
         <div className="page-header">
-          <span className="eyebrow">Start list (sample)</span>
-          <h1>Riders</h1>
+          <span className="eyebrow">{t(lang, "riders.eyebrow")}</span>
+          <h1>{t(lang, "riders.title")}</h1>
         </div>
 
         <input
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search a rider by name..."
+          placeholder={t(lang, "riders.searchPlaceholder")}
           className="rider-search"
           autoFocus
         />
@@ -42,7 +44,7 @@ export default function Riders() {
         <div className="chip-row">
           {SPECIALTIES.map((s) => (
             <button key={s} className={"chip" + (filter === s ? " active" : "")} onClick={() => setFilter(s)}>
-              {s}
+              {t(lang, "specialty." + s)}
             </button>
           ))}
         </div>
@@ -57,7 +59,7 @@ export default function Riders() {
                 <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <span className="team-dot" style={{ background: teamColor(r.team) }} />
                   {r.name}
-                  {!r.confirmed && <span className="unconfirmed-tag"> · unconfirmed</span>}
+                  {!r.confirmed && <span className="unconfirmed-tag"> · {t(lang, "riders.unconfirmed")}</span>}
                 </span>
                 <span className="specialty-tag">{r.team}</span>
               </a>
@@ -71,28 +73,23 @@ export default function Riders() {
   return (
     <div>
       <div className="page-header">
-        <span className="eyebrow">Start list (sample)</span>
-        <h1>Riders</h1>
-        <p className="subtitle">
-          Tap a team to see its riders, or search a name directly. Of the 23 confirmed teams, 16
-          have at least one listed rider so far — the other 7 will be added as their rosters get
-          confirmed. Names marked &quot;unconfirmed&quot; rode for that team in 2025 and are
-          likely picks, but haven&apos;t been officially confirmed for 2026 yet.
-        </p>
+        <span className="eyebrow">{t(lang, "riders.eyebrow")}</span>
+        <h1>{t(lang, "riders.title")}</h1>
+        <p className="subtitle">{t(lang, "riders.subtitle")}</p>
       </div>
 
       <input
         type="text"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        placeholder="Search a rider by name..."
+        placeholder={t(lang, "riders.searchPlaceholder")}
         className="rider-search"
       />
 
       <div className="chip-row">
         {SPECIALTIES.map((s) => (
           <button key={s} className={"chip" + (filter === s ? " active" : "")} onClick={() => setFilter(s)}>
-            {s}
+            {t(lang, "specialty." + s)}
           </button>
         ))}
       </div>
@@ -117,7 +114,7 @@ export default function Riders() {
                 <span className="team-dot" style={{ background: teamColor(team) }} />
                 <span className="team-accordion-name">{team}</span>
                 <span className="team-accordion-count">
-                  {hasNoRidersAtAll ? "TBC" : visible.length + " rider" + (visible.length !== 1 ? "s" : "")}
+                  {hasNoRidersAtAll ? t(lang, "riders.tbc") : visible.length + " rider" + (visible.length !== 1 ? "s" : "")}
                 </span>
                 <span className="team-accordion-chevron">{isOpen ? "▲" : "▼"}</span>
               </button>
@@ -126,14 +123,14 @@ export default function Riders() {
                 <div className="team-accordion-body">
                   {hasNoRidersAtAll ? (
                     <p className="subtitle" style={{ padding: "14px 16px" }}>
-                      No riders confirmed for this team yet — check back closer to the Tour.
+                      {t(lang, "riders.noRidersYet")}
                     </p>
                   ) : (
                     visible.map((r) => (
                       <a key={r.id} href={pcsUrl(r)} target="_blank" rel="noopener noreferrer" className="team-rider-row">
                         <span>
                           {r.name}
-                          {!r.confirmed && <span className="unconfirmed-tag"> · unconfirmed</span>}
+                          {!r.confirmed && <span className="unconfirmed-tag"> · {t(lang, "riders.unconfirmed")}</span>}
                         </span>
                         <span className="specialty-tag">{riderSpecialty(r)}</span>
                       </a>
