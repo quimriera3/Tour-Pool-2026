@@ -1,7 +1,8 @@
 "use client";
 // app/admin/page.js
 import { useState } from "react";
-import { buildEmailHtml, textToHtmlParagraphs } from "../../lib/emailTemplate";
+import { buildEmailHtml } from "../../lib/emailTemplate";
+import RichTextEditor from "../../components/RichTextEditor";
 
 export default function Admin() {
   const [password, setPassword] = useState("");
@@ -13,6 +14,7 @@ export default function Admin() {
 
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
+  const [editorKey, setEditorKey] = useState(0);
   const [sending, setSending] = useState(false);
   const [sendResult, setSendResult] = useState(null);
   const [confirmSend, setConfirmSend] = useState(false);
@@ -91,6 +93,7 @@ export default function Admin() {
         setSendResult({ ok: true, sent: data.sent, total: data.total, errors: data.errors });
         setSubject("");
         setMessage("");
+        setEditorKey((k) => k + 1);
         setSelectedIds(new Set());
       }
     } catch (err) {
@@ -145,7 +148,7 @@ export default function Admin() {
   const targetCount = recipientMode === "selected" ? selectedIds.size : optedInCount;
   const previewHtml = buildEmailHtml({
     name: "Jane",
-    bodyHtml: textToHtmlParagraphs(message || "Your message will appear here as you type it."),
+    bodyHtml: message || "<p>Your message will appear here as you type it.</p>",
   });
 
   return (
@@ -166,12 +169,11 @@ export default function Admin() {
             </div>
             <div className="field">
               <label>Message</label>
-              <textarea
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                placeholder="One line per paragraph -- this becomes the email body."
-                rows={6}
-                style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1.5px solid var(--grey-light)", fontSize: 14, fontFamily: "inherit" }}
+              <RichTextEditor
+                key={editorKey}
+                initialValue={message}
+                onChange={setMessage}
+                placeholder="Write your message... use the toolbar for bold, italic, lists, and color."
               />
             </div>
 

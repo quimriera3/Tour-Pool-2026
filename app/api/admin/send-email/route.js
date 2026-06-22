@@ -7,7 +7,7 @@
 // Uses Resend (resend.com); requires RESEND_API_KEY in Vercel's env vars.
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "../../../../lib/supabaseAdmin";
-import { buildEmailHtml, textToHtmlParagraphs } from "../../../../lib/emailTemplate";
+import { buildEmailHtml } from "../../../../lib/emailTemplate";
 
 export async function POST(request) {
   const { password, subject, message, testEmail, selectedEmails } = await request.json();
@@ -87,7 +87,7 @@ export async function POST(request) {
       from: FROM,
       to: [r.email],
       subject,
-      html: buildEmailHtml({ name: r.name, bodyHtml: textToHtmlParagraphs(message) }),
+      html: buildEmailHtml({ name: r.name, bodyHtml: message }),
     }));
 
     const res = await fetch("https://api.resend.com/emails/batch", {

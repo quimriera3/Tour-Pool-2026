@@ -42,7 +42,7 @@ function LangSwitcher({ pathname }) {
   const currentShort = LANGUAGES.find((l) => l.code === current)?.short || "ENG";
 
   return (
-    <div style={{ position: "relative" }}>
+    <div className="lang-switcher" style={{ position: "relative" }}>
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
@@ -113,6 +113,8 @@ export default function Nav() {
           </span>
         </a>
 
+        <LangSwitcher pathname={pathname} />
+
         <button
           className="nav-hamburger"
           aria-label="Toggle menu"
@@ -140,7 +142,6 @@ export default function Nav() {
               {t(lang, l.key)}
             </a>
           ))}
-          <LangSwitcher pathname={pathname} />
         </div>
 
         <div className={"nav-user" + (menuOpen ? " open" : "")}>
