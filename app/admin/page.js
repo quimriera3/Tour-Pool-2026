@@ -1,6 +1,7 @@
 "use client";
 // app/admin/page.js
 import { useState } from "react";
+import { buildEmailHtml, textToHtmlParagraphs } from "../../lib/emailTemplate";
 
 export default function Admin() {
   const [password, setPassword] = useState("");
@@ -15,6 +16,13 @@ export default function Admin() {
   const [sending, setSending] = useState(false);
   const [sendResult, setSendResult] = useState(null);
   const [confirmSend, setConfirmSend] = useState(false);
+
+  const [testEmail, setTestEmail] = useState("");
+  const [sendingTest, setSendingTest] = useState(false);
+  const [testResult, setTestResult] = useState(null);
+
+  const [recipientMode, setRecipientMode] = useState("all"); // "all" | "selected"
+  const [selectedIds, setSelectedIds] = useState(new Set());
 
   async function load(e) {
     e.preventDefault();
@@ -40,14 +48,41 @@ export default function Admin() {
     }
   }
 
-  async function sendEmail() {
-    setSending(true);
-    setSendResult(null);
+  async function sendTest() {
+    setSendingTest(true);
+    setTestResult(null);
     try {
       const res = await fetch("/api/admin/send-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password, subject, message }),
+        body: JSON.stringify({
+          password,
+          subject: subject || "(test) Tour de France Pool",
+          message: message || "This is a test email.",
+          testEmail,
+        }),
+      });
+      const data = await res.json();
+      setTestResult(res.ok ? { ok: true } : { ok: false, error: data.error });
+    } catch (err) {
+      setTestResult({ ok: false, error: "Could not reach the server." });
+    } finally {
+      setSendingTest(false);
+    }
+  }
+
+  async function sendEmail() {
+    setSending(true);
+    setSendResult(null);
+    try {
+      const body = { password, subject, message };
+      if (recipientMode === "selected") {
+        body.selectedEmails = users.filter((u) => selectedIds.has(u.id)).map((u) => u.email);
+      }
+      const res = await fetch("/api/admin/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -56,6 +91,7 @@ export default function Admin() {
         setSendResult({ ok: true, sent: data.sent, total: data.total, errors: data.errors });
         setSubject("");
         setMessage("");
+        setSelectedIds(new Set());
       }
     } catch (err) {
       setSendResult({ ok: false, error: "Could not reach the server." });
@@ -63,6 +99,15 @@ export default function Admin() {
       setSending(false);
       setConfirmSend(false);
     }
+  }
+
+  function toggleSelected(id) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
   }
 
   if (!users) {
@@ -97,6 +142,11 @@ export default function Admin() {
     ? users.filter((u) => u.name.toLowerCase().includes(query) || u.email.toLowerCase().includes(query))
     : users;
   const optedInCount = users.filter((u) => u.emailOptIn).length;
+  const targetCount = recipientMode === "selected" ? selectedIds.size : optedInCount;
+  const previewHtml = buildEmailHtml({
+    name: "Jane",
+    bodyHtml: textToHtmlParagraphs(message || "Your message will appear here as you type it."),
+  });
 
   return (
     <div>
@@ -105,60 +155,125 @@ export default function Admin() {
         <h1>Sign-ups & predictions</h1>
       </div>
 
-      {/* ---------- Send a reminder email ---------- */}
       <div className="card">
         <h3 style={{ fontSize: 16 }}>Send a reminder email</h3>
-        <p className="subtitle" style={{ marginTop: 6 }}>
-          Goes only to the <strong>{optedInCount} of {users.length}</strong> users who opted in
-          to essential game emails when they signed up.
-        </p>
-        <div className="field">
-          <label>Subject</label>
-          <input value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="Stage 5 predictions close in 1 hour!" />
-        </div>
-        <div className="field">
-          <label>Message</label>
-          <textarea
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            placeholder="One line per paragraph -- this becomes the email body."
-            rows={5}
-            style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1.5px solid var(--grey-light)", fontSize: 14, fontFamily: "inherit" }}
-          />
-        </div>
 
-        {!confirmSend ? (
-          <button
-            className="btn"
-            style={{ marginTop: 14 }}
-            disabled={!subject || !message || optedInCount === 0}
-            onClick={() => setConfirmSend(true)}
-          >
-            Review & send to {optedInCount} {optedInCount === 1 ? "person" : "people"}
-          </button>
-        ) : (
-          <div style={{ marginTop: 14, padding: 14, background: "#fff8e1", borderRadius: 8, border: "1px solid #f0d98c" }}>
-            <p style={{ fontSize: 13, fontWeight: 700 }}>
-              Send &quot;{subject}&quot; to {optedInCount} {optedInCount === 1 ? "person" : "people"} now?
-            </p>
-            <div style={{ display: "flex", gap: 10, marginTop: 10 }}>
-              <button className="btn" disabled={sending} onClick={sendEmail}>
-                {sending ? "Sending..." : "Yes, send it"}
+        <div className="grid grid-2" style={{ marginTop: 12, alignItems: "start" }}>
+          <div>
+            <div className="field" style={{ marginTop: 0 }}>
+              <label>Subject</label>
+              <input value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="Stage 5 predictions close in 1 hour!" />
+            </div>
+            <div className="field">
+              <label>Message</label>
+              <textarea
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder="One line per paragraph -- this becomes the email body."
+                rows={6}
+                style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1.5px solid var(--grey-light)", fontSize: 14, fontFamily: "inherit" }}
+              />
+            </div>
+
+            <div style={{ marginTop: 14, padding: 12, background: "#f7f7f5", borderRadius: 8 }}>
+              <label style={{ fontSize: 12, fontWeight: 700, color: "var(--grey)", textTransform: "uppercase", display: "block", marginBottom: 6 }}>
+                Send yourself a test copy first
+              </label>
+              <div style={{ display: "flex", gap: 8 }}>
+                <input
+                  type="email"
+                  value={testEmail}
+                  onChange={(e) => setTestEmail(e.target.value)}
+                  placeholder="you@email.com"
+                  style={{ flex: 1, padding: "9px 12px", borderRadius: 8, border: "1.5px solid var(--grey-light)", fontSize: 13 }}
+                />
+                <button
+                  type="button"
+                  className="btn btn-outline"
+                  style={{ padding: "9px 16px", fontSize: 13 }}
+                  disabled={!testEmail || sendingTest}
+                  onClick={sendTest}
+                >
+                  {sendingTest ? "Sending..." : "Send test"}
+                </button>
+              </div>
+              {testResult && (
+                <p style={{ marginTop: 8, fontSize: 12, color: testResult.ok ? "var(--green)" : "var(--red)" }}>
+                  {testResult.ok ? "Test sent — check your inbox." : "Error: " + testResult.error}
+                </p>
+              )}
+            </div>
+
+            <div style={{ marginTop: 14 }}>
+              <label style={{ fontSize: 12, fontWeight: 700, color: "var(--grey)", textTransform: "uppercase", display: "block", marginBottom: 6 }}>
+                Send the real email to
+              </label>
+              <div style={{ display: "flex", gap: 8 }}>
+                <button
+                  type="button"
+                  className={"chip" + (recipientMode === "all" ? " active" : "")}
+                  onClick={() => setRecipientMode("all")}
+                >
+                  Everyone opted in ({optedInCount})
+                </button>
+                <button
+                  type="button"
+                  className={"chip" + (recipientMode === "selected" ? " active" : "")}
+                  onClick={() => setRecipientMode("selected")}
+                >
+                  Hand-picked ({selectedIds.size} selected)
+                </button>
+              </div>
+              {recipientMode === "selected" && (
+                <p className="subtitle" style={{ marginTop: 8, fontSize: 12 }}>
+                  Tick people in the table below to choose exactly who gets this one.
+                </p>
+              )}
+            </div>
+
+            {!confirmSend ? (
+              <button
+                className="btn"
+                style={{ marginTop: 14 }}
+                disabled={!subject || !message || targetCount === 0}
+                onClick={() => setConfirmSend(true)}
+              >
+                Review & send to {targetCount} {targetCount === 1 ? "person" : "people"}
               </button>
-              <button className="btn btn-ghost" disabled={sending} onClick={() => setConfirmSend(false)}>
-                Cancel
-              </button>
+            ) : (
+              <div style={{ marginTop: 14, padding: 14, background: "#fff8e1", borderRadius: 8, border: "1px solid #f0d98c" }}>
+                <p style={{ fontSize: 13, fontWeight: 700 }}>
+                  Send &quot;{subject}&quot; to {targetCount} {targetCount === 1 ? "person" : "people"} now?
+                </p>
+                <div style={{ display: "flex", gap: 10, marginTop: 10 }}>
+                  <button className="btn" disabled={sending} onClick={sendEmail}>
+                    {sending ? "Sending..." : "Yes, send it"}
+                  </button>
+                  <button className="btn btn-ghost" disabled={sending} onClick={() => setConfirmSend(false)}>
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {sendResult && (
+              <p style={{ marginTop: 12, fontSize: 13, color: sendResult.ok ? "var(--green)" : "var(--red)" }}>
+                {sendResult.ok
+                  ? "Sent to " + sendResult.sent + " of " + sendResult.total + " people."
+                  : "Error: " + sendResult.error}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label style={{ fontSize: 12, fontWeight: 700, color: "var(--grey)", textTransform: "uppercase", display: "block", marginBottom: 6 }}>
+              Live preview
+            </label>
+            <div style={{ background: "#e9e9e9", borderRadius: 8, padding: 14, maxHeight: 480, overflowY: "auto" }}>
+              <div style={{ background: "#fff" }} dangerouslySetInnerHTML={{ __html: previewHtml }} />
             </div>
           </div>
-        )}
-
-        {sendResult && (
-          <p style={{ marginTop: 12, fontSize: 13, color: sendResult.ok ? "var(--green)" : "var(--red)" }}>
-            {sendResult.ok
-              ? "Sent to " + sendResult.sent + " of " + sendResult.total + " people."
-              : "Error: " + sendResult.error}
-          </p>
-        )}
+        </div>
       </div>
 
       <input
@@ -175,6 +290,7 @@ export default function Admin() {
           <table className="leaderboard">
             <thead>
               <tr>
+                {recipientMode === "selected" && <th></th>}
                 <th>Name</th>
                 <th>Email</th>
                 <th>Joined</th>
@@ -191,6 +307,15 @@ export default function Admin() {
                 return (
                   <>
                     <tr key={u.id}>
+                      {recipientMode === "selected" && (
+                        <td>
+                          <input
+                            type="checkbox"
+                            checked={selectedIds.has(u.id)}
+                            onChange={() => toggleSelected(u.id)}
+                          />
+                        </td>
+                      )}
                       <td style={{ fontWeight: 700 }}>{u.name}</td>
                       <td>{u.email}</td>
                       <td>{new Date(u.joined).toLocaleDateString()}</td>
@@ -209,7 +334,7 @@ export default function Admin() {
                     </tr>
                     {isOpen && (
                       <tr key={u.id + "-detail"}>
-                        <td colSpan={7} style={{ background: "#fafafa" }}>
+                        <td colSpan={8} style={{ background: "#fafafa" }}>
                           <div style={{ padding: "10px 4px" }}>
                             <strong style={{ fontSize: 12 }}>Jersey picks:</strong>{" "}
                             <span style={{ fontSize: 12 }}>
@@ -235,7 +360,7 @@ export default function Admin() {
               })}
               {visible.length === 0 && (
                 <tr>
-                  <td colSpan={7}>No matches.</td>
+                  <td colSpan={8}>No matches.</td>
                 </tr>
               )}
             </tbody>
