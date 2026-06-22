@@ -37,11 +37,20 @@ export const metadata = {
     siteName: "Tour de France Pool",
     locale: "en_US",
     type: "website",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 916,
+        height: 493,
+        alt: "Tour de France Pool 2026",
+      },
+    ],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "Tour de France Pool 2026 — Stage Predictions & Sweepstake",
     description: "Pick the winner of every Tour de France 2026 stage and climb the leaderboard.",
+    images: ["/og-image.png"],
   },
   robots: {
     index: true,
