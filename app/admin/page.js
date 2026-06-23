@@ -13,6 +13,8 @@ export default function Admin() {
   const [expanded, setExpanded] = useState(null);
   const [search, setSearch] = useState("");
   const [chartsOpen, setChartsOpen] = useState(false);
+  const [kpisOpen, setKpisOpen] = useState(false);
+  const [updatingOptIn, setUpdatingOptIn] = useState(null);
 
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
@@ -50,6 +52,28 @@ export default function Admin() {
       setError("Could not reach the server.");
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function toggleOptIn(user) {
+    const newValue = !user.emailOptIn;
+    setUpdatingOptIn(user.id);
+    try {
+      const res = await fetch("/api/admin/update-opt-in", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password, userId: user.id, emailOptIn: newValue }),
+      });
+      if (res.ok) {
+        setUsers((prev) => prev.map((u) => (u.id === user.id ? { ...u, emailOptIn: newValue } : u)));
+      } else {
+        const data = await res.json().catch(() => ({}));
+        alert("Could not update: " + (data.error || "unknown error"));
+      }
+    } catch (err) {
+      alert("Could not reach the server.");
+    } finally {
+      setUpdatingOptIn(null);
     }
   }
 
@@ -175,6 +199,22 @@ export default function Admin() {
     value: users.filter((u) => b.test(u.stagesPicked)).length,
   }));
   const activeCount = users.filter((u) => u.stagesPicked > 0).length;
+
+  // ---- KPIs ----
+  const totalRegistered = users.length;
+  const activePct = totalRegistered > 0 ? Math.round((activeCount / totalRegistered) * 100) : 0;
+  const avgStagesPicked =
+    totalRegistered > 0 ? (users.reduce((sum, u) => sum + u.stagesPicked, 0) / totalRegistered).toFixed(1) : "0.0";
+  const jerseyCompleteCount = users.filter((u) => Object.values(u.finals).filter(Boolean).length === 4).length;
+  const optedInCount2 = users.filter((u) => u.emailOptIn).length;
+
+  const kpis = [
+    { label: "Total registered", value: totalRegistered },
+    { label: "Active (≥1 pick)", value: activeCount + " (" + activePct + "%)" },
+    { label: "Avg. stages picked", value: avgStagesPicked + " / 21" },
+    { label: "All 4 jerseys done", value: jerseyCompleteCount },
+    { label: "Opted in to emails", value: optedInCount2 },
+  ];
 
   const previewHtml = buildEmailHtml({
     name: "Jane",
@@ -343,6 +383,29 @@ export default function Admin() {
         type="button"
         className="card"
         style={{ width: "100%", textAlign: "left", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 16 }}
+        onClick={() => setKpisOpen((v) => !v)}
+      >
+        <h3 style={{ fontSize: 16, margin: 0 }}>Key numbers</h3>
+        <span style={{ fontSize: 13 }}>{kpisOpen ? "▲ Hide" : "▼ Show"}</span>
+      </button>
+
+      {kpisOpen && (
+        <div className="card" style={{ marginTop: 16 }}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 24 }}>
+            {kpis.map((k) => (
+              <div key={k.label} style={{ minWidth: 120 }}>
+                <div style={{ fontSize: 26, fontWeight: 800 }}>{k.value}</div>
+                <div style={{ fontSize: 12, color: "var(--grey)", marginTop: 2 }}>{k.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <button
+        type="button"
+        className="card"
+        style={{ width: "100%", textAlign: "left", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 16 }}
         onClick={() => setChartsOpen((v) => !v)}
       >
         <h3 style={{ fontSize: 16, margin: 0 }}>Charts</h3>
@@ -413,7 +476,17 @@ export default function Admin() {
                       <td style={{ fontWeight: 700 }}>{u.name}</td>
                       <td>{u.email}</td>
                       <td>{new Date(u.joined).toLocaleDateString()}</td>
-                      <td>{u.emailOptIn ? "✅" : "—"}</td>
+                      <td>
+                        <button
+                          className="btn btn-outline"
+                          style={{ padding: "4px 10px", fontSize: 11 }}
+                          disabled={updatingOptIn === u.id}
+                          onClick={() => toggleOptIn(u)}
+                          title="Click to change this person's email preference"
+                        >
+                          {updatingOptIn === u.id ? "..." : u.emailOptIn ? "✅ Yes" : "— No"}
+                        </button>
+                      </td>
                       <td>{u.stagesPicked} / 21</td>
                       <td>{jerseysPicked} / 4</td>
                       <td>
