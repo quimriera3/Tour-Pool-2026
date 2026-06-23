@@ -22,6 +22,50 @@ create policy "Users can update own profile" on profiles for update using (auth.
 -- alter table profiles add column if not exists email_opt_in boolean default true;
 -- alter table profiles add column if not exists preferred_language text default 'en';
 
+-- ============================================================================
+-- IMPORTANT FIX: auto-create a profile row whenever someone signs up.
+--
+-- Previously, the app tried to insert a profile row itself right after
+-- sign-up, from the browser. If "Confirm email" is on (or there's any other
+-- timing hiccup), there's a moment where the new user has no active session
+-- yet, and Supabase's security rules correctly block that insert -- leaving
+-- an account that can log in and play, but has no name or email preference
+-- saved anywhere. This trigger removes that whole failure mode: profile
+-- creation now happens automatically, inside the database itself, the
+-- instant a new auth user is created, with no timing window for it to fail.
+-- ============================================================================
+create or replace function public.handle_new_user()
+returns trigger as $$
+begin
+  insert into public.profiles (id, name, email_opt_in, preferred_language)
+  values (
+    new.id,
+    coalesce(new.raw_user_meta_data->>'name', split_part(new.email, '@', 1)),
+    false, -- safe default until the app explicitly sets their real choice
+    'en'
+  )
+  on conflict (id) do nothing;
+  return new;
+end;
+$$ language plpgsql security definer set search_path = public;
+
+drop trigger if exists on_auth_user_created on auth.users;
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute function public.handle_new_user();
+
+-- One-off backfill: create a profile row for any existing account that's
+-- missing one (the people this bug already affected). Their name is set
+-- from their email as a placeholder -- edit it in Table Editor if you want
+-- their real name. Their email_opt_in defaults to false (safe) since we
+-- genuinely don't know what they chose; ask them or leave it off.
+insert into public.profiles (id, name, email_opt_in, preferred_language)
+select u.id, split_part(u.email, '@', 1), false, 'en'
+from auth.users u
+left join public.profiles p on p.id = u.id
+where p.id is null
+on conflict (id) do nothing;
+
 -- Picks: one row per user per stage, the rider they predicted to win.
 create table if not exists picks (
   user_id uuid references profiles(id) on delete cascade,
