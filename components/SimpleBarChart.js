@@ -4,29 +4,30 @@
 // A small, dependency-free bar chart. data: [{ label, value }]. No charting
 // library needed for something this simple -- one less thing that can break.
 export default function SimpleBarChart({ data, height = 140, barColor = "#ffd400" }) {
+  const W = 300;
+  const padTop = 22; // room for the value label printed above each bar
+  const padBottom = 4;
+  const chartH = height - padTop - padBottom;
   const max = Math.max(1, ...data.map((d) => d.value));
-  const w = 100 / data.length;
-  const vbHeight = height / 10;
+  const barW = W / data.length;
 
   return (
     <div>
-      <svg viewBox={"0 0 100 " + vbHeight} width="100%" height={height} preserveAspectRatio="none">
+      <svg viewBox={"0 0 " + W + " " + height} width="100%" height={height} preserveAspectRatio="none">
+        {/* baseline */}
+        <line x1={0} y1={height - padBottom} x2={W} y2={height - padBottom} stroke="#e5e5e3" strokeWidth={1} />
         {data.map((d, i) => {
-          const barHeight = (d.value / max) * (vbHeight - 14);
+          const barH = max > 0 ? (d.value / max) * chartH : 0;
+          const x = i * barW + barW * 0.2;
+          const w = barW * 0.6;
+          const y = height - padBottom - barH;
           return (
             <g key={i}>
-              <rect
-                x={i * w + w * 0.15}
-                y={vbHeight - 14 - barHeight}
-                width={w * 0.7}
-                height={Math.max(barHeight, 0.5)}
-                fill={barColor}
-                rx={0.6}
-              />
+              <rect x={x} y={y} width={w} height={Math.max(barH, 1)} fill={barColor} rx={2} />
               <text
-                x={i * w + w / 2}
-                y={vbHeight - 14 - barHeight - 1.5}
-                fontSize={3.4}
+                x={x + w / 2}
+                y={y - 6}
+                fontSize={12}
                 textAnchor="middle"
                 fill="#111"
                 fontWeight="700"

@@ -13,6 +13,7 @@ export default function Admin() {
   const [expanded, setExpanded] = useState(null);
   const [search, setSearch] = useState("");
   const [tableOpen, setTableOpen] = useState(false);
+  const [chartsOpen, setChartsOpen] = useState(false);
   const [updatingOptIn, setUpdatingOptIn] = useState(null);
 
   const [subject, setSubject] = useState("");
@@ -207,25 +208,6 @@ export default function Admin() {
         <h1>Sign-ups & predictions</h1>
       </div>
 
-      <div className="grid grid-2">
-        <div className="card">
-          <h3 style={{ fontSize: 14 }}>Sign-ups, last 14 days</h3>
-          <p className="subtitle" style={{ fontSize: 12, marginTop: 2 }}>{users.length} total so far</p>
-          <div style={{ marginTop: 10 }}>
-            <SimpleBarChart data={signupsByDay} barColor="#ffd400" />
-          </div>
-        </div>
-        <div className="card">
-          <h3 style={{ fontSize: 14 }}>Participation -- stages picked</h3>
-          <p className="subtitle" style={{ fontSize: 12, marginTop: 2 }}>
-            {activeCount} of {users.length} have made at least 1 pick
-          </p>
-          <div style={{ marginTop: 10 }}>
-            <SimpleBarChart data={participationData} barColor="#111111" />
-          </div>
-        </div>
-      </div>
-
       <div className="card">
         <h3 style={{ fontSize: 16 }}>Send a reminder email</h3>
 
@@ -379,7 +361,38 @@ export default function Admin() {
       <button
         type="button"
         className="card"
-        style={{ width: "100%", textAlign: "left", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center" }}
+        style={{ width: "100%", textAlign: "left", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 16 }}
+        onClick={() => setChartsOpen((v) => !v)}
+      >
+        <h3 style={{ fontSize: 16, margin: 0 }}>Charts</h3>
+        <span style={{ fontSize: 13 }}>{chartsOpen ? "▲ Hide" : "▼ Show"}</span>
+      </button>
+
+      {chartsOpen && (
+        <div className="grid grid-2" style={{ marginTop: 16 }}>
+          <div className="card">
+            <h3 style={{ fontSize: 14 }}>Sign-ups, last 14 days</h3>
+            <p className="subtitle" style={{ fontSize: 12, marginTop: 2 }}>{users.length} total so far</p>
+            <div style={{ marginTop: 10 }}>
+              <SimpleBarChart data={signupsByDay} barColor="#ffd400" />
+            </div>
+          </div>
+          <div className="card">
+            <h3 style={{ fontSize: 14 }}>Participation -- stages picked</h3>
+            <p className="subtitle" style={{ fontSize: 12, marginTop: 2 }}>
+              {activeCount} of {users.length} have made at least 1 pick
+            </p>
+            <div style={{ marginTop: 10 }}>
+              <SimpleBarChart data={participationData} barColor="#111111" />
+            </div>
+          </div>
+        </div>
+      )}
+
+      <button
+        type="button"
+        className="card"
+        style={{ width: "100%", textAlign: "left", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 16 }}
         onClick={() => setTableOpen((v) => !v)}
       >
         <h3 style={{ fontSize: 16, margin: 0 }}>
