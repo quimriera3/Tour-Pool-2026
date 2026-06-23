@@ -25,6 +25,7 @@ import { computeLeaderboard, getResults, useSession } from "../lib/store";
 import StageTypeIcon from "../components/StageTypeIcon";
 import Podium from "../components/Podium";
 import AuthModal from "../components/AuthModal";
+import PreviewArticleContent from "../components/PreviewArticleContent";
 
 function useCountdown(targetDate) {
   const [left, setLeft] = useState({ d: 0, h: 0, m: 0, s: 0 });
@@ -126,13 +127,15 @@ export default function Dashboard() {
     <div>
       <div className="page-header" style={{ paddingBottom: 0 }}>
         {!session && (
-          <button
-            onClick={() => setShowAuth(true)}
-            className="btn"
-            style={{ display: "block", width: "100%", fontSize: 17, padding: "16px 20px", marginBottom: 18 }}
-          >
-            Sign up free - start predicting
-          </button>
+          <div style={{ marginBottom: 18 }}>
+            <button
+              onClick={() => setShowAuth(true)}
+              className="hero-signup-btn"
+            >
+              Sign up free - start predicting
+            </button>
+            <p className="hero-signup-sub">Free forever - takes 30 seconds - no card needed</p>
+          </div>
         )}
         {showAuth && <AuthModal onClose={() => setShowAuth(false)} onAuth={() => setShowAuth(false)} />}
 
@@ -274,6 +277,8 @@ export default function Dashboard() {
       ) : (
         <div style={{ marginTop: 22 }}>{leaderboardCard}</div>
       )}
+
+      <PreviewArticleContent lang="en" variant="home" />
 
       <div className="card" style={{ marginTop: 16 }}>
         <h3 style={{ fontSize: 16 }}>How scoring works</h3>

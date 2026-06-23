@@ -1,5 +1,6 @@
 // app/es/page.js
 import { alternatesFor } from "../../lib/seo";
+import PreviewArticleContent from "../../components/PreviewArticleContent";
 
 export const metadata = {
   title: "Porra y Pronósticos del Tour de Francia 2026",
@@ -68,11 +69,7 @@ export default function SpanishLanding() {
         </a>
       </div>
 
-      <p style={{ textAlign: "center", marginTop: 16 }}>
-        <a href="/es/preview" style={{ fontSize: 13, fontWeight: 700, color: "var(--red)", textDecoration: "underline" }}>
-          Lee nuestro análisis previo del Tour 2026: favoritos, sprinters y outsiders →
-        </a>
-      </p>
+      <PreviewArticleContent lang="es" variant="home" />
     </div>
   );
 }

@@ -281,6 +281,134 @@ h3 {
   }
 }
 
+/* Softened version of the CTA bar shown only on the homepage, where the big
+   yellow "Sign up free" button in the Hero is the primary call to action and
+   Stage/Jersey predictions should recede into the background. */
+.cta-bar.cta-bar-soft {
+  border-bottom: 1px solid #2a2a2a;
+}
+
+.cta-bar.cta-bar-soft .cta-bar-inner {
+  padding: 10px 20px;
+  justify-content: center;
+  gap: 28px;
+}
+
+.cta-bar-btn.ghost-text {
+  flex: none;
+  min-width: 0;
+  background: transparent;
+  color: #9a9a9a;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: 0;
+  padding: 4px 0;
+  border-radius: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.cta-bar-btn.ghost-text:hover {
+  color: var(--yellow);
+}
+
+@media (max-width: 600px) {
+  .cta-bar.cta-bar-soft .cta-bar-inner {
+    padding: 10px 14px;
+    gap: 16px;
+  }
+
+  .cta-bar-btn.ghost-text {
+    font-size: 11px;
+  }
+}
+
+/* ---------- Hero primary signup CTA (homepage) ---------- */
+.hero-signup-btn {
+  display: block;
+  width: 100%;
+  background: var(--yellow);
+  color: var(--black);
+  font-weight: 800;
+  text-align: center;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 19px;
+  padding: 20px 24px;
+  box-shadow: 0 10px 30px rgba(255, 212, 0, 0.35);
+}
+
+.hero-signup-btn:hover {
+  opacity: 0.92;
+}
+
+.hero-signup-sub {
+  text-align: center;
+  margin-top: 10px;
+  font-size: 12px;
+  color: #777;
+}
+
+/* ---------- Homepage SEO preview block ---------- */
+.preview-block {
+  margin-top: 28px;
+  padding: 36px 8px 12px;
+  border-top: 1px solid #ececec;
+}
+
+.preview-block-title {
+  margin-top: 8px;
+  max-width: 640px;
+}
+
+.preview-block-intro {
+  margin-top: 14px;
+  max-width: 640px;
+  font-size: 15px;
+  line-height: 1.75;
+  color: #444;
+}
+
+.preview-block-section {
+  margin-top: 26px;
+  max-width: 640px;
+}
+
+.preview-block-section h3 {
+  font-size: 17px;
+}
+
+.preview-block-section p {
+  margin-top: 10px;
+  font-size: 15px;
+  line-height: 1.75;
+  color: #444;
+}
+
+.preview-block-closing {
+  margin-top: 24px;
+  max-width: 640px;
+  font-size: 14px;
+  color: #666;
+}
+
+.preview-block-closing a {
+  color: var(--red);
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+  .preview-block {
+    padding: 26px 2px 8px;
+  }
+}
+
 .btn {
   display: inline-block;
   background: var(--yellow);
