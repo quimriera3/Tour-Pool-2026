@@ -410,20 +410,10 @@ export default function Admin() {
                           />
                         </td>
                       )}
-                      <td style={{ fontWeight: 700, color: u.hasProfile ? "inherit" : "var(--grey)" }}>
-                        {u.hasProfile ? u.name : "(never completed sign-up)"}
-                      </td>
+                      <td style={{ fontWeight: 700 }}>{u.name}</td>
                       <td>{u.email}</td>
                       <td>{new Date(u.joined).toLocaleDateString()}</td>
-                      <td>
-                        {!u.hasProfile ? (
-                          <span title="Never finished sign-up -- no profile row exists for this account.">⚠️ no profile</span>
-                        ) : u.emailOptIn ? (
-                          "✅"
-                        ) : (
-                          "—"
-                        )}
-                      </td>
+                      <td>{u.emailOptIn ? "✅" : "—"}</td>
                       <td>{u.stagesPicked} / 21</td>
                       <td>{jerseysPicked} / 4</td>
                       <td>
