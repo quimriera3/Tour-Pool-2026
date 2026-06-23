@@ -12,9 +12,7 @@ export default function Admin() {
   const [loading, setLoading] = useState(false);
   const [expanded, setExpanded] = useState(null);
   const [search, setSearch] = useState("");
-  const [tableOpen, setTableOpen] = useState(false);
   const [chartsOpen, setChartsOpen] = useState(false);
-  const [updatingOptIn, setUpdatingOptIn] = useState(null);
 
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
@@ -30,23 +28,6 @@ export default function Admin() {
 
   const [recipientMode, setRecipientMode] = useState("all"); // "all" | "selected"
   const [selectedIds, setSelectedIds] = useState(new Set());
-
-  async function toggleOptIn(user) {
-    setUpdatingOptIn(user.id);
-    const newValue = !user.emailOptIn;
-    try {
-      const res = await fetch("/api/admin/update-opt-in", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password, userId: user.id, emailOptIn: newValue }),
-      });
-      if (res.ok) {
-        setUsers((prev) => prev.map((u) => (u.id === user.id ? { ...u, emailOptIn: newValue } : u)));
-      }
-    } finally {
-      setUpdatingOptIn(null);
-    }
-  }
 
   async function load(e) {
     e.preventDefault();
@@ -389,40 +370,25 @@ export default function Admin() {
         </div>
       )}
 
-      <button
-        type="button"
-        className="card"
-        style={{ width: "100%", textAlign: "left", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 16 }}
-        onClick={() => setTableOpen((v) => !v)}
-      >
-        <h3 style={{ fontSize: 16, margin: 0 }}>
-          View all sign-ups & predictions ({users.length})
-        </h3>
-        <span style={{ fontSize: 13 }}>{tableOpen ? "▲ Hide" : "▼ Show"}</span>
-      </button>
+      <input
+        type="text"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        placeholder="Search by name or email..."
+        className="rider-search"
+        style={{ marginTop: 16 }}
+      />
 
-      {tableOpen && (
-        <>
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by name or email..."
-            className="rider-search"
-            style={{ marginTop: 16 }}
-          />
-
-          <div className="card">
-            <div className="table-scroll">
-              <table className="leaderboard">
-                <thead>
-                  <tr>
-                    {recipientMode === "selected" && <th></th>}
-                    <th>Name</th>
-                    <th>Email</th>
+      <div className="card">
+        <div className="table-scroll">
+          <table className="leaderboard">
+            <thead>
+              <tr>
+                {recipientMode === "selected" && <th></th>}
+                <th>Name</th>
+                <th>Email</th>
                 <th>Joined</th>
                 <th>Emails?</th>
-                <th>Lang</th>
                 <th>Stages picked</th>
                 <th>Jerseys picked</th>
                 <th></th>
@@ -448,10 +414,9 @@ export default function Admin() {
                       <td>{u.email}</td>
                       <td>{new Date(u.joined).toLocaleDateString()}</td>
                       <td>{u.emailOptIn ? "✅" : "—"}</td>
-                      <td>{(u.preferredLanguage || "en").toUpperCase()}</td>
                       <td>{u.stagesPicked} / 21</td>
                       <td>{jerseysPicked} / 4</td>
-                      <td style={{ display: "flex", gap: 6 }}>
+                      <td>
                         <button
                           className="btn btn-outline"
                           style={{ padding: "6px 12px", fontSize: 12 }}
@@ -459,20 +424,11 @@ export default function Admin() {
                         >
                           {isOpen ? "Hide" : "Details"}
                         </button>
-                        <button
-                          className="btn btn-outline"
-                          style={{ padding: "6px 12px", fontSize: 12 }}
-                          disabled={updatingOptIn === u.id}
-                          onClick={() => toggleOptIn(u)}
-                          title={u.emailOptIn ? "Remove from email list" : "Add back to email list"}
-                        >
-                          {updatingOptIn === u.id ? "..." : u.emailOptIn ? "Unsubscribe" : "Resubscribe"}
-                        </button>
                       </td>
                     </tr>
                     {isOpen && (
                       <tr key={u.id + "-detail"}>
-                        <td colSpan={9} style={{ background: "#fafafa" }}>
+                        <td colSpan={8} style={{ background: "#fafafa" }}>
                           <div style={{ padding: "10px 4px" }}>
                             <strong style={{ fontSize: 12 }}>Jersey picks:</strong>{" "}
                             <span style={{ fontSize: 12 }}>
@@ -498,15 +454,13 @@ export default function Admin() {
               })}
               {visible.length === 0 && (
                 <tr>
-                  <td colSpan={9}>No matches.</td>
+                  <td colSpan={8}>No matches.</td>
                 </tr>
               )}
             </tbody>
           </table>
-            </div>
-          </div>
-        </>
-      )}
+        </div>
+      </div>
     </div>
   );
 }
