@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { buildEmailHtml } from "../../lib/emailTemplate";
 import RichTextEditor from "../../components/RichTextEditor";
+import SimpleBarChart from "../../components/SimpleBarChart";
 
 export default function Admin() {
   const [password, setPassword] = useState("");
@@ -11,6 +12,8 @@ export default function Admin() {
   const [loading, setLoading] = useState(false);
   const [expanded, setExpanded] = useState(null);
   const [search, setSearch] = useState("");
+  const [tableOpen, setTableOpen] = useState(false);
+  const [updatingOptIn, setUpdatingOptIn] = useState(null);
 
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
@@ -26,6 +29,23 @@ export default function Admin() {
 
   const [recipientMode, setRecipientMode] = useState("all"); // "all" | "selected"
   const [selectedIds, setSelectedIds] = useState(new Set());
+
+  async function toggleOptIn(user) {
+    setUpdatingOptIn(user.id);
+    const newValue = !user.emailOptIn;
+    try {
+      const res = await fetch("/api/admin/update-opt-in", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password, userId: user.id, emailOptIn: newValue }),
+      });
+      if (res.ok) {
+        setUsers((prev) => prev.map((u) => (u.id === user.id ? { ...u, emailOptIn: newValue } : u)));
+      }
+    } finally {
+      setUpdatingOptIn(null);
+    }
+  }
 
   async function load(e) {
     e.preventDefault();
@@ -148,6 +168,32 @@ export default function Admin() {
     : users;
   const optedInCount = users.filter((u) => u.emailOptIn).length;
   const targetCount = recipientMode === "selected" ? selectedIds.size : optedInCount;
+
+  // ---- Chart 1: sign-ups per day, last 14 days ----
+  const signupsByDay = [];
+  for (let i = 13; i >= 0; i--) {
+    const day = new Date();
+    day.setDate(day.getDate() - i);
+    const dayStr = day.toDateString();
+    const count = users.filter((u) => new Date(u.joined).toDateString() === dayStr).length;
+    signupsByDay.push({ label: String(day.getDate()), value: count });
+  }
+
+  // ---- Chart 2: participation -- how many stages each person has picked ----
+  const buckets = [
+    { label: "0", test: (n) => n === 0 },
+    { label: "1-5", test: (n) => n >= 1 && n <= 5 },
+    { label: "6-10", test: (n) => n >= 6 && n <= 10 },
+    { label: "11-15", test: (n) => n >= 11 && n <= 15 },
+    { label: "16-20", test: (n) => n >= 16 && n <= 20 },
+    { label: "21", test: (n) => n === 21 },
+  ];
+  const participationData = buckets.map((b) => ({
+    label: b.label,
+    value: users.filter((u) => b.test(u.stagesPicked)).length,
+  }));
+  const activeCount = users.filter((u) => u.stagesPicked > 0).length;
+
   const previewHtml = buildEmailHtml({
     name: "Jane",
     bodyHtml: message || "<p>Your message will appear here as you type it.</p>",
@@ -159,6 +205,25 @@ export default function Admin() {
       <div className="page-header">
         <span className="eyebrow">Admin only · {users.length} signed up</span>
         <h1>Sign-ups & predictions</h1>
+      </div>
+
+      <div className="grid grid-2">
+        <div className="card">
+          <h3 style={{ fontSize: 14 }}>Sign-ups, last 14 days</h3>
+          <p className="subtitle" style={{ fontSize: 12, marginTop: 2 }}>{users.length} total so far</p>
+          <div style={{ marginTop: 10 }}>
+            <SimpleBarChart data={signupsByDay} barColor="#ffd400" />
+          </div>
+        </div>
+        <div className="card">
+          <h3 style={{ fontSize: 14 }}>Participation -- stages picked</h3>
+          <p className="subtitle" style={{ fontSize: 12, marginTop: 2 }}>
+            {activeCount} of {users.length} have made at least 1 pick
+          </p>
+          <div style={{ marginTop: 10 }}>
+            <SimpleBarChart data={participationData} barColor="#111111" />
+          </div>
+        </div>
       </div>
 
       <div className="card">
@@ -311,23 +376,37 @@ export default function Admin() {
         </div>
       </div>
 
-      <input
-        type="text"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        placeholder="Search by name or email..."
-        className="rider-search"
-        style={{ marginTop: 16 }}
-      />
+      <button
+        type="button"
+        className="card"
+        style={{ width: "100%", textAlign: "left", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center" }}
+        onClick={() => setTableOpen((v) => !v)}
+      >
+        <h3 style={{ fontSize: 16, margin: 0 }}>
+          View all sign-ups & predictions ({users.length})
+        </h3>
+        <span style={{ fontSize: 13 }}>{tableOpen ? "▲ Hide" : "▼ Show"}</span>
+      </button>
 
-      <div className="card">
-        <div className="table-scroll">
-          <table className="leaderboard">
-            <thead>
-              <tr>
-                {recipientMode === "selected" && <th></th>}
-                <th>Name</th>
-                <th>Email</th>
+      {tableOpen && (
+        <>
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search by name or email..."
+            className="rider-search"
+            style={{ marginTop: 16 }}
+          />
+
+          <div className="card">
+            <div className="table-scroll">
+              <table className="leaderboard">
+                <thead>
+                  <tr>
+                    {recipientMode === "selected" && <th></th>}
+                    <th>Name</th>
+                    <th>Email</th>
                 <th>Joined</th>
                 <th>Emails?</th>
                 <th>Lang</th>
@@ -359,13 +438,22 @@ export default function Admin() {
                       <td>{(u.preferredLanguage || "en").toUpperCase()}</td>
                       <td>{u.stagesPicked} / 21</td>
                       <td>{jerseysPicked} / 4</td>
-                      <td>
+                      <td style={{ display: "flex", gap: 6 }}>
                         <button
                           className="btn btn-outline"
                           style={{ padding: "6px 12px", fontSize: 12 }}
                           onClick={() => setExpanded(isOpen ? null : u.id)}
                         >
                           {isOpen ? "Hide" : "Details"}
+                        </button>
+                        <button
+                          className="btn btn-outline"
+                          style={{ padding: "6px 12px", fontSize: 12 }}
+                          disabled={updatingOptIn === u.id}
+                          onClick={() => toggleOptIn(u)}
+                          title={u.emailOptIn ? "Remove from email list" : "Add back to email list"}
+                        >
+                          {updatingOptIn === u.id ? "..." : u.emailOptIn ? "Unsubscribe" : "Resubscribe"}
                         </button>
                       </td>
                     </tr>
@@ -402,8 +490,10 @@ export default function Admin() {
               )}
             </tbody>
           </table>
-        </div>
-      </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
