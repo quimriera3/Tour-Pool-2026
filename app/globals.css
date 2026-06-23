@@ -622,6 +622,13 @@ table.leaderboard tr:first-child td {
   flex-shrink: 0;
 }
 
+.consent-note {
+  font-size: 11.5px;
+  color: var(--grey);
+  line-height: 1.4;
+  margin-top: 14px;
+}
+
 .richtext-toolbar {
   display: flex;
   align-items: center;

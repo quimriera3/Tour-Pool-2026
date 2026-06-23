@@ -9,6 +9,7 @@ create table if not exists profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   name text not null,
   email_opt_in boolean default true,
+  preferred_language text default 'en',
   created_at timestamptz default now()
 );
 alter table profiles enable row level security;
@@ -16,9 +17,10 @@ create policy "Profiles are viewable by everyone" on profiles for select using (
 create policy "Users can insert own profile" on profiles for insert with check (auth.uid() = id);
 create policy "Users can update own profile" on profiles for update using (auth.uid() = id);
 
--- If you already ran this file before adding email_opt_in, run this once on
--- its own to add the column to your existing table without losing data:
+-- If you already ran this file before, run these once on their own to add
+-- the new columns to your existing table without losing data:
 -- alter table profiles add column if not exists email_opt_in boolean default true;
+-- alter table profiles add column if not exists preferred_language text default 'en';
 
 -- Picks: one row per user per stage, the rider they predicted to win.
 create table if not exists picks (

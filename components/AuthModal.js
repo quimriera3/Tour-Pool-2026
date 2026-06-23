@@ -10,7 +10,7 @@ export default function AuthModal({ onClose, onAuth }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [emailOptIn, setEmailOptIn] = useState(true);
+  const [preferredLanguage, setPreferredLanguage] = useState(lang === "es" ? "es" : "en");
   const [error, setError] = useState("");
   const [resetSent, setResetSent] = useState(false);
 
@@ -41,7 +41,7 @@ export default function AuthModal({ onClose, onAuth }) {
         setError(t(lang, "auth.passwordLength"));
         return;
       }
-      const res = await registerUser(name, email, password, emailOptIn);
+      const res = await registerUser(name, email, password, preferredLanguage);
       if (!res.ok) {
         setError(res.error);
         return;
@@ -50,7 +50,7 @@ export default function AuthModal({ onClose, onAuth }) {
       fetch("/api/send-welcome-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, lang }),
+        body: JSON.stringify({ name, email, lang: preferredLanguage }),
       }).catch(() => {});
     } else {
       const res = await loginUser(email, password);
@@ -136,6 +136,24 @@ export default function AuthModal({ onClose, onAuth }) {
               </div>
             )}
 
+            {mode === "register" && (
+              <div className="field">
+                <label>{t(lang, "auth.preferredLanguage")}</label>
+                <select
+                  value={preferredLanguage}
+                  onChange={(e) => setPreferredLanguage(e.target.value)}
+                  style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1.5px solid var(--grey-light)", fontSize: 14 }}
+                >
+                  <option value="en">English</option>
+                  <option value="es">Español</option>
+                  <option value="ca">Català</option>
+                  <option value="fr">Français</option>
+                  <option value="it">Italiano</option>
+                  <option value="nl">Nederlands</option>
+                </select>
+              </div>
+            )}
+
             {mode === "login" && (
               <button
                 type="button"
@@ -147,14 +165,7 @@ export default function AuthModal({ onClose, onAuth }) {
             )}
 
             {mode === "register" && (
-              <label className="checkbox-field">
-                <input
-                  type="checkbox"
-                  checked={emailOptIn}
-                  onChange={(e) => setEmailOptIn(e.target.checked)}
-                />
-                <span>{t(lang, "auth.optIn")}</span>
-              </label>
+              <p className="consent-note">{t(lang, "auth.consentNote")}</p>
             )}
 
             {error && <p className="error-text">{error}</p>}

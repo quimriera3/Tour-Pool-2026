@@ -29,16 +29,18 @@ export async function POST(request) {
   }
 
   const [{ data: profiles }, { data: picks }, { data: finals }] = await Promise.all([
-    supabaseAdmin.from("profiles").select("id, name, email_opt_in"),
+    supabaseAdmin.from("profiles").select("id, name, email_opt_in, preferred_language"),
     supabaseAdmin.from("picks").select("user_id, stage_number, rider_id"),
     supabaseAdmin.from("finals").select("user_id, yellow, green, polka, white"),
   ]);
 
   const nameById = {};
   const optInById = {};
+  const langById = {};
   (profiles || []).forEach((p) => {
     nameById[p.id] = p.name;
     optInById[p.id] = p.email_opt_in !== false;
+    langById[p.id] = p.preferred_language || "en";
   });
 
   const picksByUser = {};
@@ -61,6 +63,7 @@ export async function POST(request) {
       joined: u.created_at,
       lastSignIn: u.last_sign_in_at,
       emailOptIn: optInById[u.id] !== false,
+      preferredLanguage: langById[u.id] || "en",
       stagesPicked: Object.keys(picksByUser[u.id] || {}).length,
       picks: picksByUser[u.id] || {},
       finals: {

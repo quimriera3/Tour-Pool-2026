@@ -14,6 +14,7 @@ export default function Admin() {
 
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
+  const [sourceLang, setSourceLang] = useState("ca");
   const [editorKey, setEditorKey] = useState(0);
   const [sending, setSending] = useState(false);
   const [sendResult, setSendResult] = useState(null);
@@ -62,6 +63,7 @@ export default function Admin() {
           subject: subject || "(test) Tour de France Pool",
           message: message || "This is a test email.",
           testEmail,
+          sourceLang,
         }),
       });
       const data = await res.json();
@@ -77,7 +79,7 @@ export default function Admin() {
     setSending(true);
     setSendResult(null);
     try {
-      const body = { password, subject, message };
+      const body = { password, subject, message, sourceLang };
       if (recipientMode === "selected") {
         body.selectedEmails = users.filter((u) => selectedIds.has(u.id)).map((u) => u.email);
       }
@@ -149,6 +151,7 @@ export default function Admin() {
   const previewHtml = buildEmailHtml({
     name: "Jane",
     bodyHtml: message || "<p>Your message will appear here as you type it.</p>",
+    lang: sourceLang,
   });
 
   return (
@@ -164,6 +167,21 @@ export default function Admin() {
         <div className="grid grid-2" style={{ marginTop: 12, alignItems: "start" }}>
           <div>
             <div className="field" style={{ marginTop: 0 }}>
+              <label>I'm writing this in</label>
+              <select
+                value={sourceLang}
+                onChange={(e) => setSourceLang(e.target.value)}
+                style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1.5px solid var(--grey-light)", fontSize: 14 }}
+              >
+                <option value="ca">Català</option>
+                <option value="es">Español</option>
+                <option value="en">English</option>
+              </select>
+              <p className="subtitle" style={{ fontSize: 11.5, marginTop: 4 }}>
+                Anyone whose preferred language is different gets an automatic translation.
+              </p>
+            </div>
+            <div className="field">
               <label>Subject</label>
               <input value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="Stage 5 predictions close in 1 hour!" />
             </div>
@@ -229,6 +247,21 @@ export default function Admin() {
               {recipientMode === "selected" && (
                 <p className="subtitle" style={{ marginTop: 8, fontSize: 12 }}>
                   Tick people in the table below to choose exactly who gets this one.
+                </p>
+              )}
+              {recipientMode === "all" && (
+                <p className="subtitle" style={{ marginTop: 8, fontSize: 12 }}>
+                  {Object.entries(
+                    users
+                      .filter((u) => u.emailOptIn)
+                      .reduce((acc, u) => {
+                        acc[u.preferredLanguage] = (acc[u.preferredLanguage] || 0) + 1;
+                        return acc;
+                      }, {})
+                  )
+                    .map(([l, n]) => n + " " + l.toUpperCase())
+                    .join(" · ")}
+                  {" — translated automatically for anyone not in " + sourceLang.toUpperCase() + "."}
                 </p>
               )}
             </div>
@@ -297,6 +330,7 @@ export default function Admin() {
                 <th>Email</th>
                 <th>Joined</th>
                 <th>Emails?</th>
+                <th>Lang</th>
                 <th>Stages picked</th>
                 <th>Jerseys picked</th>
                 <th></th>
@@ -322,6 +356,7 @@ export default function Admin() {
                       <td>{u.email}</td>
                       <td>{new Date(u.joined).toLocaleDateString()}</td>
                       <td>{u.emailOptIn ? "✅" : "—"}</td>
+                      <td>{(u.preferredLanguage || "en").toUpperCase()}</td>
                       <td>{u.stagesPicked} / 21</td>
                       <td>{jerseysPicked} / 4</td>
                       <td>
@@ -336,7 +371,7 @@ export default function Admin() {
                     </tr>
                     {isOpen && (
                       <tr key={u.id + "-detail"}>
-                        <td colSpan={8} style={{ background: "#fafafa" }}>
+                        <td colSpan={9} style={{ background: "#fafafa" }}>
                           <div style={{ padding: "10px 4px" }}>
                             <strong style={{ fontSize: 12 }}>Jersey picks:</strong>{" "}
                             <span style={{ fontSize: 12 }}>
@@ -362,7 +397,7 @@ export default function Admin() {
               })}
               {visible.length === 0 && (
                 <tr>
-                  <td colSpan={8}>No matches.</td>
+                  <td colSpan={9}>No matches.</td>
                 </tr>
               )}
             </tbody>

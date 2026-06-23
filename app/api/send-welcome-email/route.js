@@ -6,6 +6,22 @@
 // someone from finishing sign-up.
 import { NextResponse } from "next/server";
 import { buildEmailHtml, textToHtmlParagraphs } from "../../../lib/emailTemplate";
+import { translateText } from "../../../lib/translate";
+
+const WELCOME = {
+  en: {
+    subject: "Welcome to Tour de France Pool!",
+    body: "You're all signed up. You can now pick a winner for each of the 21 stages and predict who takes home every jersey.\n\nGood luck, and may the best prediction win!",
+  },
+  es: {
+    subject: "¡Bienvenido a Tour de France Pool!",
+    body: "Te has registrado correctamente. Ya puedes elegir tus corredores para cada una de las 21 etapas y predecir quién se lleva cada maillot.\n\nMucha suerte, ¡y que gane el mejor!",
+  },
+  ca: {
+    subject: "Benvingut a Tour de France Pool!",
+    body: "T'has registrat correctament. Ja pots triar els teus corredors per a cada una de les 21 etapes i predir qui s'emporta cada mallot.\n\nMolta sort, que guanyi el millor!",
+  },
+};
 
 export async function POST(request) {
   const { name, email, lang } = await request.json();
@@ -19,12 +35,22 @@ export async function POST(request) {
   }
 
   const FROM = process.env.RESEND_FROM || "Tour de France Pool <onboarding@resend.dev>";
-  const isEs = lang === "es";
 
-  const subject = isEs ? "¡Bienvenido a Tour de France Pool!" : "Welcome to Tour de France Pool!";
-  const bodyText = isEs
-    ? "Te has registrado correctamente. Ya puedes elegir tus corredores para cada una de las 21 etapas y predecir quién se lleva cada maillot.\n\nMucha suerte, ¡y que gane el mejor!"
-    : "You're all signed up. You can now pick a winner for each of the 21 stages and predict who takes home every jersey.\n\nGood luck, and may the best prediction win!";
+  let subject, bodyText;
+  if (WELCOME[lang]) {
+    subject = WELCOME[lang].subject;
+    bodyText = WELCOME[lang].body;
+  } else {
+    // For fr/it/nl (no hand-written copy yet), translate the English
+    // version automatically rather than sending the wrong language.
+    try {
+      [subject] = await translateText(WELCOME.en.subject, "en", lang, false);
+      [bodyText] = await translateText(WELCOME.en.body, "en", lang, false);
+    } catch (err) {
+      subject = WELCOME.en.subject;
+      bodyText = WELCOME.en.body;
+    }
+  }
 
   try {
     const res = await fetch("https://api.resend.com/emails", {
@@ -37,7 +63,7 @@ export async function POST(request) {
         from: FROM,
         to: [email],
         subject,
-        html: buildEmailHtml({ name, bodyHtml: textToHtmlParagraphs(bodyText) }),
+        html: buildEmailHtml({ name, bodyHtml: textToHtmlParagraphs(bodyText), lang }),
       }),
     });
     if (!res.ok) {
