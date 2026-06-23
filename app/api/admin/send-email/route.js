@@ -58,7 +58,7 @@ export async function POST(request) {
     const langById = {};
     (profiles || []).forEach((p) => {
       nameById[p.id] = p.name;
-      optInById[p.id] = p.email_opt_in !== false;
+      optInById[p.id] = p.email_opt_in === true;
       langById[p.id] = p.preferred_language || "en";
     });
 

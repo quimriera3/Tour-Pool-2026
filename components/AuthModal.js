@@ -11,6 +11,7 @@ export default function AuthModal({ onClose, onAuth }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [preferredLanguage, setPreferredLanguage] = useState(lang === "es" ? "es" : "en");
+  const [emailOptIn, setEmailOptIn] = useState(true);
   const [error, setError] = useState("");
   const [resetSent, setResetSent] = useState(false);
 
@@ -41,7 +42,7 @@ export default function AuthModal({ onClose, onAuth }) {
         setError(t(lang, "auth.passwordLength"));
         return;
       }
-      const res = await registerUser(name, email, password, preferredLanguage);
+      const res = await registerUser(name, email, password, preferredLanguage, emailOptIn);
       if (!res.ok) {
         setError(res.error);
         return;
@@ -165,7 +166,14 @@ export default function AuthModal({ onClose, onAuth }) {
             )}
 
             {mode === "register" && (
-              <p className="consent-note">{t(lang, "auth.consentNote")}</p>
+              <label className="checkbox-field">
+                <input
+                  type="checkbox"
+                  checked={emailOptIn}
+                  onChange={(e) => setEmailOptIn(e.target.checked)}
+                />
+                <span>{t(lang, "auth.optIn")}</span>
+              </label>
             )}
 
             {error && <p className="error-text">{error}</p>}
