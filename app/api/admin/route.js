@@ -56,13 +56,15 @@ export async function POST(request) {
 
   const users = (authData?.users || []).map((u) => {
     const userFinals = finalsByUser[u.id] || {};
+    const hasProfile = Object.prototype.hasOwnProperty.call(nameById, u.id);
     return {
       id: u.id,
       email: u.email,
-      name: nameById[u.id] || "(no name set)",
+      name: hasProfile ? nameById[u.id] : "(no name set)",
       joined: u.created_at,
       lastSignIn: u.last_sign_in_at,
-      emailOptIn: optInById[u.id] !== false,
+      hasProfile,
+      emailOptIn: optInById[u.id] === true,
       preferredLanguage: langById[u.id] || "en",
       stagesPicked: Object.keys(picksByUser[u.id] || {}).length,
       picks: picksByUser[u.id] || {},
