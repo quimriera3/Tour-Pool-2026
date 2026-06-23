@@ -281,50 +281,6 @@ h3 {
   }
 }
 
-/* Softened version of the CTA bar shown only on the homepage, where the big
-   yellow "Sign up free" button in the Hero is the primary call to action and
-   Stage/Jersey predictions should recede into the background. */
-.cta-bar.cta-bar-soft {
-  border-bottom: 1px solid #2a2a2a;
-}
-
-.cta-bar.cta-bar-soft .cta-bar-inner {
-  padding: 10px 20px;
-  justify-content: center;
-  gap: 28px;
-}
-
-.cta-bar-btn.ghost-text {
-  flex: none;
-  min-width: 0;
-  background: transparent;
-  color: #9a9a9a;
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: none;
-  letter-spacing: 0;
-  padding: 4px 0;
-  border-radius: 0;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.cta-bar-btn.ghost-text:hover {
-  color: var(--yellow);
-}
-
-@media (max-width: 600px) {
-  .cta-bar.cta-bar-soft .cta-bar-inner {
-    padding: 10px 14px;
-    gap: 16px;
-  }
-
-  .cta-bar-btn.ghost-text {
-    font-size: 11px;
-  }
-}
-
 /* ---------- Hero primary signup CTA (homepage) ---------- */
 .hero-signup-btn {
   display: block;
@@ -355,32 +311,30 @@ h3 {
 }
 
 /* ---------- Homepage SEO preview block ---------- */
+/* Uses the shared .card class so it's exactly the same width as the
+   Leaderboard / recap cards above it -- no separate max-width here. */
 .preview-block {
-  margin-top: 28px;
-  padding: 36px 8px 12px;
-  border-top: 1px solid #ececec;
+  margin-top: 16px;
 }
 
 .preview-block-title {
   margin-top: 8px;
-  max-width: 640px;
+  font-size: 20px;
 }
 
 .preview-block-intro {
-  margin-top: 14px;
-  max-width: 640px;
+  margin-top: 12px;
   font-size: 15px;
   line-height: 1.75;
   color: #444;
 }
 
 .preview-block-section {
-  margin-top: 26px;
-  max-width: 640px;
+  margin-top: 22px;
 }
 
 .preview-block-section h3 {
-  font-size: 17px;
+  font-size: 16px;
 }
 
 .preview-block-section p {
@@ -391,8 +345,7 @@ h3 {
 }
 
 .preview-block-closing {
-  margin-top: 24px;
-  max-width: 640px;
+  margin-top: 22px;
   font-size: 14px;
   color: #666;
 }
@@ -403,11 +356,23 @@ h3 {
   text-decoration: underline;
 }
 
-@media (max-width: 600px) {
-  .preview-block {
-    padding: 26px 2px 8px;
-  }
+.preview-block-toggle {
+  display: inline-block;
+  margin-top: 18px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--red);
+  cursor: pointer;
+  text-decoration: underline;
 }
+
+.preview-block-toggle:hover {
+  opacity: 0.8;
+}
+
 
 .btn {
   display: inline-block;
