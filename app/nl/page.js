@@ -2,13 +2,13 @@
 import { alternatesFor } from "../../lib/seo";
 
 export const metadata = {
-  title: "Tour de France 2026 Poule & Voorspellingen — Gratis",
+  title: "Tour de France 2026 Voorspellen — Gratis Fantasy Game",
   description:
-    "Gratis wielerpoule voor de Tour de France 2026. Voorspel de winnaar van elke etappe, klim de ranglijst en win wielerkleding of materiaal.",
+    "Voorspel de Tour de France 2026 etappe voor etappe in dit gratis fantasy game: speel met vrienden, klim de live ranglijst en maak kans op prijzen.",
   alternates: alternatesFor("/nl"),
   openGraph: {
-    title: "Tour de France 2026 Poule & Voorspellingen — Gratis",
-    description: "Voorspel de winnaar van elke etappe van de Tour de France 2026 en win wielermateriaal.",
+    title: "Tour de France 2026 Voorspellen — Gratis Fantasy Game",
+    description: "Voorspel elke etappe van de Tour de France 2026, gratis, met vrienden en een live ranglijst.",
     locale: "nl_NL",
     type: "website",
   },

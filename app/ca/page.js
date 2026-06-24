@@ -2,13 +2,13 @@
 import { alternatesFor } from "../../lib/seo";
 
 export const metadata = {
-  title: "Porra i Pronòstics del Tour de França 2026",
+  title: "Millor Porra del Tour de França 2026 Online i Gratis",
   description:
-    "Porra gratuïta del Tour de França 2026. Endevina el guanyador de cada etapa amb els amics, puja a la classificació i guanya material de ciclisme.",
+    "La millor porra del Tour de França 2026 en català: fes els teus pronòstics d'etapes del Tour de França gratis, juga amb els amics i puja a la classificació en directe.",
   alternates: alternatesFor("/ca"),
   openGraph: {
-    title: "Porra i Pronòstics del Tour de França 2026",
-    description: "Endevina el guanyador de cada etapa del Tour de França 2026 i guanya material de ciclisme.",
+    title: "Millor Porra del Tour de França 2026 Online i Gratis",
+    description: "Pronòstics d'etapes del Tour de França 2026: juga gratis, competeix amb amics i guanya material de ciclisme.",
     locale: "ca_ES",
     type: "website",
   },

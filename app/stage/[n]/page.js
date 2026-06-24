@@ -131,7 +131,7 @@ export default function StageDetail() {
   );
 
   return (
-    <div>
+    <article>
       {navBlock}
 
       <div className="page-header">
@@ -149,8 +149,29 @@ export default function StageDetail() {
         </p>
       </div>
 
-      <div className="card">
-        <h3 style={{ fontSize: 15 }}>{t(lang, "stage.makeYourPick")}</h3>
+      {/* 1. Altimetry / elevation profile -- real, generated SVG, not a placeholder */}
+      <section className="card" aria-labelledby={"stage-elevation-" + n}>
+        <h2 id={"stage-elevation-" + n} style={{ fontSize: 15 }}>{t(lang, "stage.elevationProfile")}</h2>
+        <StageProfile type={stage.type} elevationGain={stage.elevationGain} />
+        <a
+          href={stage.officialUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ display: "inline-block", marginTop: 10, fontSize: 12, fontWeight: 700, color: "var(--red)" }}
+        >
+          {t(lang, "stage.moreInfo")} ↗
+        </a>
+      </section>
+
+      {/* 2. SEO-optimised stage preview text -- real, original copy, not a placeholder */}
+      <section className="card" style={{ marginTop: 16 }} aria-labelledby={"stage-preview-" + n}>
+        <h2 id={"stage-preview-" + n} style={{ fontSize: 15 }}>{t(lang, "stage.stagePreview")}</h2>
+        <p className="subtitle" style={{ marginTop: 10 }}>{lang === "es" && stage.previewEs ? stage.previewEs : stage.preview}</p>
+      </section>
+
+      {/* 3. Rider picker -- main call to action for this page, right below the SEO copy */}
+      <section className="card" style={{ marginTop: 16 }} aria-labelledby={"stage-pick-" + n}>
+        <h2 id={"stage-pick-" + n} style={{ fontSize: 15 }}>{t(lang, "stage.makeYourPick")}</h2>
         <p className="scoring-note" style={{ marginBottom: 12 }}>{t(lang, "scoring.stageShort")}</p>
 
         {!result && (
@@ -182,30 +203,9 @@ export default function StageDetail() {
             </div>
           </>
         )}
-      </div>
-
-      {/* Real, original stage preview text -- good for SEO, not a placeholder.
-          English-only for now; see the note at the top of this file. */}
-      <div className="card" style={{ marginTop: 16 }}>
-        <h3 style={{ fontSize: 15 }}>{t(lang, "stage.stagePreview")}</h3>
-        <p className="subtitle" style={{ marginTop: 10 }}>{lang === "es" && stage.previewEs ? stage.previewEs : stage.preview}</p>
-      </div>
-
-      {/* Elevation profile -- this part is real, not a placeholder */}
-      <div className="card" style={{ marginTop: 16 }}>
-        <h3 style={{ fontSize: 15 }}>{t(lang, "stage.elevationProfile")}</h3>
-        <StageProfile type={stage.type} elevationGain={stage.elevationGain} />
-        <a
-          href={stage.officialUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ display: "inline-block", marginTop: 10, fontSize: 12, fontWeight: 700, color: "var(--red)" }}
-        >
-          {t(lang, "stage.moreInfo")} ↗
-        </a>
-      </div>
+      </section>
 
       <div style={{ marginTop: 16 }}>{navBlock}</div>
-    </div>
+    </article>
   );
 }

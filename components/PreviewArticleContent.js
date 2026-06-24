@@ -3,6 +3,16 @@
 import { useState } from "react";
 import { getPreviewArticle } from "../lib/previewArticle";
 
+// Renders "**Name**" markers in the article copy as real <strong> tags, so
+// rider names read as semantically emphasised entities (good for on-page SEO
+// / entity recognition) without storing JSX inside lib/previewArticle.js.
+function withStrong(text) {
+  const parts = text.split(/\*\*(.+?)\*\*/g);
+  return parts.map((part, i) =>
+    i % 2 === 1 ? <strong key={i}>{part}</strong> : part
+  );
+}
+
 const TOGGLE_LABELS = {
   en: { more: "Read the full preview →", less: "Show less ↑" },
   es: { more: "Leer la previa completa →", less: "Ver menos ↑" },
@@ -26,7 +36,7 @@ export default function PreviewArticleContent({ lang, variant = "page" }) {
       <div className="card preview-block">
         <span className="eyebrow">{article.eyebrow}</span>
         <h2 className="preview-block-title">{article.h1}</h2>
-        <p className="preview-block-intro">{article.intro}</p>
+        <p className="preview-block-intro">{withStrong(article.intro)}</p>
 
         {expanded && (
           <>
@@ -34,7 +44,7 @@ export default function PreviewArticleContent({ lang, variant = "page" }) {
               <div key={i} className="preview-block-section">
                 <h3>{section.heading}</h3>
                 {section.paragraphs.map((p, j) => (
-                  <p key={j}>{p}</p>
+                  <p key={j}>{withStrong(p)}</p>
                 ))}
               </div>
             ))}
@@ -66,15 +76,15 @@ export default function PreviewArticleContent({ lang, variant = "page" }) {
       </div>
 
       <div className="card">
-        <p className="subtitle" style={{ marginTop: 0 }}>{article.intro}</p>
+        <p className="subtitle" style={{ marginTop: 0 }}>{withStrong(article.intro)}</p>
       </div>
 
       {article.sections.map((section, i) => (
         <div key={i} className="card" style={{ marginTop: 16 }}>
-          <h3 style={{ fontSize: 18 }}>{section.heading}</h3>
+          <h2 style={{ fontSize: 18 }}>{section.heading}</h2>
           {section.paragraphs.map((p, j) => (
             <p key={j} className="subtitle" style={{ marginTop: j === 0 ? 10 : 12 }}>
-              {p}
+              {withStrong(p)}
             </p>
           ))}
         </div>

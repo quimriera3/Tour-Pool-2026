@@ -12,10 +12,12 @@ export function generateMetadata({ params }) {
     return { title: "Etapa no encontrada" };
   }
   return {
-    title: "Etapa " + stage.n + ": " + stage.from + " a " + stage.to,
+    title: {
+      absolute: `Etapa ${stage.n}: Perfil y Pronósticos | Tour de Francia 2026 - Grand Tour Pool`,
+    },
     description:
-      "Tour de Francia 2026, etapa " + stage.n + " (" + stage.date.split("-").reverse().join("/") + "): " +
-      stage.from + " a " + stage.to + ", " + stage.km + " km. Elige quién crees que ganará.",
+      `Pronósticos etapa ${stage.n} del Tour de Francia 2026: ${stage.from} a ${stage.to} (${stage.km} km, ` +
+      `${stage.date.split("-").reverse().join("/")}). Perfil de la etapa, desnivel y elige tu corredor ganador gratis.`,
   };
 }
 

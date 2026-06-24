@@ -2,13 +2,13 @@
 import { alternatesFor } from "../../lib/seo";
 
 export const metadata = {
-  title: "Pronostics Tour de France 2026 — Jeu Gratuit",
+  title: "Pronostics Tour de France 2026 — Jeu Fantasy Gratuit",
   description:
-    "Jeu de pronostics gratuit pour le Tour de France 2026. Devinez le vainqueur de chaque étape entre amis, grimpez au classement et gagnez du matériel de cyclisme.",
+    "Faites vos pronostics Tour de France 2026 étape par étape : jeu fantasy gratuit entre amis, classement en direct et lots à gagner.",
   alternates: alternatesFor("/fr"),
   openGraph: {
-    title: "Pronostics Tour de France 2026 — Jeu Gratuit",
-    description: "Devinez le vainqueur de chaque étape du Tour de France 2026 et gagnez du matériel de cyclisme.",
+    title: "Pronostics Tour de France 2026 — Jeu Fantasy Gratuit",
+    description: "Pronostics Tour de France étape par étape, gratuits, entre amis, avec classement en direct.",
     locale: "fr_FR",
     type: "website",
   },

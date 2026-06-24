@@ -1,15 +1,16 @@
 // app/es/page.js
 import { alternatesFor } from "../../lib/seo";
 import PreviewArticleContent from "../../components/PreviewArticleContent";
+import StructuredData from "../../components/StructuredData";
 
 export const metadata = {
-  title: "Porra y Pronósticos del Tour de Francia 2026",
+  title: "Mejor Porra del Tour de Francia 2026 Online y Gratis",
   description:
-    "Porra del Tour de Francia 2026 gratis. Apuesta amistosa con tus amigos: acierta el ganador de cada etapa, sube en la clasificación y gana material de ciclismo.",
+    "La mejor porra del Tour de Francia 2026 online: haz tus pronósticos de etapas del Tour de Francia gratis, compite con amigos y sube en la clasificación en directo.",
   alternates: alternatesFor("/es"),
   openGraph: {
-    title: "Porra y Pronósticos del Tour de Francia 2026",
-    description: "Acierta el ganador de cada etapa del Tour de Francia 2026 y gana material de ciclismo.",
+    title: "Mejor Porra del Tour de Francia 2026 Online y Gratis",
+    description: "Pronósticos etapas Tour de Francia 2026: juega gratis, compite con amigos y gana material de ciclismo.",
     locale: "es_ES",
     type: "website",
   },
@@ -18,6 +19,7 @@ export const metadata = {
 export default function SpanishLanding() {
   return (
     <div>
+      <StructuredData lang="es" />
       <div className="page-header">
         <span className="eyebrow">Tour de Francia 2026 · 4 — 26 de julio</span>
         <h1>Porra del Tour de Francia 2026</h1>

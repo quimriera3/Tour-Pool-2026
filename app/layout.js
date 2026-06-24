@@ -13,12 +13,20 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://example.vercel.app
 export const metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Tour de France Pool 2026 — Stage Predictions & Sweepstake",
-    template: "%s | Tour de France Pool",
+    default: "Tour de France 2026 Sweepstakes — Predict Every Stage & Win",
+    template: "%s | Grand Tour Pool",
   },
   description:
-    "Free Tour de France 2026 predictions pool and sweepstake. Pick the winner of every stage, climb the leaderboard, and win cycling gear. 21 stages, real riders.",
-  keywords: ["Tour de France 2026", "Tour de France pool", "cycling sweepstake", "Tour de France predictions", "fantasy cycling", "cycling pick'em"],
+    "Play the best Tour de France pool online, 100% free. Predict Tour de France stages, pick your jersey winners, and climb a live leaderboard across all 21 real 2026 stages.",
+  keywords: [
+    "Tour de France 2026 sweepstakes",
+    "best Tour de France pool online",
+    "predict Tour de France stages",
+    "Tour de France 2026 predictions",
+    "Tour de France fantasy game",
+    "free cycling pool 2026",
+    "Tour de France pick'em",
+  ],
   alternates: {
     canonical: "/",
     languages: {
@@ -32,10 +40,10 @@ export const metadata = {
     },
   },
   openGraph: {
-    title: "Tour de France Pool 2026 — Stage Predictions & Sweepstake",
-    description: "Pick the winner of every Tour de France 2026 stage and climb the leaderboard.",
+    title: "Tour de France 2026 Sweepstakes — Predict Every Stage & Win",
+    description: "The best Tour de France pool online: predict every 2026 stage winner, free, and climb the live leaderboard.",
     url: SITE_URL,
-    siteName: "Tour de France Pool",
+    siteName: "Grand Tour Pool",
     locale: "en_US",
     type: "website",
     images: [
@@ -49,8 +57,8 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Tour de France Pool 2026 — Stage Predictions & Sweepstake",
-    description: "Pick the winner of every Tour de France 2026 stage and climb the leaderboard.",
+    title: "Tour de France 2026 Sweepstakes — Predict Every Stage & Win",
+    description: "The best Tour de France pool online: predict every 2026 stage winner, free, and climb the live leaderboard.",
     images: ["/og-image.png?v=2"],
   },
   robots: {

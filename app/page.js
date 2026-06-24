@@ -26,6 +26,7 @@ import StageTypeIcon from "../components/StageTypeIcon";
 import Podium from "../components/Podium";
 import AuthModal from "../components/AuthModal";
 import PreviewArticleContent from "../components/PreviewArticleContent";
+import StructuredData from "../components/StructuredData";
 
 function useCountdown(targetDate) {
   const [left, setLeft] = useState({ d: 0, h: 0, m: 0, s: 0 });
@@ -79,6 +80,7 @@ export default function Dashboard() {
   if (!mounted) {
     return (
       <div>
+        <StructuredData lang="en" />
         <div className="page-header" style={{ paddingBottom: 0 }}>
           <span className="eyebrow">Tour de France 2026 · 4 — 26 July</span>
           <h1>Tour de France Pool</h1>
@@ -125,6 +127,7 @@ export default function Dashboard() {
 
   return (
     <div>
+      <StructuredData lang="en" />
       <div className="page-header" style={{ paddingBottom: 0 }}>
         {!session && (
           <div style={{ marginBottom: 18 }}>

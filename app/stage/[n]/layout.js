@@ -12,10 +12,12 @@ export function generateMetadata({ params }) {
     return { title: "Stage not found" };
   }
   return {
-    title: "Stage " + stage.n + ": " + stage.from + " to " + stage.to,
+    title: {
+      absolute: `Stage ${stage.n} Profile & Predictions | Tour de France 2026 - Grand Tour Pool`,
+    },
     description:
-      "Tour de France 2026 stage " + stage.n + " (" + stage.date.split("-").reverse().join("/") + "): " +
-      stage.from + " to " + stage.to + ", " + stage.km + " km. Pick who you think will win.",
+      `Predict Tour de France 2026 Stage ${stage.n}: ${stage.from} to ${stage.to} (${stage.km} km, ` +
+      `${stage.date.split("-").reverse().join("/")}). Free stage profile, elevation, and rider picks for the best Tour de France pool online.`,
   };
 }
 
