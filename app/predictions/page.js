@@ -7,6 +7,7 @@ import StageProfile from "../../components/StageProfile";
 import StageTypeIcon from "../../components/StageTypeIcon";
 import TeamRiderPicker from "../../components/TeamRiderPicker";
 import Podium from "../../components/Podium";
+import AutoSaveNotice from "../../components/AutoSaveNotice";
 import { useLang, t } from "../../lib/i18n";
 
 const WEEK_KEYS = ["week.1", "week.2", "week.3"];
@@ -143,6 +144,7 @@ export default function Predictions() {
 
   return (
     <div>
+      <AutoSaveNotice lang={lang} />
       <div className="page-header">
         <span className="eyebrow">{t(lang, "predictions.eyebrow")}</span>
         <h1>{t(lang, "predictions.title")}</h1>

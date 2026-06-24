@@ -137,7 +137,7 @@ export default function Dashboard() {
             >
               Sign up free - start predicting
             </button>
-            <p className="hero-signup-sub">Free forever - takes 30 seconds - no card needed</p>
+            <p className="hero-signup-sub">Free forever - takes 30 seconds</p>
           </div>
         )}
         {showAuth && <AuthModal onClose={() => setShowAuth(false)} onAuth={() => setShowAuth(false)} />}
@@ -255,12 +255,6 @@ export default function Dashboard() {
           <span className="jersey-banner-arrow">→</span>
         </a>
       )}
-
-      <p style={{ textAlign: "center", marginTop: 10 }}>
-        <a href="/preview" style={{ fontSize: 13, fontWeight: 700, color: "var(--red)", textDecoration: "underline" }}>
-          Read our 2026 Tour de France preview: favourites, sprinters & outsiders →
-        </a>
-      </p>
 
       {prevStage ? (
         <div className="grid grid-2" style={{ marginTop: 22 }}>

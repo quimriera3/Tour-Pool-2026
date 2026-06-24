@@ -4,7 +4,9 @@ import { useState } from "react";
 import { buildEmailHtml } from "../../lib/emailTemplate";
 import RichTextEditor from "../../components/RichTextEditor";
 import SimpleBarChart from "../../components/SimpleBarChart";
-import { STAGES, teamsList, riderById } from "../../lib/data";
+import { STAGES, riderById, isWhiteJerseyEligible } from "../../lib/data";
+import TeamRiderPicker from "../../components/TeamRiderPicker";
+import JerseyIcon from "../../components/JerseyIcon";
 
 export default function Admin() {
   const [password, setPassword] = useState("");
@@ -43,6 +45,16 @@ export default function Admin() {
   const [confirmSaveResult, setConfirmSaveResult] = useState(false);
   const [saveResultMsg, setSaveResultMsg] = useState(null);
 
+  const [finalsOpen, setFinalsOpen] = useState(false);
+  const [finalResults, setFinalResults] = useState({});
+  const [finalYellow, setFinalYellow] = useState("");
+  const [finalGreen, setFinalGreen] = useState("");
+  const [finalPolka, setFinalPolka] = useState("");
+  const [finalWhite, setFinalWhite] = useState("");
+  const [savingFinals, setSavingFinals] = useState(false);
+  const [confirmSaveFinals, setConfirmSaveFinals] = useState(false);
+  const [saveFinalsMsg, setSaveFinalsMsg] = useState(null);
+
   async function load(e) {
     e.preventDefault();
     setLoading(true);
@@ -60,6 +72,13 @@ export default function Admin() {
       } else {
         setUsers(data.users);
         setResults(data.results || {});
+        setFinalResults(data.finalResults || {});
+        if (data.finalResults) {
+          setFinalYellow(data.finalResults.yellow || "");
+          setFinalGreen(data.finalResults.green || "");
+          setFinalPolka(data.finalResults.polka || "");
+          setFinalWhite(data.finalResults.white || "");
+        }
         const firstMissing = STAGES.find((s) => !(data.results || {})[s.n]);
         if (firstMissing) setResultStage(firstMissing.n);
       }
@@ -144,6 +163,36 @@ export default function Admin() {
     } finally {
       setSending(false);
       setConfirmSend(false);
+    }
+  }
+
+  async function saveFinalResults() {
+    setSavingFinals(true);
+    setSaveFinalsMsg(null);
+    try {
+      const res = await fetch("/api/admin/save-final-results", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          password,
+          yellow: finalYellow,
+          green: finalGreen,
+          polka: finalPolka,
+          white: finalWhite,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setSaveFinalsMsg({ ok: false, error: data.error });
+      } else {
+        setFinalResults({ yellow: finalYellow, green: finalGreen, polka: finalPolka, white: finalWhite });
+        setSaveFinalsMsg({ ok: true });
+      }
+    } catch (err) {
+      setSaveFinalsMsg({ ok: false, error: "Could not reach the server." });
+    } finally {
+      setSavingFinals(false);
+      setConfirmSaveFinals(false);
     }
   }
 
@@ -500,54 +549,27 @@ export default function Admin() {
           <div className="grid grid-2" style={{ marginTop: 4 }}>
             <div className="field">
               <label>🥇 Winner</label>
-              <select
+              <TeamRiderPicker
                 value={resultFirst}
-                onChange={(e) => setResultFirst(e.target.value)}
-                style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1.5px solid var(--grey-light)", fontSize: 14 }}
-              >
-                <option value="">-- select rider --</option>
-                {teamsList().map(({ team, riders }) => (
-                  <optgroup key={team} label={team}>
-                    {riders.map((r) => (
-                      <option key={r.id} value={r.id}>{r.name}</option>
-                    ))}
-                  </optgroup>
-                ))}
-              </select>
+                onChange={setResultFirst}
+                selectedRiderName={riderById(resultFirst)?.name || ""}
+              />
             </div>
             <div className="field">
               <label>🥈 2nd</label>
-              <select
+              <TeamRiderPicker
                 value={resultSecond}
-                onChange={(e) => setResultSecond(e.target.value)}
-                style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1.5px solid var(--grey-light)", fontSize: 14 }}
-              >
-                <option value="">-- select rider --</option>
-                {teamsList().map(({ team, riders }) => (
-                  <optgroup key={team} label={team}>
-                    {riders.map((r) => (
-                      <option key={r.id} value={r.id}>{r.name}</option>
-                    ))}
-                  </optgroup>
-                ))}
-              </select>
+                onChange={setResultSecond}
+                selectedRiderName={riderById(resultSecond)?.name || ""}
+              />
             </div>
             <div className="field">
               <label>🥉 3rd</label>
-              <select
+              <TeamRiderPicker
                 value={resultThird}
-                onChange={(e) => setResultThird(e.target.value)}
-                style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1.5px solid var(--grey-light)", fontSize: 14 }}
-              >
-                <option value="">-- select rider --</option>
-                {teamsList().map(({ team, riders }) => (
-                  <optgroup key={team} label={team}>
-                    {riders.map((r) => (
-                      <option key={r.id} value={r.id}>{r.name}</option>
-                    ))}
-                  </optgroup>
-                ))}
-              </select>
+                onChange={setResultThird}
+                selectedRiderName={riderById(resultThird)?.name || ""}
+              />
             </div>
           </div>
 
@@ -583,6 +605,103 @@ export default function Admin() {
                   ? "Result saved and emailed to " + saveResultMsg.sent + " of " + saveResultMsg.total + " people."
                   : "Result saved. " + (saveResultMsg.warning || "No email sent.")
                 : "Error: " + saveResultMsg.error}
+            </p>
+          )}
+        </div>
+      )}
+
+      <button
+        type="button"
+        className="card"
+        style={{ width: "100%", textAlign: "left", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 16 }}
+        onClick={() => setFinalsOpen((v) => !v)}
+      >
+        <h3 style={{ fontSize: 16, margin: 0 }}>
+          Final jersey winners {Object.keys(finalResults).length > 0 && finalResults.yellow && (
+            <span style={{ fontSize: 12, fontWeight: 600, color: "var(--green)" }}>(uploaded ✅)</span>
+          )}
+        </h3>
+        <span style={{ fontSize: 13 }}>{finalsOpen ? "▲ Hide" : "▼ Show"}</span>
+      </button>
+
+      {finalsOpen && (
+        <div className="card" style={{ marginTop: 16 }}>
+          <p className="subtitle" style={{ marginTop: 0, fontSize: 12.5 }}>
+            Once the Tour is over, upload the real winner of each of the 4 jerseys here. This is what the
+            leaderboard's final 10-points-per-jersey scoring compares everyone's picks against -- enter it
+            once, save it, and you're done.
+          </p>
+
+          <div className="grid grid-2" style={{ marginTop: 14 }}>
+            <div className="field">
+              <label style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <JerseyIcon kind="yellow" size={18} /> Yellow (GC winner)
+              </label>
+              <TeamRiderPicker
+                value={finalYellow}
+                onChange={setFinalYellow}
+                selectedRiderName={riderById(finalYellow)?.name || ""}
+              />
+            </div>
+            <div className="field">
+              <label style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <JerseyIcon kind="green" size={18} /> Green (points)
+              </label>
+              <TeamRiderPicker
+                value={finalGreen}
+                onChange={setFinalGreen}
+                selectedRiderName={riderById(finalGreen)?.name || ""}
+              />
+            </div>
+            <div className="field">
+              <label style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <JerseyIcon kind="polka" size={18} /> Polka dot (mountains)
+              </label>
+              <TeamRiderPicker
+                value={finalPolka}
+                onChange={setFinalPolka}
+                selectedRiderName={riderById(finalPolka)?.name || ""}
+              />
+            </div>
+            <div className="field">
+              <label style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <JerseyIcon kind="white" size={18} /> White (best young rider)
+              </label>
+              <TeamRiderPicker
+                value={finalWhite}
+                onChange={setFinalWhite}
+                riderFilter={isWhiteJerseyEligible}
+                selectedRiderName={riderById(finalWhite)?.name || ""}
+              />
+            </div>
+          </div>
+
+          {!confirmSaveFinals ? (
+            <button
+              className="btn"
+              style={{ marginTop: 14 }}
+              disabled={!finalYellow || !finalGreen || !finalPolka || !finalWhite}
+              onClick={() => setConfirmSaveFinals(true)}
+            >
+              UPLOAD
+            </button>
+          ) : (
+            <div style={{ marginTop: 14, padding: 14, background: "#fff8e1", borderRadius: 8, border: "1px solid #f0d98c" }}>
+              <p style={{ fontSize: 13, fontWeight: 700 }}>Save the final jersey winners now?</p>
+              <div style={{ display: "flex", gap: 10, marginTop: 10 }}>
+                <button className="btn" disabled={savingFinals} onClick={saveFinalResults}>
+                  {savingFinals ? "Uploading..." : "Yes, upload"}
+                </button>
+                <button className="btn btn-ghost" disabled={savingFinals} onClick={() => setConfirmSaveFinals(false)}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
+
+          {saveFinalsMsg && (
+            <p style={{ marginTop: 12, fontSize: 13, color: saveFinalsMsg.ok ? "var(--green)" : "var(--red)" }}>
+              {saveFinalsMsg.ok ? "Final jersey winners saved." : "Error: " + saveFinalsMsg.error}
             </p>
           )}
         </div>

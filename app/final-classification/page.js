@@ -5,6 +5,7 @@ import { riderById, isWhiteJerseyEligible, jerseyLockDate, jerseyPredictionsLock
 import { useSession, saveFinals, getFinalsFor } from "../../lib/store";
 import JerseyIcon from "../../components/JerseyIcon";
 import TeamRiderPicker from "../../components/TeamRiderPicker";
+import AutoSaveNotice from "../../components/AutoSaveNotice";
 import { useLang, t } from "../../lib/i18n";
 
 const QUESTIONS = [
@@ -66,6 +67,7 @@ export default function FinalClassification() {
 
   return (
     <div>
+      <AutoSaveNotice lang={lang} />
       <div className="page-header">
         <span className="eyebrow">
           {lang === "es" ? "Se bloquea el " : "Locks "}{lockLabel}
@@ -109,6 +111,16 @@ export default function FinalClassification() {
                   />
                 </div>
               )}
+
+              <a
+                href={lang === "fr" ? "https://www.letour.fr/fr/classements" : "https://www.letour.fr/en/rankings"}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                style={{ display: "block", marginTop: 10, fontSize: 11, fontWeight: 700, color: "var(--red)", textAlign: "center" }}
+              >
+                {lang === "es" ? "Ver clasificación oficial" : "See official ranking"} ↗
+              </a>
             </div>
           );
         })}
