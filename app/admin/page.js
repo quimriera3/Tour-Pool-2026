@@ -4,6 +4,7 @@ import { useState } from "react";
 import { buildEmailHtml } from "../../lib/emailTemplate";
 import RichTextEditor from "../../components/RichTextEditor";
 import SimpleBarChart from "../../components/SimpleBarChart";
+import { STAGES, teamsList, riderById } from "../../lib/data";
 
 export default function Admin() {
   const [password, setPassword] = useState("");
@@ -16,6 +17,7 @@ export default function Admin() {
   const [kpisOpen, setKpisOpen] = useState(false);
   const [updatingOptIn, setUpdatingOptIn] = useState(null);
 
+  const [emailOpen, setEmailOpen] = useState(false);
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
   const [sourceLang, setSourceLang] = useState("ca");
@@ -30,6 +32,16 @@ export default function Admin() {
 
   const [recipientMode, setRecipientMode] = useState("all"); // "all" | "selected"
   const [selectedIds, setSelectedIds] = useState(new Set());
+
+  const [resultsOpen, setResultsOpen] = useState(false);
+  const [results, setResults] = useState({});
+  const [resultStage, setResultStage] = useState(1);
+  const [resultFirst, setResultFirst] = useState("");
+  const [resultSecond, setResultSecond] = useState("");
+  const [resultThird, setResultThird] = useState("");
+  const [savingResult, setSavingResult] = useState(false);
+  const [confirmSaveResult, setConfirmSaveResult] = useState(false);
+  const [saveResultMsg, setSaveResultMsg] = useState(null);
 
   async function load(e) {
     e.preventDefault();
@@ -47,6 +59,9 @@ export default function Admin() {
         setUsers(null);
       } else {
         setUsers(data.users);
+        setResults(data.results || {});
+        const firstMissing = STAGES.find((s) => !(data.results || {})[s.n]);
+        if (firstMissing) setResultStage(firstMissing.n);
       }
     } catch (err) {
       setError("Could not reach the server.");
@@ -141,6 +156,47 @@ export default function Admin() {
     });
   }
 
+  async function saveResult() {
+    setSavingResult(true);
+    setSaveResultMsg(null);
+    try {
+      const res = await fetch("/api/admin/save-result", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          password,
+          stageNumber: resultStage,
+          first: resultFirst,
+          second: resultSecond,
+          third: resultThird,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setSaveResultMsg({ ok: false, error: data.error });
+      } else {
+        setResults((prev) => ({ ...prev, [resultStage]: { first: resultFirst, second: resultSecond, third: resultThird } }));
+        setSaveResultMsg({
+          ok: true,
+          emailed: data.emailed,
+          sent: data.sent,
+          total: data.total,
+          warning: data.warning,
+        });
+        setResultFirst("");
+        setResultSecond("");
+        setResultThird("");
+        const nextMissing = STAGES.find((s) => s.n > resultStage && !results[s.n]);
+        if (nextMissing) setResultStage(nextMissing.n);
+      }
+    } catch (err) {
+      setSaveResultMsg({ ok: false, error: "Could not reach the server." });
+    } finally {
+      setSavingResult(false);
+      setConfirmSaveResult(false);
+    }
+  }
+
   if (!users) {
     return (
       <div>
@@ -220,6 +276,7 @@ export default function Admin() {
     name: "Jane",
     bodyHtml: message || "<p>Your message will appear here as you type it.</p>",
     lang: sourceLang,
+    showGreeting: false,
   });
 
   return (
@@ -229,9 +286,18 @@ export default function Admin() {
         <h1>Sign-ups & predictions</h1>
       </div>
 
-      <div className="card">
-        <h3 style={{ fontSize: 16 }}>Send a reminder email</h3>
+      <button
+        type="button"
+        className="card"
+        style={{ width: "100%", textAlign: "left", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center" }}
+        onClick={() => setEmailOpen((v) => !v)}
+      >
+        <h3 style={{ fontSize: 16, margin: 0 }}>Send a reminder email</h3>
+        <span style={{ fontSize: 13 }}>{emailOpen ? "▲ Hide" : "▼ Show"}</span>
+      </button>
 
+      {emailOpen && (
+      <div className="card" style={{ marginTop: 16 }}>
         <div className="grid grid-2" style={{ marginTop: 12, alignItems: "start" }}>
           <div>
             <div className="field" style={{ marginTop: 0 }}>
@@ -259,7 +325,7 @@ export default function Admin() {
                 key={editorKey}
                 initialValue={message}
                 onChange={setMessage}
-                placeholder="Write your message... use the toolbar for bold, italic, lists, and color."
+                placeholder="Write your message (including your own greeting, e.g. 'Hi!')... use the toolbar for bold, italic, lists, and color."
               />
             </div>
 
@@ -378,6 +444,149 @@ export default function Admin() {
           </div>
         </div>
       </div>
+      )}
+
+      <button
+        type="button"
+        className="card"
+        style={{ width: "100%", textAlign: "left", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 16 }}
+        onClick={() => setResultsOpen((v) => !v)}
+      >
+        <h3 style={{ fontSize: 16, margin: 0 }}>
+          Stage results {Object.keys(results).length > 0 && (
+            <span style={{ fontSize: 12, fontWeight: 600, color: "var(--grey)" }}>
+              ({Object.keys(results).length} / {STAGES.length} uploaded)
+            </span>
+          )}
+        </h3>
+        <span style={{ fontSize: 13 }}>{resultsOpen ? "▲ Hide" : "▼ Show"}</span>
+      </button>
+
+      {resultsOpen && (
+        <div className="card" style={{ marginTop: 16 }}>
+          <p className="subtitle" style={{ marginTop: 0, fontSize: 12.5 }}>
+            Upload the real top 3 for a stage. This also automatically emails everyone who opted in --
+            in their own language -- with the podium, a link to the leaderboard, and a reminder to make
+            their next pick.
+          </p>
+
+          <div className="field" style={{ marginTop: 14 }}>
+            <label>Stage</label>
+            <select
+              value={resultStage}
+              onChange={(e) => {
+                setResultStage(Number(e.target.value));
+                setSaveResultMsg(null);
+                setConfirmSaveResult(false);
+              }}
+              style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1.5px solid var(--grey-light)", fontSize: 14 }}
+            >
+              {STAGES.map((s) => (
+                <option key={s.n} value={s.n}>
+                  Stage {s.n}: {s.from} → {s.to} {results[s.n] ? "✅" : ""}
+                </option>
+              ))}
+            </select>
+            {results[resultStage] && (
+              <p className="subtitle" style={{ fontSize: 12, marginTop: 6 }}>
+                Already has a result: {riderById(results[resultStage].first)?.name || results[resultStage].first} ·{" "}
+                {riderById(results[resultStage].second)?.name || results[resultStage].second} ·{" "}
+                {riderById(results[resultStage].third)?.name || results[resultStage].third}. Uploading again
+                will overwrite it and send a new email.
+              </p>
+            )}
+          </div>
+
+          <div className="grid grid-2" style={{ marginTop: 4 }}>
+            <div className="field">
+              <label>🥇 Winner</label>
+              <select
+                value={resultFirst}
+                onChange={(e) => setResultFirst(e.target.value)}
+                style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1.5px solid var(--grey-light)", fontSize: 14 }}
+              >
+                <option value="">-- select rider --</option>
+                {teamsList().map(({ team, riders }) => (
+                  <optgroup key={team} label={team}>
+                    {riders.map((r) => (
+                      <option key={r.id} value={r.id}>{r.name}</option>
+                    ))}
+                  </optgroup>
+                ))}
+              </select>
+            </div>
+            <div className="field">
+              <label>🥈 2nd</label>
+              <select
+                value={resultSecond}
+                onChange={(e) => setResultSecond(e.target.value)}
+                style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1.5px solid var(--grey-light)", fontSize: 14 }}
+              >
+                <option value="">-- select rider --</option>
+                {teamsList().map(({ team, riders }) => (
+                  <optgroup key={team} label={team}>
+                    {riders.map((r) => (
+                      <option key={r.id} value={r.id}>{r.name}</option>
+                    ))}
+                  </optgroup>
+                ))}
+              </select>
+            </div>
+            <div className="field">
+              <label>🥉 3rd</label>
+              <select
+                value={resultThird}
+                onChange={(e) => setResultThird(e.target.value)}
+                style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1.5px solid var(--grey-light)", fontSize: 14 }}
+              >
+                <option value="">-- select rider --</option>
+                {teamsList().map(({ team, riders }) => (
+                  <optgroup key={team} label={team}>
+                    {riders.map((r) => (
+                      <option key={r.id} value={r.id}>{r.name}</option>
+                    ))}
+                  </optgroup>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {!confirmSaveResult ? (
+            <button
+              className="btn"
+              style={{ marginTop: 14 }}
+              disabled={!resultFirst || !resultSecond || !resultThird}
+              onClick={() => setConfirmSaveResult(true)}
+            >
+              UPLOAD
+            </button>
+          ) : (
+            <div style={{ marginTop: 14, padding: 14, background: "#fff8e1", borderRadius: 8, border: "1px solid #f0d98c" }}>
+              <p style={{ fontSize: 13, fontWeight: 700 }}>
+                Save Stage {resultStage} result and email every opted-in user now?
+              </p>
+              <div style={{ display: "flex", gap: 10, marginTop: 10 }}>
+                <button className="btn" disabled={savingResult} onClick={saveResult}>
+                  {savingResult ? "Uploading..." : "Yes, upload"}
+                </button>
+                <button className="btn btn-ghost" disabled={savingResult} onClick={() => setConfirmSaveResult(false)}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
+
+          {saveResultMsg && (
+            <p style={{ marginTop: 12, fontSize: 13, color: saveResultMsg.ok ? "var(--green)" : "var(--red)" }}>
+              {saveResultMsg.ok
+                ? saveResultMsg.emailed
+                  ? "Result saved and emailed to " + saveResultMsg.sent + " of " + saveResultMsg.total + " people."
+                  : "Result saved. " + (saveResultMsg.warning || "No email sent.")
+                : "Error: " + saveResultMsg.error}
+            </p>
+          )}
+        </div>
+      )}
 
       <button
         type="button"

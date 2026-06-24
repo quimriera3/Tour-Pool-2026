@@ -79,10 +79,11 @@ create policy "Picks are viewable by everyone" on picks for select using (true);
 create policy "Users can insert own picks" on picks for insert with check (auth.uid() = user_id);
 create policy "Users can update own picks" on picks for update using (auth.uid() = user_id);
 
--- Results: the real top 3 of each stage. YOU enter these yourself, directly in the
--- Supabase Table Editor (Table Editor > results > Insert row), one row per stage,
--- after each stage finishes. There is deliberately no public write policy here,
--- so visitors can never edit results -- only you, from the Supabase dashboard.
+-- Results: the real top 3 of each stage. Enter these from the admin panel
+-- (/admin > Stage results, which also emails everyone opted in automatically),
+-- or directly in the Supabase Table Editor (Table Editor > results > Insert
+-- row) if you prefer. There is deliberately no public write policy here --
+-- only the service role key (used server-side by the admin route) can write.
 create table if not exists results (
   stage_number int primary key,
   first text not null,

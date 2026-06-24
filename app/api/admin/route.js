@@ -28,10 +28,11 @@ export async function POST(request) {
     return NextResponse.json({ error: authError.message }, { status: 500 });
   }
 
-  const [{ data: profiles }, { data: picks }, { data: finals }] = await Promise.all([
+  const [{ data: profiles }, { data: picks }, { data: finals }, { data: results }] = await Promise.all([
     supabaseAdmin.from("profiles").select("id, name, email_opt_in, preferred_language"),
     supabaseAdmin.from("picks").select("user_id, stage_number, rider_id"),
     supabaseAdmin.from("finals").select("user_id, yellow, green, polka, white"),
+    supabaseAdmin.from("results").select("stage_number, first, second, third"),
   ]);
 
   const nameById = {};
@@ -77,5 +78,10 @@ export async function POST(request) {
     };
   });
 
-  return NextResponse.json({ users, totalStages: STAGES.length });
+  const resultsByStage = {};
+  (results || []).forEach((r) => {
+    resultsByStage[r.stage_number] = { first: r.first, second: r.second, third: r.third };
+  });
+
+  return NextResponse.json({ users, totalStages: STAGES.length, results: resultsByStage });
 }

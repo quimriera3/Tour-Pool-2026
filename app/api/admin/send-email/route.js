@@ -125,7 +125,7 @@ export async function POST(request) {
         from: FROM,
         to: [r.email],
         subject: groupSubject,
-        html: buildEmailHtml({ name: r.name, bodyHtml: groupMessage, lang: groupLang }),
+        html: buildEmailHtml({ name: r.name, bodyHtml: groupMessage, lang: groupLang, showGreeting: false }),
       }));
 
       const res = await fetch("https://api.resend.com/emails/batch", {
