@@ -67,7 +67,6 @@ export default function FinalClassification() {
 
   return (
     <div>
-      <AutoSaveNotice lang={lang} />
       <div className="page-header">
         <span className="eyebrow">
           {lang === "es" ? "Se bloquea el " : "Locks "}{lockLabel}
@@ -80,6 +79,10 @@ export default function FinalClassification() {
             ? "Estas predicciones se bloquean 1 hora antes de la salida de la Etapa 1 — " + lockLabel + ". ¡Hazlas antes!"
             : "These predictions lock 1 hour before Stage 1 starts — " + lockLabel + ". Get them in before then!"}
         </p>
+      </div>
+
+      <div style={{ marginTop: 14 }}>
+        <AutoSaveNotice lang={lang} />
       </div>
 
       <div className="jersey-row">

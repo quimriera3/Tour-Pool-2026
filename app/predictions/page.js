@@ -144,12 +144,15 @@ export default function Predictions() {
 
   return (
     <div>
-      <AutoSaveNotice lang={lang} />
       <div className="page-header">
         <span className="eyebrow">{t(lang, "predictions.eyebrow")}</span>
         <h1>{t(lang, "predictions.title")}</h1>
         <p className="subtitle">{t(lang, "predictions.subtitle")}</p>
         <p className="scoring-note">{t(lang, "scoring.stage")}</p>
+      </div>
+
+      <div style={{ marginTop: 14 }}>
+        <AutoSaveNotice lang={lang} />
       </div>
 
       {WEEKS.map((week, i) => (

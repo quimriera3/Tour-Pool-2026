@@ -49,11 +49,6 @@ export default function Rules() {
           <li>{t(lang, "rules.prize3")}</li>
         </ul>
       </div>
-
-      <div className="card" style={{ marginTop: 16 }}>
-        <h3 style={{ fontSize: 16 }}>{t(lang, "rules.order.title")}</h3>
-        <p className="subtitle" style={{ marginTop: 10 }}>{t(lang, "rules.order.body")}</p>
-      </div>
     </div>
   );
 }
