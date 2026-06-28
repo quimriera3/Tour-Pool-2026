@@ -6,7 +6,7 @@
 // icon, etc.) so it's instantly clear who's good for what.
 
 import { useState } from "react";
-import { teamsList, teamColor, riderSpecialty, specialtyToType, TYPE_COLOR } from "../lib/data";
+import { teamsList, teamColor, riderSpecialty, specialtyToType, TYPE_COLOR, isTeamOfficial } from "../lib/data";
 import StageTypeIcon from "./StageTypeIcon";
 
 export default function TeamRiderPicker({ value, onChange, disabled, selectedRiderName, stageType, riderFilter }) {
@@ -149,7 +149,10 @@ export default function TeamRiderPicker({ value, onChange, disabled, selectedRid
                           flexShrink: 0,
                         }}
                       />
-                      <span style={{ fontSize: 13, fontWeight: 700, flex: 1 }}>{team}</span>
+                      <span style={{ fontSize: 13, fontWeight: 700, flex: 1, display: "flex", alignItems: "center", gap: 6 }}>
+                        {team}
+                        {isTeamOfficial(team) && <span className="official-badge">✓</span>}
+                      </span>
                       <span style={{ fontSize: 10, color: "var(--grey)" }}>{isOpen ? "▲" : "▼"}</span>
                     </button>
 

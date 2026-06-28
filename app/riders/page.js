@@ -1,7 +1,7 @@
 "use client";
 // app/riders/page.js
 import { useState } from "react";
-import { teamsList, teamColor, teamPastelBg, pcsUrl, riderSpecialty } from "../../lib/data";
+import { teamsList, teamColor, teamPastelBg, pcsUrl, riderSpecialty, isTeamOfficial } from "../../lib/data";
 import { useLang, t } from "../../lib/i18n";
 
 const SPECIALTIES = ["All", "Climber", "Puncheur", "Sprinter", "Time triallist"];
@@ -113,6 +113,11 @@ export default function Riders() {
               >
                 <span className="team-dot" style={{ background: teamColor(team) }} />
                 <span className="team-accordion-name">{team}</span>
+                {isTeamOfficial(team) && (
+                  <span className="official-badge" title={t(lang, "riders.officialLineup")}>
+                    ✓ {t(lang, "riders.officialLineup")}
+                  </span>
+                )}
                 <span className="team-accordion-count">
                   {hasNoRidersAtAll ? t(lang, "riders.tbc") : visible.length + " rider" + (visible.length !== 1 ? "s" : "")}
                 </span>
