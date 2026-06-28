@@ -1,0 +1,29 @@
+<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <clipPath id="badge">
+      <rect x="0" y="0" width="1024" height="1024" rx="170" ry="170" />
+    </clipPath>
+  </defs>
+
+  <!-- black rounded-square base, same family as the existing favicon -->
+  <g clip-path="url(#badge)">
+    <rect x="0" y="0" width="1024" height="1024" fill="#111111" />
+
+    <!-- thin red finish-line stripe along the bottom -->
+    <rect x="0" y="924" width="1024" height="22" fill="#d6432f" />
+
+    <!-- yellow medallion -->
+    <circle cx="512" cy="468" r="280" fill="#ffd400" />
+
+    <!-- bold black "T", same letterform idea as the favicon, scaled up -->
+    <text
+      x="512"
+      y="610"
+      text-anchor="middle"
+      font-family="Arial, Helvetica, sans-serif"
+      font-weight="900"
+      font-size="380"
+      fill="#111111"
+    >T</text>
+  </g>
+</svg>
