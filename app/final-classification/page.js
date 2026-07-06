@@ -76,8 +76,8 @@ export default function FinalClassification() {
         <p className="scoring-note">{t(lang, "scoring.jersey")}</p>
         <p className="scoring-note" style={{ background: "#fdeaea", color: "#8a2c2c", borderColor: "#f0c4c4", marginTop: 8 }}>
           ⏰ {lang === "es"
-            ? "Estas predicciones se bloquean 1 hora antes de la salida de la Etapa 1 — " + lockLabel + ". ¡Hazlas antes!"
-            : "These predictions lock 1 hour before Stage 1 starts — " + lockLabel + ". Get them in before then!"}
+            ? "Tus predicciones de maillots se cierran el miércoles 8 de julio a las 12:15 CEST (1h antes del inicio de la Etapa 5). ¡Hazlas antes!"
+            : "Your jersey predictions close on Wed 8 July at 12:15 CEST — 1 hour before Stage 5 starts. Get them in before then!"}
         </p>
       </div>
 

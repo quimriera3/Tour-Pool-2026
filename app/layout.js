@@ -1,7 +1,6 @@
 import "./globals.css";
 import Nav from "../components/Nav";
 import CtaBar from "../components/CtaBar";
-import DisclaimerBanner from "../components/DisclaimerBanner";
 import CookieBanner from "../components/CookieBanner";
 import Footer from "../components/Footer";
 import { Analytics } from "@vercel/analytics/react";
@@ -107,7 +106,6 @@ export default function RootLayout({ children }) {
         {/* End Google Tag Manager (noscript) */}
         <Nav />
         <CtaBar />
-        <DisclaimerBanner />
         <main className="container">{children}</main>
         <Footer />
         <CookieBanner />
