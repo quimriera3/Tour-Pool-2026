@@ -4,8 +4,10 @@
 const HEIGHTS = [86, 64, 46]; // 1st, 2nd, 3rd
 const ORDER = [1, 0, 2]; // visual order left-to-right: 2nd, 1st, 3rd
 
-export default function Podium({ items, valueSuffix = "" }) {
+export default function Podium({ items, valueSuffix = "", dark = false }) {
   if (!items || items.length === 0) return null;
+  const textColor = dark ? "#fff" : "inherit";
+  const subColor = dark ? "#666" : "var(--grey)";
 
   return (
     <div style={{ display: "flex", alignItems: "flex-end", gap: 10, justifyContent: "center", padding: "10px 0 0" }}>
@@ -15,8 +17,8 @@ export default function Podium({ items, valueSuffix = "" }) {
         const place = idx + 1;
         return (
           <div key={idx} style={{ flex: 1, textAlign: "center", maxWidth: 130 }}>
-            <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 4 }}>{item.label}</div>
-            {item.sub && <div style={{ fontSize: 11, color: "var(--grey)", marginBottom: 6 }}>{item.sub}</div>}
+            <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 4, color: textColor }}>{item.label}</div>
+            {item.sub && <div style={{ fontSize: 11, color: subColor, marginBottom: 6 }}>{item.sub}</div>}
             <div
               style={{
                 height: HEIGHTS[idx],

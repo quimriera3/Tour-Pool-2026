@@ -354,6 +354,251 @@ h3 {
   color: #777;
 }
 
+/* ---------- Hero v2 (yellow/dark split, dot progress) ---------- */
+.hero-v2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.hero-v2-left {
+  background: var(--yellow);
+  padding: 28px 28px 22px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-v2-left::before {
+  content: "";
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background: #111;
+  opacity: 0.06;
+}
+
+.hero-v2-eyebrow {
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #111;
+  opacity: 0.5;
+}
+
+.hero-v2-route {
+  font-size: 22px;
+  font-weight: 900;
+  color: #111;
+  line-height: 1.15;
+  margin-top: 8px;
+}
+
+.hero-v2-badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.hero-v2-badge {
+  background: #111;
+  color: var(--yellow);
+  font-size: 10px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.hero-v2-badge-km {
+  font-size: 11px;
+  color: #111;
+  opacity: 0.5;
+  font-weight: 700;
+}
+
+.hero-v2-cta {
+  display: inline-block;
+  background: #111;
+  color: var(--yellow);
+  font-size: 13px;
+  font-weight: 900;
+  padding: 12px 18px;
+  border-radius: 8px;
+  text-decoration: none;
+  margin-top: 16px;
+}
+
+.hero-v2-cta:hover {
+  opacity: 0.85;
+}
+
+.hero-v2-closes {
+  font-size: 10px;
+  color: #111;
+  opacity: 0.4;
+  margin-top: 8px;
+}
+
+.hero-v2-right {
+  background: #111;
+  padding: 28px 28px 22px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.hero-v2-cd-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--yellow);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+.hero-v2-countdown {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.hero-v2-cd-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.hero-v2-cd-num {
+  font-size: 40px;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  min-width: 58px;
+  text-align: center;
+  background: #1e1e1e;
+  border-radius: 8px;
+  padding: 7px 8px;
+  border-top: 3px solid var(--yellow);
+  display: block;
+}
+
+.hero-v2-cd-sep {
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--yellow);
+  margin-bottom: 16px;
+  opacity: 0.4;
+  line-height: 1;
+}
+
+.hero-v2-cd-lab {
+  font-size: 9px;
+  font-weight: 700;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.hero-v2-progress {
+  margin-top: 24px;
+}
+
+.hero-v2-prog-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: #555;
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+
+.hero-v2-dots {
+  display: flex;
+  gap: 3px;
+}
+
+.hero-v2-dot {
+  flex: 1;
+  height: 8px;
+  border-radius: 3px;
+  background: #282828;
+  position: relative;
+}
+
+.hero-v2-dot.done { background: #555; }
+.hero-v2-dot.current { background: var(--yellow); }
+
+.hero-v2-dot-arrow {
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 9px;
+  color: var(--yellow);
+  line-height: 1;
+}
+
+.hero-v2-dots-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 7px;
+  font-size: 9px;
+  color: #333;
+}
+
+/* Dark leaderboard card on the homepage */
+.home-leaderboard-card {
+  background: #111;
+  border-color: #222;
+}
+
+.home-leaderboard-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.home-leaderboard-label {
+  font-size: 16px;
+  font-weight: 800;
+  color: #fff;
+}
+
+.home-leaderboard-sub {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--yellow);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+@media (max-width: 700px) {
+  .hero-v2 {
+    grid-template-columns: 1fr;
+  }
+  .hero-v2-cd-num {
+    font-size: 32px;
+    min-width: 46px;
+  }
+}
+
 /* ---------- Homepage SEO preview block ---------- */
 /* Uses the shared .card class so it's exactly the same width as the
    Leaderboard / recap cards above it -- no separate max-width here. */

@@ -27,6 +27,7 @@ import {
   jerseyLockDate,
   jerseyPredictionsLocked,
   TYPE_LABEL,
+  STAGES,
 } from "../lib/data";
 import { computeLeaderboard, getResults, useSession } from "../lib/store";
 import StageTypeIcon from "../components/StageTypeIcon";
@@ -114,28 +115,44 @@ export default function Dashboard() {
   }
 
   const podiumItems = board.slice(0, 3).map((row) => ({ label: row.name, value: row.total }));
-  const prevResult = prevStage ? results[prevStage.n] : null;
+
+  // Find the most recent stage that has a result uploaded — this might be
+  // prevStage, or an earlier one if the admin hasn't entered the latest yet.
+  const lastResultStage = (() => {
+    if (!prevStage) return null;
+    for (let n = prevStage.n; n >= 1; n--) {
+      if (results[n]) return { n, result: results[n] };
+    }
+    return null;
+  })();
+
   const totalDistance = totalKm();
   const distanceDone = kmCompleted();
   const progressPct = Math.round((distanceDone / totalDistance) * 100);
-  const prevPodiumItems = prevResult
+
+  const lastPodiumItems = lastResultStage
     ? [
-        { label: riderById(prevResult.first)?.name || prevResult.first },
-        { label: riderById(prevResult.second)?.name || prevResult.second },
-        { label: riderById(prevResult.third)?.name || prevResult.third },
+        { label: riderById(lastResultStage.result.first)?.name || lastResultStage.result.first },
+        { label: riderById(lastResultStage.result.second)?.name || lastResultStage.result.second },
+        { label: riderById(lastResultStage.result.third)?.name || lastResultStage.result.third },
       ]
     : null;
 
+  // Leaderboard card — dark card with yellow accent to distinguish it from the
+  // stage recap card (which is a plain white card)
   const leaderboardCard = (
-    <div className="card">
-      <h3 style={{ fontSize: 16 }}>{t(lang, "home.leaderboard")}</h3>
+    <div className="card home-leaderboard-card">
+      <div className="home-leaderboard-header">
+        <span className="home-leaderboard-label">{t(lang, "home.leaderboard")}</span>
+        <span className="home-leaderboard-sub">{t(lang, "home.liveStandings")}</span>
+      </div>
       {podiumItems.length > 0 ? (
-        <Podium items={podiumItems} valueSuffix=" pts" />
+        <Podium items={podiumItems} valueSuffix=" pts" dark />
       ) : (
-        <p className="subtitle" style={{ marginTop: 10 }}>{t(lang, "home.noResultsYet")}</p>
+        <p style={{ marginTop: 10, fontSize: 13, color: "#aaa" }}>{t(lang, "home.noResultsYet")}</p>
       )}
-      <a href={(lang === "es" ? "/es" : "") + "/leaderboard"} className="btn btn-outline" style={{ marginTop: 18, display: "inline-block" }}>
-        {t(lang, "home.viewFullLeaderboard")}
+      <a href={(lang === "es" ? "/es" : "") + "/leaderboard"} className="btn" style={{ marginTop: 18, display: "inline-block", width: "100%", textAlign: "center", background: "var(--yellow)", color: "var(--black)" }}>
+        {t(lang, "home.viewFullLeaderboard")} →
       </a>
     </div>
   );
@@ -163,78 +180,88 @@ export default function Dashboard() {
       </div>
 
       {stage ? (
-        <div className="hero" style={{ marginTop: 18 }}>
-          <div className="hero-inner">
-            <span className="eyebrow">{t(lang, "home.nextStageIn")}</span>
-            <div className="hero-countdown">
-              <div>
-                <span className="num">{String(countdown.d).padStart(2, "0")}</span>
-                <span className="lab">{t(lang, "home.days")}</span>
+        <div className="hero-v2" style={{ marginTop: 18 }}>
+          {/* Left: yellow — stage info + CTA */}
+          <div className="hero-v2-left">
+            <div>
+              <span className="hero-v2-eyebrow">
+                {t(lang, "home.stageWord")} {stage.n} · {(() => {
+                  const d = stageStartDate(stage);
+                  const days = DAY_NAMES[lang] || DAY_NAMES.en;
+                  const months = MONTH_NAMES[lang] || MONTH_NAMES.en;
+                  return days[d.getDay()] + " " + d.getDate() + " " + months[d.getMonth()];
+                })()}
+              </span>
+              <div className="hero-v2-route">
+                {stage.from}<br />→ {stage.to}
               </div>
-              <div>
-                <span className="num">{String(countdown.h).padStart(2, "0")}</span>
-                <span className="lab">{t(lang, "home.hours")}</span>
-              </div>
-              <div>
-                <span className="num">{String(countdown.m).padStart(2, "0")}</span>
-                <span className="lab">{t(lang, "home.min")}</span>
-              </div>
-              <div>
-                <span className="num">{String(countdown.s).padStart(2, "0")}</span>
-                <span className="lab">{t(lang, "home.sec")}</span>
+              <div className="hero-v2-badges">
+                <span className="hero-v2-badge">
+                  <StageTypeIcon type={stage.type} size={11} color="#ffd400" /> {TYPE_LABEL[stage.type]}
+                </span>
+                <span className="hero-v2-badge-km">{stage.km} km · {stage.elevationGain.toLocaleString()} m ↑</span>
               </div>
             </div>
-
-            <div style={{ marginTop: 14, display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-              <span style={{ color: "#fff", fontSize: 14, fontWeight: 700 }}>
-                {t(lang, "home.stageWord")} {stage.n}: {stage.from} {t(lang, "home.toWord")} {stage.to}
-              </span>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 12, color: "#bbb" }}>
-                <StageTypeIcon type={stage.type} size={13} color="var(--yellow)" />
-                {TYPE_LABEL[stage.type]} - {t(lang, "home.climbing")} {stage.elevationGain} m
-              </span>
+            <div>
+              <a href={(lang === "es" ? "/es" : "") + "/stage/" + stage.n} className="hero-v2-cta">
+                {t(lang, "home.seeAndPredict")} ↗
+              </a>
+              <p className="hero-v2-closes">⏰ {t(lang, "home.pickCloses")}</p>
             </div>
-            <a href={(lang === "es" ? "/es" : "") + "/stage/" + stage.n} style={{ display: "inline-block", marginTop: 6, fontSize: 12, color: "var(--yellow)", fontWeight: 700 }}>
-              {t(lang, "home.seeAndPredict")} &#8599;
-            </a>
+          </div>
 
-            <div style={{ marginTop: 16, position: "relative", zIndex: 2 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 4, fontSize: 11, color: "#999", marginBottom: 8 }}>
-                <span>{prevStage ? t(lang, "home.stageWord") + " " + prevStage.n + " " + t(lang, "home.stageOf21Done") : t(lang, "home.notStartedYet")}</span>
-                <span>{distanceDone.toLocaleString()} / {totalDistance.toLocaleString()} km · {progressPct}%</span>
-              </div>
-              <div style={{ position: "relative", height: 12 }}>
-                <div
-                  style={{
-                    position: "absolute",
-                    left: ((stage.n - 0.5) / 21) * 100 + "%",
-                    top: 0,
-                    transform: "translateX(-50%)",
-                    fontSize: 11,
-                    lineHeight: 1,
-                    color: "var(--yellow)",
-                  }}
-                >
-                  ▼
+          {/* Right: dark — countdown + dot progress */}
+          <div className="hero-v2-right">
+            <div>
+              <span className="hero-v2-cd-label">{t(lang, "home.nextStageIn")}</span>
+              <div className="hero-v2-countdown">
+                <div className="hero-v2-cd-unit">
+                  <span className="hero-v2-cd-num">{String(countdown.d).padStart(2, "0")}</span>
+                  <span className="hero-v2-cd-lab">{t(lang, "home.days")}</span>
+                </div>
+                <span className="hero-v2-cd-sep">:</span>
+                <div className="hero-v2-cd-unit">
+                  <span className="hero-v2-cd-num">{String(countdown.h).padStart(2, "0")}</span>
+                  <span className="hero-v2-cd-lab">{t(lang, "home.hours")}</span>
+                </div>
+                <span className="hero-v2-cd-sep">:</span>
+                <div className="hero-v2-cd-unit">
+                  <span className="hero-v2-cd-num">{String(countdown.m).padStart(2, "0")}</span>
+                  <span className="hero-v2-cd-lab">{t(lang, "home.min")}</span>
+                </div>
+                <span className="hero-v2-cd-sep">:</span>
+                <div className="hero-v2-cd-unit">
+                  <span className="hero-v2-cd-num">{String(countdown.s).padStart(2, "0")}</span>
+                  <span className="hero-v2-cd-lab">{t(lang, "home.sec")}</span>
                 </div>
               </div>
-              <div style={{ height: 6, background: "#2a2a2a", borderRadius: 999, overflow: "hidden", position: "relative" }}>
-                <div style={{ height: "100%", width: progressPct + "%", background: "var(--yellow)", borderRadius: 999 }} />
-                {Array.from({ length: 20 }).map((_, i) => (
-                  <div
-                    key={i}
-                    style={{
-                      position: "absolute",
-                      top: 0,
-                      bottom: 0,
-                      left: ((i + 1) / 21) * 100 + "%",
-                      width: 1,
-                      background: "rgba(0,0,0,0.35)",
-                    }}
-                  />
-                ))}
+            </div>
+
+            {/* Dot progress — 21 blocks, one per stage */}
+            <div className="hero-v2-progress">
+              <div className="hero-v2-prog-meta">
+                <span>{t(lang, "home.tourProgress")}</span>
+                <span>{distanceDone.toLocaleString()} / {totalDistance.toLocaleString()} km</span>
               </div>
-              <p style={{ fontSize: 10, color: "#777", marginTop: 6 }}>{t(lang, "home.stagesMarker")}</p>
+              <div className="hero-v2-dots">
+                {Array.from({ length: 21 }).map((_, i) => {
+                  const sn = i + 1;
+                  const isDone = prevStage && sn < stage.n;
+                  const isCurrent = sn === stage.n;
+                  return (
+                    <div
+                      key={sn}
+                      className={"hero-v2-dot" + (isDone ? " done" : isCurrent ? " current" : "")}
+                    >
+                      {isCurrent && <span className="hero-v2-dot-arrow">▼</span>}
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="hero-v2-dots-labels">
+                <span>{t(lang, "home.stageWord")} 1</span>
+                <span>{t(lang, "home.stageWord")} 21</span>
+              </div>
             </div>
           </div>
         </div>
@@ -266,19 +293,25 @@ export default function Dashboard() {
         </a>
       )}
 
-      {prevStage ? (
+      {lastResultStage || prevStage ? (
         <div className="grid grid-2" style={{ marginTop: 22 }}>
+          {/* Stage recap — plain white card */}
           <div className="card">
-            <h3 style={{ fontSize: 16 }}>{t(lang, "home.stageWord")} {prevStage.n} {t(lang, "home.recapTitle")}</h3>
-            <p className="subtitle" style={{ marginTop: 6 }}>
-              {prevStage.from} {t(lang, "home.toWord")} {prevStage.to}
+            <span className="eyebrow" style={{ fontSize: 10 }}>
+              {t(lang, "home.stageWord")} {lastResultStage ? lastResultStage.n : prevStage.n} {t(lang, "home.recapTitle")}
+            </span>
+            <p style={{ fontWeight: 700, fontSize: 14, marginTop: 4, color: "var(--black)" }}>
+              {lastResultStage
+                ? (STAGES.find(s => s.n === lastResultStage.n)?.from + " → " + STAGES.find(s => s.n === lastResultStage.n)?.to)
+                : (prevStage.from + " → " + prevStage.to)}
             </p>
-            {prevPodiumItems ? (
-              <Podium items={prevPodiumItems} />
+            {lastPodiumItems ? (
+              <Podium items={lastPodiumItems} />
             ) : (
               <p className="subtitle" style={{ marginTop: 10 }}>{t(lang, "home.resultNotEntered")}</p>
             )}
           </div>
+          {/* Leaderboard — dark styled card */}
           {leaderboardCard}
         </div>
       ) : (
