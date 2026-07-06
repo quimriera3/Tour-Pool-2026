@@ -141,17 +141,63 @@ export default function Dashboard() {
   // Leaderboard card — dark card with yellow accent to distinguish it from the
   // stage recap card (which is a plain white card)
   const leaderboardCard = (
-    <div className="card home-leaderboard-card">
-      <div className="home-leaderboard-header">
-        <span className="home-leaderboard-label">{t(lang, "home.leaderboard")}</span>
-        <span className="home-leaderboard-sub">{t(lang, "home.liveStandings")}</span>
+    <div style={{
+      background: "#111",
+      border: "1px solid #222",
+      borderRadius: "var(--radius)",
+      padding: 20,
+    }}>
+      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 16 }}>
+        <span style={{ fontSize: 16, fontWeight: 800, color: "#fff" }}>{t(lang, "home.leaderboard")}</span>
+        <span style={{ fontSize: 10, fontWeight: 700, color: "var(--yellow)", textTransform: "uppercase", letterSpacing: 1 }}>
+          {t(lang, "home.liveStandings")}
+        </span>
       </div>
+
       {podiumItems.length > 0 ? (
-        <Podium items={podiumItems} valueSuffix=" pts" dark />
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          {podiumItems.map((row, i) => (
+            <div key={i} style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 12,
+              background: i === 0 ? "#1e1e1e" : "transparent",
+              borderRadius: 8,
+              padding: "10px 12px",
+              borderLeft: i === 0 ? "3px solid var(--yellow)" : "3px solid #222",
+            }}>
+              <span style={{
+                fontSize: 13,
+                fontWeight: 900,
+                color: i === 0 ? "var(--yellow)" : "#555",
+                minWidth: 16,
+                textAlign: "center",
+              }}>{i + 1}</span>
+              <span style={{ fontSize: 13, fontWeight: 700, color: "#fff", flex: 1 }}>{row.label}</span>
+              <span style={{ fontSize: 13, fontWeight: 800, color: i === 0 ? "var(--yellow)" : "#666" }}>
+                {row.value} pts
+              </span>
+            </div>
+          ))}
+        </div>
       ) : (
-        <p style={{ marginTop: 10, fontSize: 13, color: "#aaa" }}>{t(lang, "home.noResultsYet")}</p>
+        <p style={{ fontSize: 13, color: "#555", marginTop: 10 }}>{t(lang, "home.noResultsYet")}</p>
       )}
-      <a href={(lang === "es" ? "/es" : "") + "/leaderboard"} className="btn" style={{ marginTop: 18, display: "inline-block", width: "100%", textAlign: "center", background: "var(--yellow)", color: "var(--black)" }}>
+
+      <a href={(lang === "es" ? "/es" : "") + "/leaderboard"} style={{
+        display: "block",
+        marginTop: 16,
+        background: "var(--yellow)",
+        color: "#111",
+        fontWeight: 800,
+        fontSize: 13,
+        textAlign: "center",
+        padding: "11px 0",
+        borderRadius: 8,
+        textDecoration: "none",
+        textTransform: "uppercase",
+        letterSpacing: 0.5,
+      }}>
         {t(lang, "home.viewFullLeaderboard")} →
       </a>
     </div>
