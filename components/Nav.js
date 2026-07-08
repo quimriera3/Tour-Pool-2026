@@ -19,6 +19,7 @@ function navLinks(lang) {
     { href: prefix + "/riders", key: "nav.riders" },
     { href: prefix + "/leaderboard", key: "nav.leaderboard" },
     { href: prefix + "/rules", key: "nav.rules" },
+    { href: prefix + "/faq", key: "nav.faq" },
   ];
 }
 

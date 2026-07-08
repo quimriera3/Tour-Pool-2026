@@ -17,6 +17,7 @@ import StageProfile from "../../../components/StageProfile";
 import StageTypeIcon from "../../../components/StageTypeIcon";
 import TeamRiderPicker from "../../../components/TeamRiderPicker";
 import Podium from "../../../components/Podium";
+import StageFavourites from "../../../components/StageFavourites";
 import { useLang, t } from "../../../lib/i18n";
 
 const EN_DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -163,13 +164,16 @@ export default function StageDetail() {
         </a>
       </section>
 
-      {/* 2. SEO-optimised stage preview text -- real, original copy, not a placeholder */}
+      {/* 2. SEO-optimised stage preview text */}
       <section className="card" style={{ marginTop: 16 }} aria-labelledby={"stage-preview-" + n}>
         <h2 id={"stage-preview-" + n} style={{ fontSize: 15 }}>{t(lang, "stage.stagePreview")}</h2>
         <p className="subtitle" style={{ marginTop: 10 }}>{lang === "es" && stage.previewEs ? stage.previewEs : stage.preview}</p>
       </section>
 
-      {/* 3. Rider picker -- main call to action for this page, right below the SEO copy */}
+      {/* 3. Auto-generated favourites for this stage type -- unique SEO content per stage */}
+      <StageFavourites stage={stage} lang={lang} />
+
+      {/* 4. Rider picker */}
       <section className="card" style={{ marginTop: 16 }} aria-labelledby={"stage-pick-" + n}>
         <h2 id={"stage-pick-" + n} style={{ fontSize: 15 }}>{t(lang, "stage.makeYourPick")}</h2>
         <p className="scoring-note" style={{ marginBottom: 12 }}>{t(lang, "scoring.stageShort")}</p>
