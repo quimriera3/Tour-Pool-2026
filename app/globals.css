@@ -69,8 +69,10 @@ h3 {
   padding: 14px 20px;
   display: flex;
   align-items: center;
-  gap: 24px;
-  flex-wrap: wrap;
+  gap: 20px;
+  /* Only the mobile layout wraps (it stacks the menu underneath); on desktop
+     wrapping is what scattered the bar across three rows. */
+  flex-wrap: nowrap;
 }
 
 .brand {
@@ -83,9 +85,8 @@ h3 {
 
 .nav-links {
   display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  flex: 1;
+  gap: 2px;
+  flex-wrap: nowrap;
   align-items: center;
 }
 
@@ -200,15 +201,6 @@ h3 {
 
   .lang-switcher {
     margin-left: 0;
-    order: 2;
-  }
-
-  .nav-links {
-    order: 1;
-  }
-
-  .nav-user {
-    order: 3;
   }
 }
 
@@ -217,11 +209,13 @@ h3 {
   display: inline-flex;
 }
 
+/* Base pill style. No !important here: the desktop nav restyles these links
+   entirely, and a forced colour made the labels render black on the dark bar. */
 .nav-btn {
   display: inline-flex;
   align-items: center;
   background: var(--accent);
-  color: var(--black) !important;
+  color: var(--black);
   font-weight: 800;
   font-size: 13px;
   padding: 8px 16px;
@@ -234,7 +228,7 @@ h3 {
 
 .nav-btn.secondary {
   background: transparent;
-  color: var(--white) !important;
+  color: var(--white);
   border: 1.5px solid #444;
 }
 
@@ -244,7 +238,7 @@ h3 {
 
 .nav-btn.secondary.active {
   border-color: var(--accent);
-  color: var(--accent) !important;
+  color: var(--accent);
 }
 
 /* ---------- Sitewide participation CTA bar ---------- */
@@ -1619,6 +1613,10 @@ tr.me {
     flex-wrap: wrap;
   }
 
+  .nav-links {
+    flex-wrap: wrap;
+  }
+
   .brand-hidden-mobile {
     display: none;
   }
@@ -2034,6 +2032,24 @@ tr.me {
   .nav-inner .logo-link {
     display: flex;
     align-items: center;
-    margin-right: 8px;
+    margin-right: 4px;
+    flex-shrink: 0;
+  }
+
+  .nav-meta {
+    flex-shrink: 0;
+    align-self: center;
+  }
+
+  .nav-user {
+    flex-shrink: 0;
+    align-self: center;
+  }
+
+  /* The link row takes the slack so the logo stays left and the account
+     controls stay right. */
+  .nav-links {
+    flex: 1 1 auto;
+    min-width: 0;
   }
 }
