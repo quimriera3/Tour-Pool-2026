@@ -1,5 +1,5 @@
 // app/sitemap.js
-import { STAGES } from "../lib/data";
+import { STAGES, getRace } from "../lib/data";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://example.vercel.app";
 
@@ -35,7 +35,14 @@ export default function sitemap() {
 
   const stageRoutes = STAGES.flatMap((s) => ["/stage/" + s.n, "/es/stage/" + s.n]);
 
-  return [...routes, ...stageRoutes].map((route) => ({
+  // Archived races stay in the sitemap: their pages are no longer linked from
+  // the navigation, but they remain live and should keep being crawled.
+  const archived = getRace("tour-de-france-2026");
+  const archivedRoutes = archived
+    ? ["/tour-de-france-2026", ...archived.stages.map((s) => "/tour-de-france-2026/stage/" + s.n)]
+    : [];
+
+  return [...routes, ...stageRoutes, ...archivedRoutes].map((route) => ({
     url: SITE_URL + route,
     lastModified: new Date(),
     changeFrequency: "daily",

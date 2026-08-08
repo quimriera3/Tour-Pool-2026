@@ -3,7 +3,7 @@
 // Shows the top 5 riders suited to a stage's terrain, generated automatically
 // from the scores already stored in lib/data.js. Adds unique, crawlable content
 // to every stage page without any manual editing.
-import { RIDERS } from "../lib/data";
+import { RIDERS, getActiveRace } from "../lib/data";
 
 // Score key to use for each stage type
 const SCORE_KEY = {
@@ -21,18 +21,26 @@ const SPECIALTY_LABEL = {
 };
 
 // Human description of each stage type for the intro paragraph
+// Stages whose climbing figure hasn't been published yet render without it
+// rather than printing "null m".
+function climb(stage, lang) {
+  if (!stage.elevationGain) return "";
+  const n = stage.elevationGain.toLocaleString();
+  return lang === "es" ? ` con ${n} m de desnivel acumulado` : ` with ${n} m of cumulative climbing`;
+}
+
 const TYPE_INTRO = {
   en: {
-    flat:      (stage) => `Stage ${stage.n} (${stage.from} → ${stage.to}, ${stage.km} km) is a flat sprint stage. With only ${stage.elevationGain} m of climbing, the peloton will almost certainly arrive together and the finish will come down to the pure sprinters and their lead-out trains.`,
-    hills:     (stage) => `Stage ${stage.n} (${stage.from} → ${stage.to}, ${stage.km} km) is a hilly stage with ${stage.elevationGain.toLocaleString()} m of cumulative climbing. Puncheurs who can follow explosive accelerations on short, steep climbs will have the edge over flat-out sprinters.`,
-    mountains: (stage) => `Stage ${stage.n} (${stage.from} → ${stage.to}, ${stage.km} km) is a mountain stage with ${stage.elevationGain.toLocaleString()} m of climbing — one of the Tour's queen stages. Pure climbers capable of sustaining high power output on long ascents are the ones to watch.`,
+    flat:      (stage) => `Stage ${stage.n} (${stage.from} → ${stage.to}, ${stage.km} km) is a flat sprint stage${climb(stage, 'en')}. The peloton will almost certainly arrive together and the finish will come down to the pure sprinters and their lead-out trains.`,
+    hills:     (stage) => `Stage ${stage.n} (${stage.from} → ${stage.to}, ${stage.km} km) is a hilly stage${climb(stage, 'en')}. Puncheurs who can follow explosive accelerations on short, steep climbs will have the edge over flat-out sprinters.`,
+    mountains: (stage) => `Stage ${stage.n} (${stage.from} → ${stage.to}, ${stage.km} km) is a mountain stage${climb(stage, 'en')} — one of the race's queen stages. Pure climbers capable of sustaining high power output on long ascents are the ones to watch.`,
     itt:       (stage) => `Stage ${stage.n} (${stage.from} → ${stage.to}, ${stage.km} km) is an individual time trial. Every rider races alone against the clock, so pure time-trial specialists and all-rounders with a powerful engine will shine, while climbers and sprinters are likely to lose time.`,
     ttt:       (stage) => `Stage ${stage.n} (${stage.from} → ${stage.to}, ${stage.km} km) is a team time trial. Teams race together and the result is taken on the fifth rider to cross the line. Teams with a full complement of strong diesels and excellent synchronisation will gain precious seconds on GC rivals.`,
   },
   es: {
-    flat:      (stage) => `La etapa ${stage.n} (${stage.from} → ${stage.to}, ${stage.km} km) es una etapa llana de esprín. Con tan solo ${stage.elevationGain} m de desniviel acumulado, el pelotón llegará casi con toda seguridad junto y la decisión caerá en manos de los esprínters puros y sus trenes de lanzamiento.`,
-    hills:     (stage) => `La etapa ${stage.n} (${stage.from} → ${stage.to}, ${stage.km} km) es una etapa de media montaña con ${stage.elevationGain.toLocaleString()} m de desnivel acumulado. Los puncheurs capaces de seguir aceleraciones explosivas en repechos cortos y pronunciados tendrán ventaja sobre los esprínters puros.`,
-    mountains: (stage) => `La etapa ${stage.n} (${stage.from} → ${stage.to}, ${stage.km} km) es una etapa de alta montaña con ${stage.elevationGain.toLocaleString()} m de desnivel acumulado, una de las reinas del Tour. Los escaladores puros capaces de mantener una alta potencia en subidas largas son los grandes favoritos.`,
+    flat:      (stage) => `La etapa ${stage.n} (${stage.from} → ${stage.to}, ${stage.km} km) es una etapa llana de esprín${climb(stage, 'es')}. El pelotón llegará casi con toda seguridad junto y la decisión caerá en manos de los esprínters puros y sus trenes de lanzamiento.`,
+    hills:     (stage) => `La etapa ${stage.n} (${stage.from} → ${stage.to}, ${stage.km} km) es una etapa de media montaña${climb(stage, 'es')}. Los puncheurs capaces de seguir aceleraciones explosivas en repechos cortos y pronunciados tendrán ventaja sobre los esprínters puros.`,
+    mountains: (stage) => `La etapa ${stage.n} (${stage.from} → ${stage.to}, ${stage.km} km) es una etapa de alta montaña${climb(stage, 'es')}, una de las reinas de la carrera. Los escaladores puros capaces de mantener una alta potencia en subidas largas son los grandes favoritos.`,
     itt:       (stage) => `La etapa ${stage.n} (${stage.from} → ${stage.to}, ${stage.km} km) es una contrarreloj individual. Cada corredor compite solo contra el cronómetro, por lo que los especialistas de la crono y los rodadores con un motor poderoso brillarán, mientras que escaladores y esprínters tenderán a perder tiempo.`,
     ttt:       (stage) => `La etapa ${stage.n} (${stage.from} → ${stage.to}, ${stage.km} km) es una contrarreloj por equipos. Los equipos corren juntos y el tiempo se toma sobre el quinto corredor que cruza la línea. Los equipos con un bloque sólido de rodadores y una excelente sincronización ganarán segundos valiosos a sus rivales en la general.`,
   },
@@ -64,15 +72,20 @@ const BASED_ON = {
   es: "Clasificados por adecuación al terreno de esta etapa",
 };
 
-export default function StageFavourites({ stage, lang = "en" }) {
+export default function StageFavourites({ stage, lang = "en", race }) {
   const key = SCORE_KEY[stage.type] || "flat";
   const specialties = SPECIALTY_LABEL[lang] || SPECIALTY_LABEL.en;
   const intros = TYPE_INTRO[lang] || TYPE_INTRO.en;
   const watches = WHAT_TO_WATCH[lang] || WHAT_TO_WATCH.en;
 
-  const top5 = [...RIDERS]
+  const pool = race ? race.riders : RIDERS;
+  const top5 = [...pool]
     .sort((a, b) => (b.scores?.[key] || 0) - (a.scores?.[key] || 0))
     .slice(0, 5);
+
+  // No startlist published yet -- show the terrain analysis but no rider
+  // ranking, rather than an empty list.
+  const hasRiders = top5.length > 0;
 
   return (
     <section
@@ -88,7 +101,7 @@ export default function StageFavourites({ stage, lang = "en" }) {
         {intros[stage.type]?.(stage)}
       </p>
 
-      {/* Ranked list */}
+      {hasRiders && (
       <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 8 }}>
         {top5.map((rider, i) => (
           <div
@@ -100,7 +113,7 @@ export default function StageFavourites({ stage, lang = "en" }) {
               padding: "10px 12px",
               borderRadius: 8,
               background: i === 0 ? "#fffae8" : "var(--off-white, #f9f9f9)",
-              borderLeft: i === 0 ? "3px solid var(--yellow)" : "3px solid transparent",
+              borderLeft: i === 0 ? "3px solid var(--accent)" : "3px solid transparent",
             }}
           >
             <span style={{ fontWeight: 900, fontSize: 13, color: i === 0 ? "#9a7d00" : "#aaa", minWidth: 18 }}>
@@ -115,7 +128,7 @@ export default function StageFavourites({ stage, lang = "en" }) {
                 fontSize: 10,
                 fontWeight: 700,
                 background: "#111",
-                color: "var(--yellow)",
+                color: "var(--accent)",
                 borderRadius: 20,
                 padding: "3px 9px",
               }}
@@ -125,14 +138,17 @@ export default function StageFavourites({ stage, lang = "en" }) {
           </div>
         ))}
       </div>
+      )}
 
       <p className="subtitle" style={{ marginTop: 14, fontSize: 12, color: "#888", fontStyle: "italic" }}>
         ⚡ {watches[stage.type]}
       </p>
 
-      <p style={{ marginTop: 6, fontSize: 11, color: "#ccc" }}>
-        {BASED_ON[lang] || BASED_ON.en}
-      </p>
+      {hasRiders && (
+        <p style={{ marginTop: 6, fontSize: 11, color: "#ccc" }}>
+          {BASED_ON[lang] || BASED_ON.en}
+        </p>
+      )}
     </section>
   );
 }

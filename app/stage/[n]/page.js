@@ -145,7 +145,7 @@ export default function StageDetail() {
             <StageTypeIcon type={stage.type} size={13} />
             {TYPE_LABEL[stage.type]}
           </span>
-          · {stage.km} km · ↗ {stage.elevationGain} m {lang === "es" ? "de desnivel" : "of climbing"}
+          · {stage.km} km{stage.elevationGain ? <> · ↗ {stage.elevationGain.toLocaleString()} m {lang === "es" ? "de desnivel" : "of climbing"}</> : null}
           {stage.profileScore && <> · {lang === "es" ? "Dificultad" : "Difficulty score"}: {stage.profileScore}</>}
         </p>
       </div>

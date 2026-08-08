@@ -13,11 +13,11 @@ export function generateMetadata({ params }) {
   }
   return {
     title: {
-      absolute: `Stage ${stage.n} Profile & Predictions | Tour de France 2026 - Grand Tour Pool`,
+      absolute: `Stage ${stage.n} Profile & Predictions | La Vuelta 2026 - Grand Tour Pool`,
     },
     description:
-      `Predict Tour de France 2026 Stage ${stage.n}: ${stage.from} to ${stage.to} (${stage.km} km, ` +
-      `${stage.date.split("-").reverse().join("/")}). Free stage profile, elevation, and rider picks for the best Tour de France pool online.`,
+      `Predict La Vuelta 2026 Stage ${stage.n}: ${stage.from} to ${stage.to} (${stage.km} km, ` +
+      `${stage.date.split("-").reverse().join("/")}). Free stage profile, route details, and rider picks for the best Vuelta pool online.`,
   };
 }
 

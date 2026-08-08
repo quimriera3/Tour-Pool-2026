@@ -11,7 +11,10 @@ const W = 280;
 const H = 70;
 
 function buildPoints(type, elevationGain) {
-  const amp = Math.min(1, elevationGain / 5000); // 0..1 intensity
+  // elevationGain may be null when a race's per-stage climbing figures haven't
+  // been published yet -- fall back to a mid intensity so the silhouette still
+  // reflects the stage type rather than crashing or drawing a flat line.
+  const amp = elevationGain ? Math.min(1, elevationGain / 5000) : 0.5;
   const base = H - 6;
   let pts = [[0, base]];
 

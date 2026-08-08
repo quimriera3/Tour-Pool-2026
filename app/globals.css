@@ -1,6 +1,16 @@
 @import url("https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap");
 
 :root {
+  /* Race accent. These are overridden at runtime in app/layout.js from the
+     ACTIVE race's own theme, so the whole site reskins when the race changes.
+     The values here are only a fallback for the very first paint. */
+  --accent: #E4002B;
+  --accent-dark: #8a0019;
+  --accent-ink: #ffffff;
+  --accent-soft: #fff0f2;
+
+  /* Literal colours, used only where a specific colour is meant (e.g. the
+     Tour's yellow jersey icon), never for branding. */
   --yellow: #ffd400;
   --black: #111111;
   --black-soft: #1c1c1c;
@@ -50,7 +60,7 @@ h3 {
 /* ---------- Nav ---------- */
 .nav {
   background: var(--black);
-  border-bottom: 4px solid var(--yellow);
+  border-bottom: 4px solid var(--accent);
 }
 
 .nav-inner {
@@ -65,7 +75,7 @@ h3 {
 
 .brand {
   font-family: "Anton", sans-serif;
-  color: var(--yellow);
+  color: var(--accent);
   font-size: 22px;
   letter-spacing: 1px;
   white-space: nowrap;
@@ -104,7 +114,7 @@ h3 {
   align-items: center;
   gap: 12px;
   background: var(--black);
-  border: 2px solid var(--yellow);
+  border: 2px solid var(--accent);
   border-radius: 12px;
   padding: 14px 16px;
   margin-top: 18px;
@@ -113,7 +123,7 @@ h3 {
 }
 
 .jersey-banner strong {
-  color: var(--yellow);
+  color: var(--accent);
 }
 
 .jersey-banner-icon {
@@ -129,7 +139,7 @@ h3 {
 
 .jersey-banner-arrow {
   font-size: 20px;
-  color: var(--yellow);
+  color: var(--accent);
   flex-shrink: 0;
 }
 
@@ -173,7 +183,21 @@ h3 {
   margin-left: auto;
 }
 
+.nav-btn-icon {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .nav-btn-icon {
+    display: flex;
+  }
+}
+
 @media (min-width: 601px) {
+  .nav-btn.mobile-only {
+    display: none !important;
+  }
+
   .lang-switcher {
     margin-left: 0;
     order: 2;
@@ -196,7 +220,7 @@ h3 {
 .nav-btn {
   display: inline-flex;
   align-items: center;
-  background: var(--yellow);
+  background: var(--accent);
   color: var(--black) !important;
   font-weight: 800;
   font-size: 13px;
@@ -219,14 +243,14 @@ h3 {
 }
 
 .nav-btn.secondary.active {
-  border-color: var(--yellow);
-  color: var(--yellow) !important;
+  border-color: var(--accent);
+  color: var(--accent) !important;
 }
 
 /* ---------- Sitewide participation CTA bar ---------- */
 .cta-bar {
   background: var(--black);
-  border-bottom: 3px solid var(--yellow);
+  border-bottom: 3px solid var(--accent);
 }
 
 .cta-bar .cta-bar-inner {
@@ -240,7 +264,7 @@ h3 {
   flex: 1;
   min-width: 220px;
   text-align: center;
-  background: var(--yellow);
+  background: var(--accent);
   color: var(--black);
   font-weight: 800;
   font-size: 13px;
@@ -258,8 +282,8 @@ h3 {
 
 .cta-bar-btn.alt {
   background: transparent;
-  color: var(--yellow);
-  border: 2px solid var(--yellow);
+  color: var(--accent);
+  border: 2px solid var(--accent);
 }
 
 @media (max-width: 600px) {
@@ -329,7 +353,7 @@ h3 {
 .hero-signup-btn {
   display: block;
   width: 100%;
-  background: var(--yellow);
+  background: var(--accent);
   color: var(--black);
   font-weight: 800;
   text-align: center;
@@ -363,7 +387,7 @@ h3 {
 }
 
 .hero-v2-left {
-  background: var(--yellow);
+  background: var(--accent);
   padding: 28px 28px 22px;
   display: flex;
   flex-direction: column;
@@ -411,7 +435,7 @@ h3 {
 
 .hero-v2-badge {
   background: #111;
-  color: var(--yellow);
+  color: var(--accent);
   font-size: 10px;
   font-weight: 800;
   padding: 4px 10px;
@@ -431,7 +455,7 @@ h3 {
 .hero-v2-cta {
   display: inline-block;
   background: #111;
-  color: var(--yellow);
+  color: var(--accent);
   font-size: 13px;
   font-weight: 900;
   padding: 12px 18px;
@@ -462,7 +486,7 @@ h3 {
 .hero-v2-cd-label {
   font-size: 10px;
   font-weight: 700;
-  color: var(--yellow);
+  color: var(--accent);
   letter-spacing: 2px;
   text-transform: uppercase;
   opacity: 0.8;
@@ -493,14 +517,14 @@ h3 {
   background: #1e1e1e;
   border-radius: 8px;
   padding: 7px 8px;
-  border-top: 3px solid var(--yellow);
+  border-top: 3px solid var(--accent);
   display: block;
 }
 
 .hero-v2-cd-sep {
   font-size: 28px;
   font-weight: 900;
-  color: var(--yellow);
+  color: var(--accent);
   margin-bottom: 16px;
   opacity: 0.4;
   line-height: 1;
@@ -541,7 +565,7 @@ h3 {
 }
 
 .hero-v2-dot.done { background: #555; }
-.hero-v2-dot.current { background: var(--yellow); }
+.hero-v2-dot.current { background: var(--accent); }
 
 .hero-v2-dot-arrow {
   position: absolute;
@@ -549,7 +573,7 @@ h3 {
   left: 50%;
   transform: translateX(-50%);
   font-size: 9px;
-  color: var(--yellow);
+  color: var(--accent);
   line-height: 1;
 }
 
@@ -584,7 +608,7 @@ h3 {
 .home-leaderboard-sub {
   font-size: 10px;
   font-weight: 700;
-  color: var(--yellow);
+  color: var(--accent);
   text-transform: uppercase;
   letter-spacing: 1px;
 }
@@ -665,7 +689,7 @@ h3 {
 
 .btn {
   display: inline-block;
-  background: var(--yellow);
+  background: var(--accent);
   color: var(--black);
   font-weight: 800;
   border: none;
@@ -683,8 +707,8 @@ h3 {
 
 .btn-outline {
   background: transparent;
-  color: var(--yellow);
-  border: 2px solid var(--yellow);
+  color: var(--accent);
+  border: 2px solid var(--accent);
 }
 
 .btn-ghost {
@@ -896,7 +920,7 @@ h3 {
 }
 
 .points-10 {
-  background: var(--yellow);
+  background: var(--accent);
   color: var(--black);
 }
 
@@ -1135,7 +1159,7 @@ table.leaderboard tr:first-child td {
 
 .tab-switch button.active {
   background: var(--black);
-  color: var(--yellow);
+  color: var(--accent);
   border-color: var(--black);
 }
 
@@ -1168,7 +1192,7 @@ table.leaderboard tr:first-child td {
   right: -10%;
   width: 220px;
   height: 220px;
-  background: var(--yellow);
+  background: var(--accent);
   transform: rotate(18deg);
   opacity: 0.95;
   z-index: 0;
@@ -1180,7 +1204,7 @@ table.leaderboard tr:first-child td {
 }
 
 .hero .eyebrow {
-  color: var(--yellow);
+  color: var(--accent);
 }
 
 .hero-countdown {
@@ -1222,7 +1246,7 @@ table.leaderboard tr:first-child td {
   height: 34px;
   border-radius: 50%;
   background: var(--black);
-  color: var(--yellow);
+  color: var(--accent);
   font-family: "Anton", sans-serif;
   font-size: 14px;
   flex-shrink: 0;
@@ -1285,7 +1309,7 @@ table.leaderboard tr:first-child td {
 
 .chip.active {
   background: var(--black);
-  color: var(--yellow);
+  color: var(--accent);
   border-color: var(--black);
 }
 
@@ -1471,7 +1495,7 @@ table.leaderboard tr:first-child td {
   right: 0;
   bottom: 0;
   background: var(--black);
-  border-top: 3px solid var(--yellow);
+  border-top: 3px solid var(--accent);
   z-index: 100;
 }
 
@@ -1543,7 +1567,7 @@ table.leaderboard tr:first-child td {
 
 /* ---------- Highlighted row (leaderboard, "you") ---------- */
 tr.me td:first-child {
-  border-left: 4px solid var(--yellow);
+  border-left: 4px solid var(--accent);
 }
 
 tr.me {
@@ -1609,29 +1633,57 @@ tr.me {
     margin-left: auto;
   }
 
+  /* Mobile menu: full-width rows with icons and an accent bar marking the
+     current page, instead of centred pill buttons that floated oddly. */
   .nav-links {
     display: none;
     flex-direction: column;
     width: 100%;
     order: 3;
-    gap: 8px;
-    margin-top: 14px;
-    background: #1a1a1a;
-    border-radius: 12px;
-    overflow: hidden;
-    padding: 12px;
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
+    gap: 0;
+    margin-top: 12px;
+    padding: 6px 0 0;
+    border-top: 1px solid #232323;
   }
 
   .nav-links.open {
     display: flex;
   }
 
-  .nav-links a.nav-btn {
+  .nav-links a.nav-btn,
+  .nav-links a.nav-btn.secondary {
     width: 100%;
-    justify-content: center;
-    padding: 13px 16px;
-    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    padding: 13px 14px;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: none;
+    letter-spacing: 0;
+    background: transparent;
+    border: none;
+    border-left: 3px solid transparent;
+    border-radius: 0;
+    color: #dddddd;
+  }
+
+  .nav-links a.nav-btn .nav-btn-icon {
+    display: flex;
+    color: #888888;
+  }
+
+  .nav-links a.nav-btn.active,
+  .nav-links a.nav-btn.secondary.active {
+    background: var(--accent-soft);
+    border-left-color: var(--accent);
+    color: #ffffff;
+    background: rgba(228, 0, 43, 0.1);
+  }
+
+  .nav-links a.nav-btn.active .nav-btn-icon {
+    color: var(--accent);
   }
 
   .nav-user {
@@ -1645,10 +1697,10 @@ tr.me {
     flex-direction: column;
     align-items: stretch;
     gap: 10px;
-    margin-top: 12px;
-    padding-top: 12px;
-    border-top: 1px solid var(--grey-light);
-    color: var(--black);
+    margin-top: 10px;
+    padding-top: 14px;
+    border-top: 1px solid #232323;
+    color: #ffffff;
     font-weight: 700;
   }
 
@@ -1698,4 +1750,46 @@ tr.me {
   .jersey-card {
     padding: 12px 8px;
   }
+}
+
+
+/* ---------- Archived race banner ---------- */
+.archive-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  background: #f4f4f2;
+  border: 1px solid var(--grey-light);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  margin-bottom: 18px;
+}
+
+.archive-banner-label {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--white);
+  background: var(--grey);
+  border-radius: 20px;
+  padding: 4px 10px;
+  flex-shrink: 0;
+}
+
+.archive-banner p {
+  flex: 1;
+  min-width: 200px;
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--grey);
+}
+
+.archive-banner a {
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--accent);
+  white-space: nowrap;
 }

@@ -10,15 +10,15 @@ import { translateText } from "../../../lib/translate";
 
 const WELCOME = {
   en: {
-    subject: "Welcome to Tour de France Pool!",
+    subject: "Welcome to Grand Tour Pool!",
     body: "You're all signed up. You can now pick a winner for each of the 21 stages and predict who takes home every jersey.\n\nGood luck, and may the best prediction win!",
   },
   es: {
-    subject: "¡Bienvenido a Tour de France Pool!",
+    subject: "¡Bienvenido a Grand Tour Pool!",
     body: "Te has registrado correctamente. Ya puedes elegir tus corredores para cada una de las 21 etapas y predecir quién se lleva cada maillot.\n\nMucha suerte, ¡y que gane el mejor!",
   },
   ca: {
-    subject: "Benvingut a Tour de France Pool!",
+    subject: "Benvingut a Grand Tour Pool!",
     body: "T'has registrat correctament. Ja pots triar els teus corredors per a cada una de les 21 etapes i predir qui s'emporta cada mallot.\n\nMolta sort, que guanyi el millor!",
   },
 };
@@ -34,7 +34,7 @@ export async function POST(request) {
     return NextResponse.json({ ok: true, skipped: "RESEND_API_KEY not set" });
   }
 
-  const FROM = process.env.RESEND_FROM || "Tour de France Pool <onboarding@resend.dev>";
+  const FROM = process.env.RESEND_FROM || "Grand Tour Pool <onboarding@resend.dev>";
 
   let subject, bodyText;
   if (WELCOME[lang]) {

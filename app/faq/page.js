@@ -8,11 +8,11 @@ const FAQS = [
     items: [
       {
         q: "What is Grand Tour Pool?",
-        a: "Grand Tour Pool is a free online prediction game for the Tour de France. Before each stage starts, you pick the rider you think will win. At the end of the Tour, the person with the most points wins. There are no entry fees and no mandatory registration — just sign up and start predicting.",
+        a: "Grand Tour Pool is a free online prediction game for cycling's biggest races — currently La Vuelta a España 2026. Before each stage starts, you pick the rider you think will win. At the end of the race, the person with the most points wins. There are no entry fees — just sign up and start predicting.",
       },
       {
         q: "How do I earn points?",
-        a: "You earn 10 points if your predicted rider wins the stage, 5 points if they finish second, and 2 points if they finish third. If your rider doesn't make the podium, you score zero for that stage. For the jersey predictions, you earn 10 points for each jersey winner you correctly predict at the end of the Tour.",
+        a: "You earn 10 points if your predicted rider wins the stage, 5 points if they finish second, and 2 points if they finish third. If your rider doesn't make the podium, you score zero for that stage. For the jersey predictions, you earn 10 points for each jersey winner you correctly predict at the end of the race.",
       },
       {
         q: "When do my picks lock?",
@@ -28,7 +28,7 @@ const FAQS = [
       },
       {
         q: "When do jersey predictions close?",
-        a: "Jersey predictions (Yellow, Green, Polka Dot and White) close one hour before Stage 5 starts on Wednesday 8 July 2026 at 12:15 CEST. After that, jersey picks are locked for the rest of the Tour.",
+        a: "Jersey predictions (Red, Green, Polka Dot and White) close one hour before Stage 5 starts on Wednesday 26 August 2026 at 12:15 CEST. After that, jersey picks are locked for the rest of the race.",
       },
       {
         q: "Is the pool free to enter?",
@@ -36,44 +36,44 @@ const FAQS = [
       },
       {
         q: "What can I win?",
-        a: "There are cycling gear prizes for the top three finishers on the leaderboard. The exact prizes will be confirmed before the end of the Tour. The full details are on the Rules page.",
+        a: "There are cycling gear prizes for the top three finishers on the leaderboard. The exact prizes will be confirmed before the end of the race. The full details are on the Rules page.",
       },
     ],
   },
   {
-    section: "About the Tour de France 2026",
+    section: "About La Vuelta a España 2026",
     items: [
       {
-        q: "When and where does the Tour de France 2026 take place?",
-        a: "The 2026 Tour de France runs from 4 to 26 July 2026. It starts with a team time trial through the streets of Barcelona, Spain — the first time since 2009 that the Grand Départ is held outside France — and finishes with the traditional procession into Paris.",
+        q: "When and where does La Vuelta a España 2026 take place?",
+        a: "La Vuelta a España 2026 runs from 22 August to 13 September 2026. It starts with a 9 km individual time trial through the streets of Monaco — the first time the principality has hosted a Vuelta start, making it the first country to host the opening stage of all three Grand Tours — and finishes in Granada with a circuit climbing to the Alhambra.",
       },
       {
         q: "How many stages are there?",
-        a: "There are 21 stages in total, covering 3,321 kilometres. The route includes a team time trial at the start in Barcelona, one individual time trial near the end in Évian-Thonon, a double ascent of the iconic Alpe d'Huez in the penultimate week, and several major Pyrenean and Alpine finishes in between.",
+        a: "There are 21 stages in total, covering 3,291 kilometres across four countries: Monaco, France, Andorra and Spain. The route features seven mountain stages, a gravel sector on Stage 6, two individual time trials, and a final ten stages held entirely in Andalusia.",
       },
       {
-        q: "What are the four jerseys in the Tour de France?",
-        a: "The Yellow Jersey (Maillot Jaune) is worn by the leader of the general classification — the rider with the lowest cumulative time. The Green Jersey (Maillot Vert) goes to the points classification leader, typically won by sprinters who accumulate points at stage finishes and intermediate sprints. The Polka Dot Jersey (Maillot à Pois) rewards the best climber, based on points earned at the top of categorised climbs. The White Jersey (Maillot Blanc) is the best young rider's jersey, awarded to the leading GC rider aged 25 or under on 1 January of race year.",
+        q: "What are the four jerseys in La Vuelta?",
+        a: "The Red Jersey (Maillot Rojo) is worn by the leader of the general classification — the rider with the lowest cumulative time. It is La Vuelta's equivalent of the Tour's yellow jersey. The Green Jersey goes to the points classification leader, typically a sprinter. The Polka Dot Jersey rewards the best climber, based on points earned at the top of categorised climbs. The White Jersey is the best young rider's jersey, awarded to the leading GC rider aged 25 or under.",
       },
       {
-        q: "Who are the favourites for the yellow jersey in 2026?",
-        a: "The overwhelming favourite is Tadej Pogačar (UAE Team Emirates-XRG), who is chasing a fifth Tour de France title following dominant spring performances. His main rivals are two-time champion Jonas Vingegaard (Team Visma-Lease a Bike), who returns after injury concerns, and Remco Evenepoel (Red Bull-BORA-hansgrohe), who is increasingly competitive in three-week stage races. French fans are watching 19-year-old Paul Seixas (Decathlon CMA CGM Team) closely as the great domestic hope.",
+        q: "Who are the favourites for La Vuelta 2026?",
+        a: "Team line-ups are normally confirmed in the week before the start, so no rider list is official yet. What the route tells us is that this edition rewards a complete rider: seven mountain stages and summit finishes at Calar Alto and the Sierra de la Pandera favour pure climbers, but the 32.5 km time trial to Jerez means a strong climber who cannot time trial will struggle to hold red all the way to Granada.",
       },
       {
-        q: "Who are the favourites for the green jersey?",
-        a: "Jonathan Milan (Lidl-Trek) starts as the leading favourite for the points jersey, combining raw sprinting power with the ability to get over moderate climbs. Jasper Philipsen (Alpecin-Premier Tech) is the defending champion and always dangerous. Tim Merlier (Soudal Quick-Step) is another threat, along with Biniam Girmay (NSN Cycling Team) and Mads Pedersen (Lidl-Trek).",
+        q: "What is the gravel stage?",
+        a: "Stage 6 to Castellón introduces sterrato — unpaved gravel sectors, rarely used in La Vuelta's history. Gravel punishes poor positioning and introduces the risk of punctures and mechanical problems, which is why general classification teams treat these days as seriously as a mountain stage despite the modest climbing.",
       },
       {
-        q: "What is the Alpe d'Huez and why is it famous?",
-        a: "The Alpe d'Huez is a ski resort in the French Alps reached by a climb of 14 km at an average gradient of 8.1%, featuring 21 numbered hairpin bends. It has hosted a Tour de France stage finish more than 30 times since 1952 and is widely considered the most iconic climb in cycling. The 2026 route features a double ascent of the Alpe in Stage 20, one of the hardest days of the whole race.",
+        q: "Why does La Vuelta finish in Granada instead of Madrid?",
+        a: "The 2026 edition skips Madrid because of a scheduling clash with Formula 1 in the capital. Instead the race finishes in Granada with four laps of a circuit featuring a climb of roughly one kilometre up to the Alhambra. Unlike the usual processional final stage, this one is genuinely competitive and could still affect the standings.",
       },
       {
-        q: "What is a team time trial?",
-        a: "A team time trial (TTT) is a stage where all eight riders on a team start together and race the clock as a unit. The team's official finishing time is taken when the fifth rider crosses the line, which means riders must work together and no one can be dropped until late in the stage. The 2026 Tour opens with a TTT through Barcelona on 4 July.",
+        q: "How long are the time trials?",
+        a: "There are two. Stage 1 is a 9 km individual time trial in Monaco — short and technical, producing only small gaps. Stage 18 is a 32.5 km individual time trial from El Puerto de Santa María to Jerez de la Frontera over largely flat terrain. It is the longest Vuelta time trial in years and the biggest single opportunity to overturn the general classification.",
       },
       {
-        q: "How many riders start the Tour de France?",
-        a: "184 riders from 23 teams start the 2026 Tour de France. Each team nominates eight riders. Not all of them finish — attrition from crashes, illness and fatigue typically means 150–170 riders make it to Paris.",
+        q: "How many riders start La Vuelta?",
+        a: "184 riders from 23 teams start La Vuelta a España 2026: the 18 UCI WorldTeams plus five invited ProTeams. Each team nominates eight riders. Not all of them finish — attrition from crashes, illness and fatigue typically means around 150 riders make it to the final stage.",
       },
     ],
   },
@@ -115,7 +115,7 @@ export default function FAQ() {
       <div className="page-header">
         <span className="eyebrow">Help & information</span>
         <h1>Frequently asked questions</h1>
-        <p className="subtitle">Everything you need to know about Grand Tour Pool and the Tour de France 2026.</p>
+        <p className="subtitle">Everything you need to know about Grand Tour Pool and La Vuelta a España 2026.</p>
       </div>
 
       {FAQS.map((section) => (

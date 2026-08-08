@@ -97,7 +97,7 @@ export async function POST(request) {
     groups[r.lang].push(r);
   });
 
-  const FROM = process.env.RESEND_FROM || "Tour de France Pool <onboarding@resend.dev>";
+  const FROM = process.env.RESEND_FROM || "Grand Tour Pool <onboarding@resend.dev>";
   let sent = 0;
   let total = 0;
   const errors = [];

@@ -18,6 +18,12 @@ export default function Footer() {
         <a href={prefix + "/contact"} style={{ textDecoration: "underline" }}>
           {lang === "es" ? "Contacto" : "Contact"}
         </a>
+        {" · "}
+        {/* Keeps the archived race's pages internally linked so crawlers can
+            still reach them now that they're out of the main navigation. */}
+        <a href="/tour-de-france-2026" style={{ textDecoration: "underline" }}>
+          {lang === "es" ? "Archivo: Tour 2026" : "Archive: Tour 2026"}
+        </a>
       </span>
       <br />
       <span style={{ marginTop: 6, display: "inline-block" }}>

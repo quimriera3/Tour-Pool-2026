@@ -2,15 +2,21 @@
 // Generic, non-trademarked jersey silhouette, just tinted/patterned by category.
 // Not a reproduction of any official ASO/UCI jersey graphic.
 
+// The leader's jersey is yellow at the Tour and red at the Vuelta, so the GC
+// colour comes from the active race's own jersey definition rather than being
+// hardcoded. "yellow" is kept as the map key for backwards compatibility with
+// the database columns (finals.yellow etc.), but it means "GC leader".
 const FILL = {
-  yellow: "#ffd400",
+  yellow: "var(--accent)",
+  red: "var(--accent)",
   green: "#1f8a4c",
   white: "#ffffff",
   polka: "#ffffff",
 };
 
 const STROKE = {
-  yellow: "#9a7d00",
+  yellow: "var(--accent-dark)",
+  red: "var(--accent-dark)",
   green: "#155c33",
   white: "#999999",
   polka: "#d6432f",

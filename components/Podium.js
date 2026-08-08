@@ -22,7 +22,7 @@ export default function Podium({ items, valueSuffix = "", dark = false }) {
             <div
               style={{
                 height: HEIGHTS[idx],
-                background: place === 1 ? "var(--yellow)" : "var(--black)",
+                background: place === 1 ? "var(--accent)" : "var(--black)",
                 borderRadius: "8px 8px 0 0",
                 display: "flex",
                 flexDirection: "column",
@@ -35,7 +35,7 @@ export default function Podium({ items, valueSuffix = "", dark = false }) {
                 style={{
                   fontFamily: "Anton, sans-serif",
                   fontSize: 22,
-                  color: place === 1 ? "var(--black)" : "var(--yellow)",
+                  color: place === 1 ? "var(--black)" : "var(--accent)",
                 }}
               >
                 {place}

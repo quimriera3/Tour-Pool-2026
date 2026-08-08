@@ -144,7 +144,7 @@ export default function Dashboard() {
     <div className="card">
       <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 16 }}>
         <span style={{ fontSize: 16, fontWeight: 800 }}>{t(lang, "home.leaderboard")}</span>
-        <span style={{ fontSize: 10, fontWeight: 700, color: "var(--yellow)", textTransform: "uppercase", letterSpacing: 1 }}>
+        <span style={{ fontSize: 10, fontWeight: 700, color: "var(--accent)", textTransform: "uppercase", letterSpacing: 1 }}>
           {t(lang, "home.liveStandings")}
         </span>
       </div>
@@ -159,7 +159,7 @@ export default function Dashboard() {
               background: i === 0 ? "#fff9e0" : "transparent",
               borderRadius: 8,
               padding: "10px 12px",
-              borderLeft: i === 0 ? "3px solid var(--yellow)" : "3px solid var(--grey-light)",
+              borderLeft: i === 0 ? "3px solid var(--accent)" : "3px solid var(--grey-light)",
             }}>
               <span style={{
                 fontSize: 13,
@@ -229,9 +229,9 @@ export default function Dashboard() {
               </div>
               <div className="hero-v2-badges">
                 <span className="hero-v2-badge">
-                  <StageTypeIcon type={stage.type} size={11} color="#ffd400" /> {TYPE_LABEL[stage.type]}
+                  <StageTypeIcon type={stage.type} size={11} color="var(--accent)" /> {TYPE_LABEL[stage.type]}
                 </span>
-                <span className="hero-v2-badge-km">{stage.km} km · {stage.elevationGain.toLocaleString()} m ↑</span>
+                <span className="hero-v2-badge-km">{stage.km} km{stage.elevationGain ? " · " + stage.elevationGain.toLocaleString() + " m ↑" : ""}</span>
               </div>
             </div>
             <div>

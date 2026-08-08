@@ -4,27 +4,31 @@ import CtaBar from "../components/CtaBar";
 import CookieBanner from "../components/CookieBanner";
 import Footer from "../components/Footer";
 import { Analytics } from "@vercel/analytics/react";
+import { getActiveRace, localised } from "../lib/races";
 
 // Set this to your real domain once you have one (or your *.vercel.app URL for now).
 // Vercel: Settings > Environment Variables > NEXT_PUBLIC_SITE_URL
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://example.vercel.app";
 
+const RACE = getActiveRace();
+const RACE_NAME = localised(RACE.name, "en");
+
 export const metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Tour de France 2026 Sweepstakes — Predict Every Stage & Win",
+    default: "Vuelta a Espa\u00f1a 2026 Sweepstakes \u2014 Predict Every Stage & Win",
     template: "%s | Grand Tour Pool",
   },
   description:
-    "Play the best Tour de France pool online, 100% free. Predict Tour de France stages, pick your jersey winners, and climb a live leaderboard across all 21 real 2026 stages.",
+    "Play the best Vuelta a Espa\u00f1a pool online, 100% free. Predict every stage of La Vuelta 2026, pick your jersey winners, and climb a live leaderboard across all 21 stages from Monaco to Granada.",
   keywords: [
-    "Tour de France 2026 sweepstakes",
-    "best Tour de France pool online",
-    "predict Tour de France stages",
-    "Tour de France 2026 predictions",
-    "Tour de France fantasy game",
+    "Vuelta a Espa\u00f1a 2026 sweepstakes",
+    "best Vuelta pool online",
+    "predict Vuelta stages",
+    "La Vuelta 2026 predictions",
+    "Vuelta fantasy game",
     "free cycling pool 2026",
-    "Tour de France pick'em",
+    "Vuelta a Espa\u00f1a pick'em",
   ],
   alternates: {
     canonical: "/",
@@ -39,31 +43,28 @@ export const metadata = {
     },
   },
   openGraph: {
-    title: "Tour de France 2026 Sweepstakes — Predict Every Stage & Win",
-    description: "The best Tour de France pool online: predict every 2026 stage winner, free, and climb the live leaderboard.",
+    title: "Vuelta a Espa\u00f1a 2026 Sweepstakes \u2014 Predict Every Stage & Win",
+    description: "The best Vuelta a Espa\u00f1a pool online: predict every 2026 stage winner, free, and climb the live leaderboard.",
     url: SITE_URL,
     siteName: "Grand Tour Pool",
     locale: "en_US",
     type: "website",
     images: [
       {
-        url: "/og-image.png?v=2",
+        url: "/og-image.png?v=3",
         width: 916,
         height: 493,
-        alt: "Tour de France Pool 2026",
+        alt: "Grand Tour Pool \u2014 " + RACE_NAME,
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Tour de France 2026 Sweepstakes — Predict Every Stage & Win",
-    description: "The best Tour de France pool online: predict every 2026 stage winner, free, and climb the live leaderboard.",
-    images: ["/og-image.png?v=2"],
+    title: "Vuelta a Espa\u00f1a 2026 Sweepstakes \u2014 Predict Every Stage & Win",
+    description: "The best Vuelta a Espa\u00f1a pool online: predict every 2026 stage winner, free, and climb the live leaderboard.",
+    images: ["/og-image.png?v=3"],
   },
-  robots: {
-    index: true,
-    follow: true,
-  },
+  robots: { index: true, follow: true },
 };
 
 export const viewport = {
@@ -73,9 +74,17 @@ export const viewport = {
 };
 
 export default function RootLayout({ children }) {
+  const theme = getActiveRace().theme || {};
   return (
     <html lang="en">
       <head>
+        {/* Race theme: every accent on the site reads these, so changing the
+            active race in lib/races/index.js reskins the whole platform. */}
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `:root{--accent:${theme.accent};--accent-dark:${theme.accentDark};--accent-ink:${theme.accentInk};--accent-soft:${theme.accentSoft};}`,
+          }}
+        />
         {/* Google Tag Manager */}
         <script
           dangerouslySetInnerHTML={{

@@ -53,9 +53,9 @@ export default function RichTextEditor({ initialValue, onChange, placeholder }) 
         <button
           type="button"
           onMouseDown={(e) => e.preventDefault()}
-          onClick={() => exec("foreColor", "#ffd400")}
+          onClick={() => exec("foreColor", "var(--accent)")}
           title="Yellow text"
-          style={{ color: "#ffd400", textShadow: "0 0 1px #00000055" }}
+          style={{ color: "var(--accent)", textShadow: "0 0 1px #00000055" }}
         >
           ● Yellow
         </button>

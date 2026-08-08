@@ -120,7 +120,7 @@ export default function Admin() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           password,
-          subject: subject || "(test) Tour de France Pool",
+          subject: subject || "(test) Grand Tour Pool",
           message: message || "This is a test email.",
           testEmail,
           sourceLang,
@@ -746,7 +746,7 @@ export default function Admin() {
             <h3 style={{ fontSize: 14 }}>Sign-ups, last 14 days</h3>
             <p className="subtitle" style={{ fontSize: 12, marginTop: 2 }}>{users.length} total so far</p>
             <div style={{ marginTop: 10 }}>
-              <SimpleBarChart data={signupsByDay} barColor="#ffd400" />
+              <SimpleBarChart data={signupsByDay} barColor="var(--accent)" />
             </div>
           </div>
           <div className="card">

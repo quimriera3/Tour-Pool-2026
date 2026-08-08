@@ -1,6 +1,6 @@
 export const metadata = {
   title: "Privacy Policy",
-  description: "Privacy policy for Tour de France Pool: what data we collect, cookies, and ads.",
+  description: "Privacy policy for Grand Tour Pool: what data we collect, cookies, and ads.",
 };
 
 export default function Privacy() {

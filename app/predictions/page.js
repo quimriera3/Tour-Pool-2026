@@ -56,7 +56,7 @@ function StageCard({ stage, pick, onPick, result, lang, stagePrefix }) {
         {stage.from} → {stage.to}
       </div>
       <div className="stage-meta">
-        {stage.date.split("-").reverse().join("/")} · {stage.km} km · ↗ {stage.elevationGain} m
+        {stage.date.split("-").reverse().join("/")} · {stage.km} km{stage.elevationGain ? " · ↗ " + stage.elevationGain.toLocaleString() + " m" : ""}
       </div>
 
       <StageProfile type={stage.type} elevationGain={stage.elevationGain} />

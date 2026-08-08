@@ -13,11 +13,11 @@ export function generateMetadata({ params }) {
   }
   return {
     title: {
-      absolute: `Etapa ${stage.n}: Perfil y Pronósticos | Tour de Francia 2026 - Grand Tour Pool`,
+      absolute: `Etapa ${stage.n}: Perfil y Pronósticos | La Vuelta 2026 - Grand Tour Pool`,
     },
     description:
-      `Pronósticos etapa ${stage.n} del Tour de Francia 2026: ${stage.from} a ${stage.to} (${stage.km} km, ` +
-      `${stage.date.split("-").reverse().join("/")}). Perfil de la etapa, desnivel y elige tu corredor ganador gratis.`,
+      `Pronósticos etapa ${stage.n} de La Vuelta 2026: ${stage.from} a ${stage.to} (${stage.km} km, ` +
+      `${stage.date.split("-").reverse().join("/")}). Perfil de la etapa, recorrido y elige tu corredor ganador gratis.`,
   };
 }
 

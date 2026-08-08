@@ -15,7 +15,7 @@ const QUESTIONS = [
   { key: "white", jersey: "white", labelKey: "jersey.white", subKey: "jersey.whiteSub", sortType: null, riderFilter: isWhiteJerseyEligible },
 ];
 
-// "Saturday 4 July at 16:05" / "sábado 4 de julio a las 16:05"
+// "Wednesday 26 August at 12:15" / "miércoles 26 de agosto a las 12:15"
 function formatLockDateTime(date, lang) {
   const time = date.toTimeString().slice(0, 5);
   if (lang === "es") {
@@ -76,8 +76,8 @@ export default function FinalClassification() {
         <p className="scoring-note">{t(lang, "scoring.jersey")}</p>
         <p className="scoring-note" style={{ background: "#fdeaea", color: "#8a2c2c", borderColor: "#f0c4c4", marginTop: 8 }}>
           ⏰ {lang === "es"
-            ? "Tus predicciones de maillots se cierran el miércoles 8 de julio a las 12:15 CEST (1h antes del inicio de la Etapa 5). ¡Hazlas antes!"
-            : "Your jersey predictions close on Wed 8 July at 12:15 CEST — 1 hour before Stage 5 starts. Get them in before then!"}
+            ? "Tus predicciones de maillots se cierran el miércoles 26 de agosto a las 12:15 CEST (1h antes del inicio de la Etapa 5). ¡Hazlas antes!"
+            : "Your jersey predictions close on Wed 26 August at 12:15 CEST — 1 hour before Stage 5 starts. Get them in before then!"}
         </p>
       </div>
 

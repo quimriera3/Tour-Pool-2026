@@ -3,7 +3,7 @@
 //
 // A small, dependency-free bar chart. data: [{ label, value }]. No charting
 // library needed for something this simple -- one less thing that can break.
-export default function SimpleBarChart({ data, height = 140, barColor = "#ffd400" }) {
+export default function SimpleBarChart({ data, height = 140, barColor = "var(--accent)" }) {
   const W = 300;
   const padTop = 22; // room for the value label printed above each bar
   const padBottom = 4;
