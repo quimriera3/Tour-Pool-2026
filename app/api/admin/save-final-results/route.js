@@ -7,7 +7,7 @@
 // role key (used here) can write to it.
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "../../../../lib/supabaseAdmin";
-import { riderById } from "../../../../lib/data";
+import { riderById, ACTIVE_RACE_SLUG } from "../../../../lib/data";
 
 export async function POST(request) {
   const { password, yellow, green, polka, white } = await request.json();
@@ -32,7 +32,7 @@ export async function POST(request) {
 
   const { error } = await supabaseAdmin
     .from("final_results")
-    .upsert({ id: 1, yellow, green, polka, white }, { onConflict: "id" });
+    .upsert({ race: ACTIVE_RACE_SLUG, yellow, green, polka, white }, { onConflict: "race" });
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });

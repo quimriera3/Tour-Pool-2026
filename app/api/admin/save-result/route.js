@@ -14,7 +14,7 @@
 // source of truth for scoring; the email is a courtesy notification.
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "../../../../lib/supabaseAdmin";
-import { STAGES, riderById } from "../../../../lib/data";
+import { STAGES, riderById, ACTIVE_RACE_SLUG } from "../../../../lib/data";
 import { buildStageResultEmail } from "../../../../lib/emailTemplate";
 
 export async function POST(request) {
@@ -50,7 +50,7 @@ export async function POST(request) {
 
   const { error: upsertError } = await supabaseAdmin
     .from("results")
-    .upsert({ stage_number: n, first, second, third }, { onConflict: "stage_number" });
+    .upsert({ race: ACTIVE_RACE_SLUG, stage_number: n, first, second, third }, { onConflict: "race,stage_number" });
 
   if (upsertError) {
     return NextResponse.json({ error: upsertError.message }, { status: 500 });

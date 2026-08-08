@@ -7,7 +7,7 @@
 // names, every stage pick, and every jersey pick.
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "../../../lib/supabaseAdmin";
-import { STAGES, riderById } from "../../../lib/data";
+import { STAGES, riderById, ACTIVE_RACE_SLUG } from "../../../lib/data";
 
 export async function POST(request) {
   const { password } = await request.json();
@@ -30,10 +30,10 @@ export async function POST(request) {
 
   const [{ data: profiles }, { data: picks }, { data: finals }, { data: results }, { data: finalResultsRow }] = await Promise.all([
     supabaseAdmin.from("profiles").select("id, name, email_opt_in, preferred_language"),
-    supabaseAdmin.from("picks").select("user_id, stage_number, rider_id"),
-    supabaseAdmin.from("finals").select("user_id, yellow, green, polka, white"),
-    supabaseAdmin.from("results").select("stage_number, first, second, third"),
-    supabaseAdmin.from("final_results").select("yellow, green, polka, white").eq("id", 1).maybeSingle(),
+    supabaseAdmin.from("picks").select("user_id, stage_number, rider_id").eq("race", ACTIVE_RACE_SLUG),
+    supabaseAdmin.from("finals").select("user_id, yellow, green, polka, white").eq("race", ACTIVE_RACE_SLUG),
+    supabaseAdmin.from("results").select("stage_number, first, second, third").eq("race", ACTIVE_RACE_SLUG),
+    supabaseAdmin.from("final_results").select("yellow, green, polka, white").eq("race", ACTIVE_RACE_SLUG).maybeSingle(),
   ]);
 
   const nameById = {};
