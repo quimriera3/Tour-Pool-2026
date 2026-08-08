@@ -8,7 +8,8 @@
 //
 // Adding a race to lib/races/ makes it appear here automatically.
 import { useState, useEffect, useRef } from "react";
-import { getActiveRace, racesByDate, isArchived, localised } from "../lib/races";
+import { usePathname } from "next/navigation";
+import { getActiveRace, racesByDate, isArchived, localised, raceFromPathname } from "../lib/races";
 import { useLang } from "../lib/i18n";
 
 const COPY = {
@@ -31,9 +32,14 @@ export default function RaceSwitcher() {
   const lang = useLang();
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
+  const pathname = usePathname();
   const active = getActiveRace();
+  // What the button shows is the race you are currently looking at, which is
+  // not necessarily the live one — you may be browsing the archive.
+  const current = raceFromPathname(pathname);
   const races = racesByDate();
   const c = COPY[lang] || COPY.en;
+  const viewingArchive = isArchived(current);
 
   useEffect(() => {
     if (!open) return;
@@ -49,7 +55,7 @@ export default function RaceSwitcher() {
     return (
       <span className="race-switcher-label">
         <span className="race-live-dot" />
-        {localised(active.shortName, lang)}
+        {localised(current.shortName, lang)}
       </span>
     );
   }
@@ -57,8 +63,8 @@ export default function RaceSwitcher() {
   return (
     <div className="race-switcher" ref={ref}>
       <button type="button" className="race-switcher-btn" onClick={() => setOpen((v) => !v)}>
-        <span className="race-live-dot" />
-        {localised(active.shortName, lang)}
+        <span className={"race-live-dot" + (viewingArchive ? " archived" : "")} />
+        {localised(current.shortName, lang)}
         <span className="race-switcher-caret">{open ? "▴" : "▾"}</span>
       </button>
 
@@ -71,7 +77,7 @@ export default function RaceSwitcher() {
               <a
                 key={r.slug}
                 href={raceHref(r, active, lang)}
-                className={"race-switcher-item" + (r.slug === active.slug ? " current" : "")}
+                className={"race-switcher-item" + (r.slug === current.slug ? " current" : "")}
               >
                 <span className="race-switcher-name">{localised(r.shortName, lang)}</span>
                 <span className={"race-switcher-status" + (archived ? " archived" : "")}>

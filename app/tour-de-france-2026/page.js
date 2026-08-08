@@ -35,6 +35,20 @@ export default function TourArchive() {
         </p>
       </div>
 
+      <div className="card" style={{ marginBottom: 16, textAlign: "center" }}>
+        <h2 style={{ fontSize: 16 }}>
+          {lang === "es" ? "Clasificación final" : "Final standings"}
+        </h2>
+        <p className="subtitle" style={{ marginTop: 8 }}>
+          {lang === "es"
+            ? "Consulta cómo terminó la porra del Tour 2026."
+            : "See how the 2026 Tour pool finished."}
+        </p>
+        <a href="/tour-de-france-2026/leaderboard" className="btn btn-outline" style={{ marginTop: 12, display: "inline-block" }}>
+          {lang === "es" ? "Ver clasificación" : "View leaderboard"}
+        </a>
+      </div>
+
       <div className="card">
         <h2 style={{ fontSize: 16 }}>{lang === "es" ? "Todas las etapas" : "All stages"}</h2>
         <div style={{ marginTop: 14, display: "flex", flexDirection: "column", gap: 2 }}>

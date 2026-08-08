@@ -1,19 +1,20 @@
 "use client";
 // app/rules/page.js
 import { useLang, t } from "../../lib/i18n";
+import JerseyIcon from "../../components/JerseyIcon";
 
 const JERSEY_INFO = {
   en: [
-    { icon: "🔴", name: "Red Jersey", desc: "Worn by the leader of the general classification — the rider with the lowest cumulative race time. The red jersey is La Vuelta's equivalent of the Tour's yellow, and winning it in Granada is the goal of every GC contender." },
-    { icon: "🟢", name: "Green Jersey", desc: "Awarded to the leader of the points classification. Points are earned at intermediate sprints and stage finishes. Usually fought over by pure sprinters." },
-    { icon: "⚪🔴", name: "Polka Dot Jersey", desc: "The best climber's jersey, known in French as the 'maillot à pois'. Points are awarded at the top of categorised climbs (HC, Cat 1, Cat 2, Cat 3, Cat 4)." },
-    { icon: "⚪", name: "White Jersey", desc: "The best young rider's jersey, for the highest-placed GC rider born on or after 1 January 2001 (for the 2026 edition). The next generation of Tour stars compete for this." },
+    { kind: "yellow", name: "Red Jersey", desc: "Worn by the leader of the general classification — the rider with the lowest cumulative race time. The red jersey is La Vuelta's equivalent of the Tour's yellow, and winning it in Granada is the goal of every GC contender." },
+    { kind: "green", name: "Green Jersey", desc: "Awarded to the leader of the points classification. Points are earned at intermediate sprints and stage finishes. Usually fought over by pure sprinters." },
+    { kind: "polka", name: "Polka Dot Jersey", desc: "The best climber's jersey, known in French as the 'maillot à pois'. Points are awarded at the top of categorised climbs (HC, Cat 1, Cat 2, Cat 3, Cat 4)." },
+    { kind: "white", name: "White Jersey", desc: "The best young rider's jersey, for the highest-placed GC rider born on or after 1 January 2001 (for the 2026 edition). The next generation of Tour stars compete for this." },
   ],
   es: [
-    { icon: "🔴", name: "Maillot Rojo", desc: "Lo lleva el líder de la clasificación general, el corredor con el menor tiempo acumulado. El maillot rojo es el equivalente en La Vuelta al amarillo del Tour, y ganarlo en Granada es el objetivo de todo aspirante a la general." },
-    { icon: "🟢", name: "Maillot Verde", desc: "Se otorga al líder de la clasificación por puntos. Los puntos se acumulan en esprints intermedios y llegadas de etapa. Suele disputarse entre esprínters puros." },
-    { icon: "⚪🔴", name: "Maillot de Montaña", desc: "El maillot de lunares rojos distingue al mejor escalador. Los puntos se conceden en la cima de los puertos catalogados (HC, 1.ª, 2.ª, 3.ª y 4.ª categoría)." },
-    { icon: "⚪", name: "Maillot Blanco", desc: "El mejor joven: el corredor mejor clasificado en la general nacido a partir del 1 de enero de 2001 (para la edición 2026). La próxima generación de estrellas del Tour compite por él." },
+    { kind: "yellow", name: "Maillot Rojo", desc: "Lo lleva el líder de la clasificación general, el corredor con el menor tiempo acumulado. El maillot rojo es el equivalente en La Vuelta al amarillo del Tour, y ganarlo en Granada es el objetivo de todo aspirante a la general." },
+    { kind: "green", name: "Maillot Verde", desc: "Se otorga al líder de la clasificación por puntos. Los puntos se acumulan en esprints intermedios y llegadas de etapa. Suele disputarse entre esprínters puros." },
+    { kind: "polka", name: "Maillot de Montaña", desc: "El maillot de lunares rojos distingue al mejor escalador. Los puntos se conceden en la cima de los puertos catalogados (HC, 1.ª, 2.ª, 3.ª y 4.ª categoría)." },
+    { kind: "white", name: "Maillot Blanco", desc: "El mejor joven: el corredor mejor clasificado en la general nacido a partir del 1 de enero de 2001 (para la edición 2026). La próxima generación de estrellas del Tour compite por él." },
   ],
 };
 
@@ -92,7 +93,9 @@ export default function Rules() {
         <div style={{ marginTop: 14, display: "flex", flexDirection: "column", gap: 14 }}>
           {jerseys.map((j) => (
             <div key={j.name} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
-              <span style={{ fontSize: 20, flexShrink: 0, marginTop: 1 }}>{j.icon}</span>
+              <span style={{ flexShrink: 0, marginTop: 1, display: "flex" }}>
+                <JerseyIcon kind={j.kind} size={30} />
+              </span>
               <div>
                 <p style={{ fontWeight: 700, fontSize: 14 }}>{j.name}</p>
                 <p className="subtitle" style={{ marginTop: 3 }}>{j.desc}</p>

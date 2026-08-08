@@ -11,5 +11,18 @@ export const metadata = {
 };
 
 export default function TourArchiveLayout({ children }) {
-  return children;
+  // Server-render this race's colours so archived pages paint yellow from the
+  // very first frame. RaceTheme also sets them on <html> after hydration, but
+  // without this there would be a brief flash of the live race's red first.
+  return (
+    <>
+      <style
+        dangerouslySetInnerHTML={{
+          __html:
+            ":root{--accent:#ffd400;--accent-dark:#9a7d00;--accent-ink:#111111;--accent-soft:#fff9e0;}",
+        }}
+      />
+      {children}
+    </>
+  );
 }

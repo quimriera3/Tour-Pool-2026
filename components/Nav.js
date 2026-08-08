@@ -8,6 +8,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import AuthModal from "./AuthModal";
 import RaceSwitcher from "./RaceSwitcher";
+import { raceFromPathname, localised } from "../lib/races";
 import { useSession, logoutUser } from "../lib/store";
 import { useLang, t } from "../lib/i18n";
 
@@ -16,11 +17,13 @@ import { useLang, t } from "../lib/i18n";
 function navLinks(lang) {
   const prefix = lang === "es" ? "/es" : "";
   return [
-    { href: prefix || "/", key: "nav.home", icon: "home" },
-    { href: prefix + "/predictions", key: "cta.stage", icon: "flag", mobileOnly: true },
-    { href: prefix + "/final-classification", key: "cta.jersey", icon: "jersey", mobileOnly: true },
+    { href: prefix || "/", key: "nav.home", icon: "home", mobileOnly: true },
+    // The three things people actually come to do. On desktop these sit first
+    // and carry an icon; the old separate red CTA bar is gone.
+    { href: prefix + "/predictions", key: "nav.stages", icon: "flag", primary: true },
+    { href: prefix + "/final-classification", key: "nav.jerseys", icon: "jersey", primary: true },
+    { href: prefix + "/leaderboard", key: "nav.leaderboard", icon: "trophy", primary: true },
     { href: prefix + "/riders", key: "nav.riders", icon: "riders" },
-    { href: prefix + "/leaderboard", key: "nav.leaderboard", icon: "trophy" },
     { href: prefix + "/rules", key: "nav.rules", icon: "book" },
     { href: prefix + "/faq", key: "nav.faq", icon: "help" },
   ];
@@ -128,7 +131,7 @@ export default function Nav() {
       <div className="nav-inner">
         <a href={logoHref} className="logo-link">
           <span className={"brand" + (menuOpen ? " brand-hidden-mobile" : "")}>
-            <span style={{ color: "var(--accent)" }}>{t(lang, "brand.race")}</span>{" "}
+            <span style={{ color: "var(--accent)" }}>{localised(raceFromPathname(pathname).brandName, lang)}</span>{" "}
             <span style={{ color: "var(--white)" }}>POOL</span>
           </span>
         </a>
@@ -160,20 +163,27 @@ export default function Nav() {
         </button>
 
         <div className={"nav-links" + (menuOpen ? " open" : "")}>
-          {links.map((l) => (
-            <a
-              key={l.href}
-              href={l.href}
-              className={
-                "nav-btn secondary" +
-                (pathname === l.href ? " active" : "") +
-                (l.mobileOnly ? " mobile-only" : "")
-              }
-            >
-              <span className="nav-btn-icon"><NavIcon name={l.icon} /></span>
-              <span>{t(lang, l.key)}</span>
-            </a>
-          ))}
+          {links.map((l, i) => {
+            const prevPrimary = i > 0 && links[i - 1].primary;
+            const needsDivider = prevPrimary && !l.primary;
+            return (
+              <span key={l.href} className="nav-link-wrap">
+                {needsDivider && <span className="nav-divider" aria-hidden="true" />}
+                <a
+                  href={l.href}
+                  className={
+                    "nav-btn" +
+                    (l.primary ? " primary-link" : " secondary") +
+                    (pathname === l.href ? " active" : "") +
+                    (l.mobileOnly ? " mobile-only" : "")
+                  }
+                >
+                  <span className="nav-btn-icon"><NavIcon name={l.icon} /></span>
+                  <span>{t(lang, l.key)}</span>
+                </a>
+              </span>
+            );
+          })}
         </div>
 
         <div className={"nav-user" + (menuOpen ? " open" : "")}>

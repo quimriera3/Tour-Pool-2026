@@ -1,6 +1,6 @@
 import "./globals.css";
 import Nav from "../components/Nav";
-import CtaBar from "../components/CtaBar";
+import RaceTheme from "../components/RaceTheme";
 import CookieBanner from "../components/CookieBanner";
 import Footer from "../components/Footer";
 import { Analytics } from "@vercel/analytics/react";
@@ -103,6 +103,7 @@ export default function RootLayout({ children }) {
         ></script>
       </head>
       <body>
+        <RaceTheme />
         {/* Google Tag Manager (noscript) */}
         <noscript>
           <iframe
@@ -114,7 +115,6 @@ export default function RootLayout({ children }) {
         </noscript>
         {/* End Google Tag Manager (noscript) */}
         <Nav />
-        <CtaBar />
         <main className="container">{children}</main>
         <Footer />
         <CookieBanner />

@@ -1828,6 +1828,10 @@ tr.me {
   flex-shrink: 0;
 }
 
+.race-live-dot.archived {
+  background: #555555;
+}
+
 .race-switcher-caret {
   font-size: 8px;
   color: #666;
@@ -1936,5 +1940,100 @@ tr.me {
 @media (max-width: 600px) {
   .nav-meta {
     gap: 10px;
+  }
+}
+
+
+/* ---------- Desktop navigation (single merged bar) ---------- */
+.nav-link-wrap {
+  display: contents;
+}
+
+.nav-divider {
+  display: none;
+}
+
+@media (min-width: 601px) {
+  .nav-link-wrap {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .nav-divider {
+    display: inline-block;
+    width: 1px;
+    height: 18px;
+    background: #2c2c2c;
+    margin: 0 12px;
+  }
+
+  /* Primary actions: icon + label, underlined when active. These replace the
+     old separate CTA bar, so the game's three main destinations sit inside the
+     navigation rather than in a second strip below it. */
+  .nav-links a.nav-btn.primary-link {
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    border-bottom: 2px solid transparent;
+    color: #dddddd;
+    font-size: 12.5px;
+    font-weight: 700;
+    text-transform: none;
+    letter-spacing: 0;
+    padding: 20px 13px;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .nav-links a.nav-btn.primary-link .nav-btn-icon {
+    display: flex;
+    color: #777777;
+  }
+
+  .nav-links a.nav-btn.primary-link:hover {
+    color: #ffffff;
+  }
+
+  .nav-links a.nav-btn.primary-link.active {
+    color: #ffffff;
+    border-bottom-color: var(--accent);
+  }
+
+  .nav-links a.nav-btn.primary-link.active .nav-btn-icon {
+    color: var(--accent);
+  }
+
+  /* Secondary/info links stay quiet */
+  .nav-links a.nav-btn.secondary {
+    background: transparent;
+    border: none;
+    color: #888888;
+    font-size: 12.5px;
+    font-weight: 600;
+    text-transform: none;
+    letter-spacing: 0;
+    padding: 20px 10px;
+  }
+
+  .nav-links a.nav-btn.secondary:hover {
+    color: #dddddd;
+  }
+
+  .nav-links a.nav-btn.secondary.active {
+    color: #ffffff;
+    background: transparent;
+  }
+
+  .nav-inner {
+    align-items: stretch;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .nav-inner .logo-link {
+    display: flex;
+    align-items: center;
+    margin-right: 8px;
   }
 }

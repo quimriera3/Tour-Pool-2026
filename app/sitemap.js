@@ -39,7 +39,7 @@ export default function sitemap() {
   // the navigation, but they remain live and should keep being crawled.
   const archived = getRace("tour-de-france-2026");
   const archivedRoutes = archived
-    ? ["/tour-de-france-2026", ...archived.stages.map((s) => "/tour-de-france-2026/stage/" + s.n)]
+    ? ["/tour-de-france-2026", "/tour-de-france-2026/leaderboard", ...archived.stages.map((s) => "/tour-de-france-2026/stage/" + s.n)]
     : [];
 
   return [...routes, ...stageRoutes, ...archivedRoutes].map((route) => ({
