@@ -39,7 +39,7 @@ export default function CatalanLanding() {
       <div className="card" style={{ marginTop: 16 }}>
         <h2 style={{ fontSize: 16 }}>La Vuelta 2026, en xifres</h2>
         <p className="subtitle" style={{ marginTop: 10 }}>
-          3.291 km · 21 etapes · 4 països (Mònaco, França, Andorra i Espanya) · 7 etapes de muntanya · un sector de grava · Sortida de Mònaco el 22 d&apos;agost, arribada a Granada el 13 de setembre amb final en alt a l&apos;Alhambra.
+          3.298 km · 21 etapes · 4 països (Mònaco, França, Andorra i Espanya) · 7 etapes de muntanya · un sector de grava · Sortida de Mònaco el 22 d&apos;agost, arribada a Granada el 13 de setembre amb final en alt a l&apos;Alhambra.
         </p>
       </div>
 

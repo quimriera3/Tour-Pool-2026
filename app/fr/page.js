@@ -39,7 +39,7 @@ export default function FrenchLanding() {
       <div className="card" style={{ marginTop: 16 }}>
         <h2 style={{ fontSize: 16 }}>La Vuelta 2026 en chiffres</h2>
         <p className="subtitle" style={{ marginTop: 10 }}>
-          3 291 km · 21 étapes · 4 pays (Monaco, France, Andorre et Espagne) · 7 étapes de montagne · un secteur de gravel · Départ de Monaco le 22 août, arrivée à Grenade le 13 septembre avec une montée finale vers l&apos;Alhambra.
+          3 298 km · 21 étapes · 4 pays (Monaco, France, Andorre et Espagne) · 7 étapes de montagne · un secteur de gravel · Départ de Monaco le 22 août, arrivée à Grenade le 13 septembre avec une montée finale vers l&apos;Alhambra.
         </p>
       </div>
 

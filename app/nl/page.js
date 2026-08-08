@@ -39,7 +39,7 @@ export default function DutchLanding() {
       <div className="card" style={{ marginTop: 16 }}>
         <h2 style={{ fontSize: 16 }}>De Vuelta 2026 in cijfers</h2>
         <p className="subtitle" style={{ marginTop: 10 }}>
-          3.291 km · 21 etappes · 4 landen (Monaco, Frankrijk, Andorra en Spanje) · 7 bergetappes · een gravelsector · Start in Monaco op 22 augustus, finish in Granada op 13 september met een slotklim naar het Alhambra.
+          3.298 km · 21 etappes · 4 landen (Monaco, Frankrijk, Andorra en Spanje) · 7 bergetappes · een gravelsector · Start in Monaco op 22 augustus, finish in Granada op 13 september met een slotklim naar het Alhambra.
         </p>
       </div>
 

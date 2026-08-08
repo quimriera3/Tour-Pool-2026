@@ -49,7 +49,7 @@ const FAQS = [
       },
       {
         q: "¿Cuántas etapas tiene?",
-        a: "La Vuelta 2026 tiene 21 etapas que suman 3.291 kilómetros por cuatro países: Mónaco, Francia, Andorra y España. El recorrido incluye siete etapas de montaña, un sector de grava en la etapa 6, dos contrarrelojes individuales, y unas diez últimas etapas disputadas íntegramente en Andalucía.",
+        a: "La Vuelta 2026 tiene 21 etapas que suman 3.298 kilómetros por cuatro países: Mónaco, Francia, Andorra y España. El recorrido incluye siete etapas de montaña, un sector de grava en la etapa 6, dos contrarrelojes individuales, y unas diez últimas etapas disputadas íntegramente en Andalucía.",
       },
       {
         q: "¿Cuáles son los cuatro maillots de La Vuelta?",
@@ -69,7 +69,7 @@ const FAQS = [
       },
       {
         q: "¿Cuántas contrarrelojes hay y de qué distancia?",
-        a: "Hay dos. La etapa 1 es una contrarreloj individual de 9 km en Mónaco: corta y técnica, con diferencias pequeñas. La etapa 18 es una contrarreloj individual de 32,5 km entre El Puerto de Santa María y Jerez de la Frontera, por terreno mayoritariamente llano. Es la crono más larga de La Vuelta en años y la mayor oportunidad individual para dar la vuelta a la clasificación general.",
+        a: "Hay dos. La etapa 1 es una contrarreloj individual de 9 km en Mónaco: corta y técnica, con diferencias pequeñas. La etapa 18 es una contrarreloj individual de 32,1 km entre El Puerto de Santa María y Jerez de la Frontera, por terreno mayoritariamente llano. Es la crono más larga de La Vuelta en años y la mayor oportunidad individual para dar la vuelta a la clasificación general.",
       },
       {
         q: "¿Cuántos corredores toman la salida?",

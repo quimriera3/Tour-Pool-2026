@@ -49,7 +49,7 @@ const FAQS = [
       },
       {
         q: "How many stages are there?",
-        a: "There are 21 stages in total, covering 3,291 kilometres across four countries: Monaco, France, Andorra and Spain. The route features seven mountain stages, a gravel sector on Stage 6, two individual time trials, and a final ten stages held entirely in Andalusia.",
+        a: "There are 21 stages in total, covering 3,298 kilometres across four countries: Monaco, France, Andorra and Spain. The route features seven mountain stages, a gravel sector on Stage 6, two individual time trials, and a final ten stages held entirely in Andalusia.",
       },
       {
         q: "What are the four jerseys in La Vuelta?",
@@ -57,7 +57,7 @@ const FAQS = [
       },
       {
         q: "Who are the favourites for La Vuelta 2026?",
-        a: "Team line-ups are normally confirmed in the week before the start, so no rider list is official yet. What the route tells us is that this edition rewards a complete rider: seven mountain stages and summit finishes at Calar Alto and the Sierra de la Pandera favour pure climbers, but the 32.5 km time trial to Jerez means a strong climber who cannot time trial will struggle to hold red all the way to Granada.",
+        a: "Team line-ups are normally confirmed in the week before the start, so no rider list is official yet. What the route tells us is that this edition rewards a complete rider: seven mountain stages and summit finishes at Calar Alto and the Sierra de la Pandera favour pure climbers, but the 32.1 km time trial to Jerez means a strong climber who cannot time trial will struggle to hold red all the way to Granada.",
       },
       {
         q: "What is the gravel stage?",

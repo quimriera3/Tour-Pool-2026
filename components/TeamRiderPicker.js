@@ -8,8 +8,25 @@
 import { useState } from "react";
 import { teamsList, teamColor, riderSpecialty, specialtyToType, TYPE_COLOR, isTeamOfficial } from "../lib/data";
 import StageTypeIcon from "./StageTypeIcon";
+import { useLang } from "../lib/i18n";
+
+// When a race's startlist hasn't been published yet there is nothing to pick.
+// Say so plainly instead of opening an empty dropdown, which just looks broken.
+const NO_STARTLIST = {
+  en: {
+    button: "Startlist not published yet",
+    title: "No riders to pick yet",
+    body: "Teams confirm their eight riders in the week before the race starts. Once the startlist is published you'll be able to make your picks here.",
+  },
+  es: {
+    button: "Lista de corredores aún no publicada",
+    title: "Todavía no hay corredores",
+    body: "Los equipos confirman sus ocho corredores la semana previa a la salida. En cuanto se publique la lista podrás hacer tus predicciones aquí.",
+  },
+};
 
 export default function TeamRiderPicker({ value, onChange, disabled, selectedRiderName, stageType, riderFilter }) {
+  const lang = useLang();
   const [open, setOpen] = useState(false);
   const [openTeam, setOpenTeam] = useState(null);
   const [search, setSearch] = useState("");
@@ -21,6 +38,18 @@ export default function TeamRiderPicker({ value, onChange, disabled, selectedRid
         .filter((t) => t.riders.length > 0)
     : baseTeams;
   const query = search.trim().toLowerCase();
+  const noStartlist = baseTeams.length === 0;
+
+  // Nothing to show: render an explanatory panel rather than an empty menu.
+  if (noStartlist) {
+    const c = NO_STARTLIST[lang] || NO_STARTLIST.en;
+    return (
+      <div className="picker-empty">
+        <strong>{c.title}</strong>
+        <p>{c.body}</p>
+      </div>
+    );
+  }
 
   function pick(riderId) {
     onChange(riderId);

@@ -7,6 +7,7 @@
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import AuthModal from "./AuthModal";
+import RaceSwitcher from "./RaceSwitcher";
 import { useSession, logoutUser } from "../lib/store";
 import { useLang, t } from "../lib/i18n";
 
@@ -132,7 +133,10 @@ export default function Nav() {
           </span>
         </a>
 
-        <LangSwitcher pathname={pathname} />
+        <span className="nav-meta">
+          <RaceSwitcher />
+          <LangSwitcher pathname={pathname} />
+        </span>
 
         <button
           className="nav-hamburger"

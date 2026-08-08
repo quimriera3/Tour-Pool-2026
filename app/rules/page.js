@@ -20,12 +20,12 @@ const JERSEY_INFO = {
 const TOUR_INFO = {
   en: {
     heading: "About La Vuelta a España 2026",
-    body: "La Vuelta a España 2026 is the 81st edition of Spain's Grand Tour and the final Grand Tour of the season. It starts in Monaco on 22 August with a short individual time trial — the first time the principality has hosted a Vuelta start — and crosses France and Andorra before entering Spain on stage five. From there the race stays in Spain until it finishes in Granada on 13 September, with the last ten stages held entirely in Andalusia. The 3,291 km route features seven mountain stages, a gravel sector on stage six, and a final stage that climbs to the Alhambra rather than the usual processional sprint.",
+    body: "La Vuelta a España 2026 is the 81st edition of Spain's Grand Tour and the final Grand Tour of the season. It starts in Monaco on 22 August with a short individual time trial — the first time the principality has hosted a Vuelta start — and crosses France and Andorra before entering Spain on stage five. From there the race stays in Spain until it finishes in Granada on 13 September, with the last ten stages held entirely in Andalusia. The 3,298 km route features seven mountain stages, a gravel sector on stage six, and a final stage that climbs to the Alhambra rather than the usual processional sprint.",
     jerseyHeading: "The four jerseys",
   },
   es: {
     heading: "Sobre La Vuelta a España 2026",
-    body: "La Vuelta a España 2026 es la 81.ª edición de la gran vuelta española y la última gran vuelta de la temporada. Arranca en Mónaco el 22 de agosto con una contrarreloj individual corta —la primera vez que el principado acoge una salida de La Vuelta— y atraviesa Francia y Andorra antes de entrar en España en la quinta etapa. A partir de ahí la carrera no sale de España hasta el final en Granada, el 13 de septiembre, con las diez últimas etapas íntegramente en Andalucía. Los 3.291 km del recorrido incluyen siete etapas de montaña, un sector de grava en la sexta etapa y una etapa final que sube a la Alhambra en lugar del habitual paseo con esprint.",
+    body: "La Vuelta a España 2026 es la 81.ª edición de la gran vuelta española y la última gran vuelta de la temporada. Arranca en Mónaco el 22 de agosto con una contrarreloj individual corta —la primera vez que el principado acoge una salida de La Vuelta— y atraviesa Francia y Andorra antes de entrar en España en la quinta etapa. A partir de ahí la carrera no sale de España hasta el final en Granada, el 13 de septiembre, con las diez últimas etapas íntegramente en Andalucía. Los 3.298 km del recorrido incluyen siete etapas de montaña, un sector de grava en la sexta etapa y una etapa final que sube a la Alhambra en lugar del habitual paseo con esprint.",
     jerseyHeading: "Los cuatro maillots",
   },
 };

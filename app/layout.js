@@ -51,7 +51,7 @@ export const metadata = {
     type: "website",
     images: [
       {
-        url: "/og-image.png?v=3",
+        url: "/og-image.png?v=4",
         width: 916,
         height: 493,
         alt: "Grand Tour Pool \u2014 " + RACE_NAME,
@@ -62,7 +62,7 @@ export const metadata = {
     card: "summary_large_image",
     title: "Vuelta a Espa\u00f1a 2026 Sweepstakes \u2014 Predict Every Stage & Win",
     description: "The best Vuelta a Espa\u00f1a pool online: predict every 2026 stage winner, free, and climb the live leaderboard.",
-    images: ["/og-image.png?v=3"],
+    images: ["/og-image.png?v=4"],
   },
   robots: { index: true, follow: true },
 };

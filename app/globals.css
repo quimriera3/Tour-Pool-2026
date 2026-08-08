@@ -1793,3 +1793,148 @@ tr.me {
   color: var(--accent);
   white-space: nowrap;
 }
+
+
+/* ---------- Race switcher ---------- */
+.race-switcher {
+  position: relative;
+}
+
+.race-switcher-btn,
+.race-switcher-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 700;
+  color: #9a9a9a;
+  padding: 5px 0;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+}
+
+.race-switcher-btn:hover {
+  color: #ffffff;
+}
+
+.race-live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+
+.race-switcher-caret {
+  font-size: 8px;
+  color: #666;
+}
+
+.race-switcher-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 210px;
+  background: #1c1c1c;
+  border: 1px solid #2c2c2c;
+  border-radius: 10px;
+  padding: 6px;
+  z-index: 60;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+}
+
+.race-switcher-heading {
+  display: block;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #5a5a5a;
+  padding: 6px 10px 8px;
+}
+
+.race-switcher-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 6px;
+  text-decoration: none;
+  color: #dddddd;
+}
+
+.race-switcher-item:hover {
+  background: #262626;
+}
+
+.race-switcher-item.current {
+  background: rgba(228, 0, 43, 0.12);
+  color: #ffffff;
+}
+
+.race-switcher-name {
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.race-switcher-status {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.race-switcher-status.archived {
+  color: #666666;
+}
+
+@media (max-width: 600px) {
+  .race-switcher-menu {
+    right: auto;
+    left: 0;
+  }
+}
+
+
+/* ---------- Rider picker: no startlist yet ---------- */
+.picker-empty {
+  background: var(--accent-soft);
+  border: 1px dashed var(--accent);
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+}
+
+.picker-empty strong {
+  display: block;
+  font-size: 13.5px;
+  color: var(--accent-dark);
+}
+
+.picker-empty p {
+  margin: 6px 0 0;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--grey);
+}
+
+
+/* Right-hand cluster in the nav: race switcher + language */
+.nav-meta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-left: auto;
+}
+
+@media (max-width: 600px) {
+  .nav-meta {
+    gap: 10px;
+  }
+}
