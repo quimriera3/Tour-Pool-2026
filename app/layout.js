@@ -16,19 +16,19 @@ const RACE_NAME = localised(RACE.name, "en");
 export const metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Vuelta a Espa\u00f1a 2026 Sweepstakes \u2014 Predict Every Stage & Win",
+    default: "Road World Championships 2026 Predictions \u2014 Montreal Worlds Pool",
     template: "%s | Grand Tour Pool",
   },
   description:
-    "Play the best Vuelta a Espa\u00f1a pool online, 100% free. Predict every stage of La Vuelta 2026, pick your jersey winners, and climb a live leaderboard across all 21 stages from Monaco to Granada.",
+    "Free 2026 UCI Road World Championships prediction pool. Predict who wins the rainbow jersey in Montreal: full route preview of the 273.4 km race, Mount Royal circuit analysis and the ten favourites.",
   keywords: [
-    "Vuelta a Espa\u00f1a 2026 sweepstakes",
-    "best Vuelta pool online",
-    "predict Vuelta stages",
-    "La Vuelta 2026 predictions",
-    "Vuelta fantasy game",
-    "free cycling pool 2026",
-    "Vuelta a Espa\u00f1a pick'em",
+    "Road World Championships 2026 predictions",
+    "cycling Worlds 2026 Montreal",
+    "rainbow jersey 2026 favourites",
+    "Montreal Worlds route",
+    "UCI Road Worlds pool",
+    "who will win the Worlds 2026",
+    "Mount Royal circuit cycling",
   ],
   alternates: {
     canonical: "/",
@@ -43,26 +43,26 @@ export const metadata = {
     },
   },
   openGraph: {
-    title: "Vuelta a Espa\u00f1a 2026 Sweepstakes \u2014 Predict Every Stage & Win",
-    description: "The best Vuelta a Espa\u00f1a pool online: predict every 2026 stage winner, free, and climb the live leaderboard.",
+    title: "Road World Championships 2026 Predictions \u2014 Montreal Worlds Pool",
+    description: "Predict the rainbow jersey in Montreal: route preview, Mount Royal analysis and the ten favourites. Free to play.",
     url: SITE_URL,
     siteName: "Grand Tour Pool",
     locale: "en_US",
     type: "website",
     images: [
       {
-        url: "/og-image.png?v=4",
+        url: "/og-image.png?v=5",
         width: 916,
         height: 493,
-        alt: "Grand Tour Pool \u2014 " + RACE_NAME,
+        alt: "Grand Tour Pool \u2014 Road World Championships 2026" + RACE_NAME,
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Vuelta a Espa\u00f1a 2026 Sweepstakes \u2014 Predict Every Stage & Win",
-    description: "The best Vuelta a Espa\u00f1a pool online: predict every 2026 stage winner, free, and climb the live leaderboard.",
-    images: ["/og-image.png?v=4"],
+    title: "Road World Championships 2026 Predictions \u2014 Montreal Worlds Pool",
+    description: "Predict the rainbow jersey in Montreal: route preview, Mount Royal analysis and the ten favourites. Free to play.",
+    images: ["/og-image.png?v=5"],
   },
   robots: { index: true, follow: true },
 };

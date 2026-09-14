@@ -2053,3 +2053,21 @@ tr.me {
     min-width: 0;
   }
 }
+
+
+/* ---------- Rainbow band (World Championships) ----------
+   The rainbow jersey has no single colour, so the race theme carries a
+   gradient alongside its accent. Only races that define `theme.rainbow`
+   render this strip; every other race leaves it off. */
+.rainbow-band {
+  height: 4px;
+  width: 100%;
+  background: linear-gradient(
+    90deg,
+    #0B4EA2 0%, #0B4EA2 20%,
+    #D7241E 20%, #D7241E 40%,
+    #111111 40%, #111111 60%,
+    #F2C200 60%, #F2C200 80%,
+    #1E9E4A 80%, #1E9E4A 100%
+  );
+}

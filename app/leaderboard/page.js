@@ -4,9 +4,11 @@ import { useEffect, useState } from "react";
 import { computeLeaderboard, useSession } from "../../lib/store";
 import Podium from "../../components/Podium";
 import { useLang, t } from "../../lib/i18n";
+import { getActiveRace, hasJerseys } from "../../lib/races";
 
 export default function Leaderboard() {
   const lang = useLang();
+  const showJerseys = hasJerseys(getActiveRace());
   const session = useSession();
   const [board, setBoard] = useState([]);
   const [search, setSearch] = useState("");
@@ -60,7 +62,7 @@ export default function Leaderboard() {
               <th>{t(lang, "leaderboard.colName")}</th>
               <th><span className="th-full">{t(lang, "leaderboard.colPointsFull")}</span><span className="th-short">{t(lang, "leaderboard.colPointsShort")}</span></th>
               <th><span className="th-full">{t(lang, "leaderboard.colStagesFull")}</span><span className="th-short">{t(lang, "leaderboard.colStagesShort")}</span></th>
-              <th><span className="th-full">{t(lang, "leaderboard.colJerseysFull")}</span><span className="th-short">{t(lang, "leaderboard.colJerseysShort")}</span></th>
+              {showJerseys && <th><span className="th-full">{t(lang, "leaderboard.colJerseysFull")}</span><span className="th-short">{t(lang, "leaderboard.colJerseysShort")}</span></th>}
               <th><span className="th-full">{t(lang, "leaderboard.colLastFull")}</span><span className="th-short">{t(lang, "leaderboard.colLastShort")}</span></th>
             </tr>
           </thead>
@@ -71,7 +73,7 @@ export default function Leaderboard() {
                 <td>{row.name}</td>
                 <td style={{ fontWeight: 800 }}>{row.total}</td>
                 <td>{row.correctCount}</td>
-                <td>{row.jerseysWon} / 4</td>
+                {showJerseys && <td>{row.jerseysWon} / 4</td>}
                 <td>
                   {row.lastFive.map((ok, idx) => (
                     <span key={idx} className={"dot " + (ok ? "dot-green" : "dot-red")}></span>
@@ -81,12 +83,12 @@ export default function Leaderboard() {
             ))}
             {board.length === 0 && (
               <tr>
-                <td colSpan={6}>{t(lang, "leaderboard.noUsers")}</td>
+                <td colSpan={showJerseys ? 6 : 5}>{t(lang, "leaderboard.noUsers")}</td>
               </tr>
             )}
             {board.length > 0 && visibleRest.length === 0 && query && (
               <tr>
-                <td colSpan={6}>{t(lang, "leaderboard.noResultsFor")} &quot;{search}&quot; {t(lang, "leaderboard.found")}</td>
+                <td colSpan={showJerseys ? 6 : 5}>{t(lang, "leaderboard.noResultsFor")} &quot;{search}&quot; {t(lang, "leaderboard.found")}</td>
               </tr>
             )}
           </tbody>

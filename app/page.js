@@ -35,6 +35,7 @@ import Podium from "../components/Podium";
 import AuthModal from "../components/AuthModal";
 import PreviewArticleContent from "../components/PreviewArticleContent";
 import StructuredData from "../components/StructuredData";
+import { getActiveRace, hasJerseys, hasOverallClassification, localised } from "../lib/races";
 import { useLang, t } from "../lib/i18n";
 
 const DAY_NAMES = {
@@ -269,7 +270,8 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Dot progress — 21 blocks, one per stage */}
+            {/* Overall progress only means something for a stage race. */}
+            {hasOverallClassification(getActiveRace()) && (
             <div className="hero-v2-progress">
               <div className="hero-v2-prog-meta">
                 <span>{t(lang, "home.tourProgress")}</span>
@@ -292,9 +294,10 @@ export default function Dashboard() {
               </div>
               <div className="hero-v2-dots-labels">
                 <span>{t(lang, "home.stageWord")} 1</span>
-                <span>{t(lang, "home.stageWord")} 21</span>
+                <span>{t(lang, "home.stageWord")} {STAGES.length}</span>
               </div>
             </div>
+            )}
           </div>
         </div>
       ) : (
@@ -308,7 +311,7 @@ export default function Dashboard() {
         </div>
       )}
 
-      {mounted && !jerseyPredictionsLocked() && (
+      {mounted && hasJerseys(getActiveRace()) && !jerseyPredictionsLocked() && (
         <a href={(lang === "es" ? "/es" : "") + "/final-classification"} className="jersey-banner">
           <span className="jersey-banner-icon">🏆</span>
           <span>

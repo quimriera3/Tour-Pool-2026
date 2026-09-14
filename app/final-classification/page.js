@@ -7,6 +7,7 @@ import JerseyIcon from "../../components/JerseyIcon";
 import TeamRiderPicker from "../../components/TeamRiderPicker";
 import AutoSaveNotice from "../../components/AutoSaveNotice";
 import { useLang, t } from "../../lib/i18n";
+import { getActiveRace, hasJerseys, localised } from "../../lib/races";
 
 const QUESTIONS = [
   { key: "yellow", jersey: "yellow", labelKey: "jersey.yellow", subKey: "jersey.yellowSub", sortType: "mountains" },
@@ -17,6 +18,7 @@ const QUESTIONS = [
 
 // "Wednesday 26 August at 12:15" / "miércoles 26 de agosto a las 12:15"
 function formatLockDateTime(date, lang) {
+  if (!date) return "";
   const time = date.toTimeString().slice(0, 5);
   if (lang === "es") {
     const days = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
@@ -64,6 +66,30 @@ export default function FinalClassification() {
 
   const locked = mounted ? jerseyPredictionsLocked() : true;
   const lockLabel = formatLockDateTime(jerseyLockDate(), lang);
+
+  // Championships and one-day races have no general classification, so there
+  // are no jerseys to predict. Say so rather than rendering a broken page.
+  if (!hasJerseys(getActiveRace())) {
+    const race = getActiveRace();
+    return (
+      <div>
+        <div className="page-header">
+          <span className="eyebrow">{localised(race.shortName, lang)}</span>
+          <h1>{lang === "es" ? "Sin clasificaciones finales" : "No jersey predictions"}</h1>
+          <p className="subtitle">
+            {lang === "es"
+              ? "El Mundial no tiene clasificación general ni maillots que durar\u00e9n toda la carrera: cada prueba se gana en el d\u00eda, y el premio es el maillot arcoíris. Haz tus predicciones prueba a prueba."
+              : "A World Championship has no general classification and no jerseys running through it \u2014 each race is won on the day, and the prize is the rainbow jersey itself. Make your predictions race by race instead."}
+          </p>
+        </div>
+        <div className="card" style={{ textAlign: "center" }}>
+          <a href={(lang === "es" ? "/es" : "") + "/predictions"} className="btn" style={{ display: "inline-block" }}>
+            {lang === "es" ? "Ir a las predicciones" : "Go to predictions"}
+          </a>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>

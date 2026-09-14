@@ -8,7 +8,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import AuthModal from "./AuthModal";
 import RaceSwitcher from "./RaceSwitcher";
-import { raceFromPathname, localised } from "../lib/races";
+import { raceFromPathname, localised, hasJerseys, getActiveRace } from "../lib/races";
 import { useSession, logoutUser } from "../lib/store";
 import { useLang, t } from "../lib/i18n";
 
@@ -21,7 +21,10 @@ function navLinks(lang) {
     // The three things people actually come to do. On desktop these sit first
     // and carry an icon; the old separate red CTA bar is gone.
     { href: prefix + "/predictions", key: "nav.stages", icon: "flag", primary: true },
-    { href: prefix + "/final-classification", key: "nav.jerseys", icon: "jersey", primary: true },
+    // Only shown for races that actually have a general classification.
+    ...(hasJerseys(getActiveRace())
+      ? [{ href: prefix + "/final-classification", key: "nav.jerseys", icon: "jersey", primary: true }]
+      : []),
     { href: prefix + "/leaderboard", key: "nav.leaderboard", icon: "trophy", primary: true },
     { href: prefix + "/riders", key: "nav.riders", icon: "riders" },
     { href: prefix + "/rules", key: "nav.rules", icon: "book" },
@@ -204,6 +207,7 @@ export default function Nav() {
       {showModal && (
         <AuthModal onClose={() => setShowModal(false)} onAuth={() => setShowModal(false)} />
       )}
+      {raceFromPathname(pathname).theme?.rainbow && <div className="rainbow-band" />}
     </nav>
   );
 }
