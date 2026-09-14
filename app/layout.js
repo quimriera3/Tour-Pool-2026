@@ -76,7 +76,7 @@ export const viewport = {
 export default function RootLayout({ children }) {
   const theme = getActiveRace().theme || {};
   return (
-    <html lang="en">
+    <html lang="en" data-surface={getActiveRace().surface || "dark"}>
       <head>
         {/* Race theme: every accent on the site reads these, so changing the
             active race in lib/races/index.js reskins the whole platform. */}

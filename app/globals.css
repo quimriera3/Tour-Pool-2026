@@ -2071,3 +2071,291 @@ tr.me {
     #1E9E4A 80%, #1E9E4A 100%
   );
 }
+
+
+/* ===========================================================================
+   Light surface (World Championships)
+   ---------------------------------------------------------------------------
+   The rainbow bands only read against white, so the Worlds runs on a light
+   surface while the Grand Tours stay dark. RaceTheme sets data-surface="light"
+   on <html>; everything below is scoped to that, so no other race is touched.
+   =========================================================================== */
+[data-surface="light"] {
+  --bg: #ffffff;
+}
+
+[data-surface="light"] body {
+  background: #ffffff;
+}
+
+/* Navigation inverts: dark bar -> white bar with dark text */
+[data-surface="light"] .nav {
+  background: #ffffff;
+  border-bottom: 1px solid #ececec;
+}
+
+[data-surface="light"] .brand span {
+  color: #111111 !important;
+}
+
+[data-surface="light"] .nav-links a.nav-btn.primary-link,
+[data-surface="light"] .nav-links a.nav-btn.secondary {
+  color: #6f6f6f;
+}
+
+[data-surface="light"] .nav-links a.nav-btn.primary-link:hover,
+[data-surface="light"] .nav-links a.nav-btn.secondary:hover {
+  color: #111111;
+}
+
+[data-surface="light"] .nav-links a.nav-btn.primary-link.active,
+[data-surface="light"] .nav-links a.nav-btn.secondary.active {
+  color: #111111;
+}
+
+[data-surface="light"] .nav-links a.nav-btn.primary-link .nav-btn-icon {
+  color: #aaaaaa;
+}
+
+[data-surface="light"] .nav-links a.nav-btn.primary-link.active .nav-btn-icon {
+  color: var(--accent);
+}
+
+[data-surface="light"] .nav-divider {
+  background: #e4e4e4;
+}
+
+[data-surface="light"] .nav-hamburger svg {
+  stroke: #111111;
+}
+
+[data-surface="light"] .race-switcher-btn,
+[data-surface="light"] .race-switcher-label,
+[data-surface="light"] .lang-switcher {
+  color: #888888;
+}
+
+[data-surface="light"] .race-switcher-btn:hover {
+  color: #111111;
+}
+
+[data-surface="light"] .race-switcher-menu {
+  background: #ffffff;
+  border-color: #e4e4e4;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+}
+
+[data-surface="light"] .race-switcher-item {
+  color: #444444;
+}
+
+[data-surface="light"] .race-switcher-item:hover {
+  background: #f5f5f5;
+}
+
+/* Mobile menu on a light bar */
+@media (max-width: 600px) {
+  [data-surface="light"] .nav-links {
+    border-top-color: #ececec;
+  }
+
+  [data-surface="light"] .nav-links a.nav-btn,
+  [data-surface="light"] .nav-links a.nav-btn.secondary {
+    color: #444444;
+  }
+
+  [data-surface="light"] .nav-links a.nav-btn.active,
+  [data-surface="light"] .nav-links a.nav-btn.secondary.active {
+    background: var(--accent-soft);
+    color: #111111;
+  }
+
+  [data-surface="light"] .nav-user.open {
+    border-top-color: #ececec;
+    color: #111111;
+  }
+}
+
+/* ---------- Category switcher (men / women) ---------- */
+.cat-switch {
+  display: inline-flex;
+  background: #f0f0f0;
+  border-radius: 999px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.cat-switch-btn {
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #777777;
+  padding: 6px 14px;
+  border-radius: 999px;
+  text-decoration: none;
+  white-space: nowrap;
+  letter-spacing: 0.2px;
+}
+
+.cat-switch-btn:hover {
+  color: #111111;
+}
+
+.cat-switch-btn.active {
+  background: #ffffff;
+  color: #111111;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+@media (max-width: 600px) {
+  .cat-switch-btn {
+    font-size: 11px;
+    padding: 6px 11px;
+  }
+}
+
+
+/* ---------- Championship event list (homepage) ---------- */
+.events {
+  margin-top: 24px;
+}
+
+.events-head h2 {
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.events-lead {
+  font-size: 12px;
+  color: var(--grey);
+  margin: 4px 0 16px;
+}
+
+.events-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.event {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 13px 14px;
+  border: 1px solid #ececec;
+  border-radius: 10px;
+  background: var(--white);
+  text-decoration: none;
+  color: inherit;
+}
+
+.event:hover {
+  border-color: #d8d8d8;
+}
+
+.event-open {
+  border-color: var(--accent);
+  border-width: 1.5px;
+  background: var(--accent-soft);
+}
+
+.event-done {
+  opacity: 0.62;
+}
+
+.event-bar {
+  width: 4px;
+  align-self: stretch;
+  border-radius: 2px;
+  background: #e0e0e0;
+  flex-shrink: 0;
+}
+
+.event-open .event-bar {
+  background: var(--accent);
+}
+
+.event-date {
+  min-width: 46px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.event-day {
+  display: block;
+  font-size: 9px;
+  font-weight: 800;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.event-num {
+  display: block;
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 1;
+  margin-top: 2px;
+}
+
+.event-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.event-name {
+  display: block;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.event-meta {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+  font-size: 11px;
+  color: var(--grey);
+  margin-top: 4px;
+}
+
+.event-status {
+  font-size: 9.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  padding: 5px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.status-open {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.status-closed {
+  background: #f1f1f1;
+  color: #8a8a8a;
+}
+
+.status-done {
+  background: #eaf5ee;
+  color: var(--green);
+}
+
+@media (max-width: 600px) {
+  .event {
+    gap: 10px;
+    padding: 11px 12px;
+  }
+
+  .event-meta {
+    font-size: 10.5px;
+  }
+
+  .event-status {
+    font-size: 9px;
+    padding: 4px 8px;
+  }
+}

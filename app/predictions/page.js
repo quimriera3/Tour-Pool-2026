@@ -9,6 +9,7 @@ import TeamRiderPicker from "../../components/TeamRiderPicker";
 import Podium from "../../components/Podium";
 import AutoSaveNotice from "../../components/AutoSaveNotice";
 import { useLang, t } from "../../lib/i18n";
+import { useRace, useRaceBase } from "../../lib/useRace";
 
 const WEEK_KEYS = ["week.1", "week.2", "week.3"];
 
@@ -107,6 +108,13 @@ function StageCard({ stage, pick, onPick, result, lang, stagePrefix }) {
 
 export default function Predictions() {
   const lang = useLang();
+  const race = useRace();
+  const raceBase = useRaceBase();
+  // Group this race's own events, not the active race's.
+  const weeks = (race.weeks || []).map((w) => ({
+    key: w.key,
+    stages: w.stages.map((n) => race.stages.find((st) => st.n === n)).filter(Boolean),
+  }));
   const stagePrefix = lang === "es" ? "/es" : "";
   const session = useSession();
   const [picks, setPicks] = useState({});
@@ -117,8 +125,8 @@ export default function Predictions() {
     let active = true;
     async function load() {
       const [userPicks, allResults] = await Promise.all([
-        session ? getPicksFor(session.id) : Promise.resolve({}),
-        getResults(),
+        session ? getPicksFor(session.id, race.slug) : Promise.resolve({}),
+        getResults(race.slug),
       ]);
       if (!active) return;
       setPicks(userPicks);
@@ -137,7 +145,7 @@ export default function Predictions() {
       return;
     }
     setPicks((prev) => ({ ...prev, [stageN]: riderId }));
-    await savePick(session.id, stageN, riderId);
+    await savePick(session.id, stageN, riderId, race.slug);
   }
 
   if (!ready) return null;
@@ -155,7 +163,7 @@ export default function Predictions() {
         <AutoSaveNotice lang={lang} />
       </div>
 
-      {WEEKS.map((week, i) => (
+      {weeks.map((week, i) => (
         <div key={week.title}>
           <div className="week-header">
             <h2>{t(lang, WEEK_KEYS[i] + ".title")}</h2>

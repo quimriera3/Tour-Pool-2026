@@ -3,12 +3,14 @@
 import { useState } from "react";
 import { teamsList, teamColor, teamPastelBg, pcsUrl, riderSpecialty, isTeamOfficial } from "../../lib/data";
 import { useLang, t } from "../../lib/i18n";
+import { useRace } from "../../lib/useRace";
 
 const SPECIALTIES = ["All", "Climber", "Puncheur", "Sprinter", "Time triallist"];
 
 export default function Riders() {
   const lang = useLang();
-  const teams = teamsList();
+  const race = useRace();
+  const teams = teamsList(race);
   const [filter, setFilter] = useState("All");
   const [openTeam, setOpenTeam] = useState(null);
   const [search, setSearch] = useState("");

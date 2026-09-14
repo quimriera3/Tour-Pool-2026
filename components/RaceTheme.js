@@ -24,6 +24,8 @@ export default function RaceTheme() {
     root.style.setProperty("--accent-ink", theme.accentInk);
     root.style.setProperty("--accent-soft", theme.accentSoft);
     root.setAttribute("data-race", race.slug);
+    // Races can opt into a light surface; everything else stays dark.
+    root.setAttribute("data-surface", race.surface || "dark");
   }, [pathname]);
 
   return null;

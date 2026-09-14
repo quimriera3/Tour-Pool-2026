@@ -1,7 +1,7 @@
 // components/StructuredData.js
 import { getWebSiteSchema, getSportsEventSchema } from "../lib/structuredData";
 
-export default function StructuredData({ lang }) {
+export default function StructuredData({ lang, raceSlug }) {
   const website = getWebSiteSchema(lang);
   const sportsEvent = getSportsEventSchema(lang);
 

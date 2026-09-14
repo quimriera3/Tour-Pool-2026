@@ -35,6 +35,19 @@ export default function sitemap() {
 
   const stageRoutes = STAGES.flatMap((s) => ["/stage/" + s.n, "/es/stage/" + s.n]);
 
+  // The women's championship runs in parallel under its own prefix.
+  const women = getRace("worlds-2026-women");
+  const womenRoutes = women
+    ? [
+        "/women",
+        "/women/predictions",
+        "/women/riders",
+        "/women/leaderboard",
+        "/women/preview",
+        ...women.stages.map((s) => "/women/stage/" + s.n),
+      ]
+    : [];
+
   // Archived races stay in the sitemap: their pages are no longer linked from
   // the navigation, but they remain live and should keep being crawled.
   const archived = getRace("tour-de-france-2026");
@@ -42,7 +55,7 @@ export default function sitemap() {
     ? ["/tour-de-france-2026", "/tour-de-france-2026/leaderboard", ...archived.stages.map((s) => "/tour-de-france-2026/stage/" + s.n)]
     : [];
 
-  return [...routes, ...stageRoutes, ...archivedRoutes].map((route) => ({
+  return [...routes, ...stageRoutes, ...womenRoutes, ...archivedRoutes].map((route) => ({
     url: SITE_URL + route,
     lastModified: new Date(),
     changeFrequency: "daily",

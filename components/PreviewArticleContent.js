@@ -26,8 +26,8 @@ const TOGGLE_LABELS = {
 // variant="home"  -> used on the homepage, below the Leaderboard. Same width as the
 //                    other homepage cards; title + first paragraph show by default,
 //                    the rest of the article is a "read more" disclosure.
-export default function PreviewArticleContent({ lang, variant = "page" }) {
-  const article = getPreviewArticle(lang);
+export default function PreviewArticleContent({ lang, variant = "page", raceSlug }) {
+  const article = getPreviewArticle(lang, raceSlug);
   const [expanded, setExpanded] = useState(false);
 
   if (variant === "home") {

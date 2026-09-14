@@ -35,7 +35,9 @@ import Podium from "../components/Podium";
 import AuthModal from "../components/AuthModal";
 import PreviewArticleContent from "../components/PreviewArticleContent";
 import StructuredData from "../components/StructuredData";
-import { getActiveRace, hasJerseys, hasOverallClassification, localised } from "../lib/races";
+import { getActiveRace, hasJerseys, hasOverallClassification, isChampionship, localised } from "../lib/races";
+import { useRace, useRaceBase } from "../lib/useRace";
+import EventList from "../components/EventList";
 import { useLang, t } from "../lib/i18n";
 
 const DAY_NAMES = {
@@ -69,6 +71,8 @@ function useCountdown(targetDate) {
 export default function Dashboard() {
   const lang = useLang();
   const session = useSession();
+  const race = useRace();
+  const raceBase = useRaceBase();
   const [showAuth, setShowAuth] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [stage, setStage] = useState(null);
@@ -77,14 +81,14 @@ export default function Dashboard() {
   const [results, setResults] = useState({});
 
   useEffect(() => {
-    setStage(nextStage());
-    setPrevStage(previousStage());
+    setStage(nextStage(undefined, race));
+    setPrevStage(previousStage(undefined, race));
     setMounted(true);
   }, []);
 
   useEffect(() => {
     let active = true;
-    Promise.all([computeLeaderboard(), getResults()]).then(([b, r]) => {
+    Promise.all([computeLeaderboard(race.slug), getResults(race.slug)]).then(([b, r]) => {
       if (active) {
         setBoard(b);
         setResults(r);
@@ -95,7 +99,7 @@ export default function Dashboard() {
     };
   }, []);
 
-  const countdown = useCountdown(stage ? stageStartDate(stage) : null);
+  const countdown = useCountdown(stage ? stageStartDate(stage, race) : null);
 
   if (!mounted) {
     return (
@@ -106,11 +110,9 @@ export default function Dashboard() {
           <h1>{t(lang, "home.title")}</h1>
           <p className="subtitle">{t(lang, "home.subtitle")}</p>
         </div>
-        <div className="hero" style={{ marginTop: 18 }}>
-          <div className="hero-inner">
-            <span className="eyebrow">Loading...</span>
-          </div>
-        </div>
+        {isChampionship(race) && (
+          <EventList race={race} lang={lang} base={raceBase} results={{}} />
+        )}
       </div>
     );
   }
@@ -127,8 +129,8 @@ export default function Dashboard() {
     return null;
   })();
 
-  const totalDistance = totalKm();
-  const distanceDone = kmCompleted();
+  const totalDistance = totalKm(race);
+  const distanceDone = kmCompleted(undefined, race);
   const progressPct = Math.round((distanceDone / totalDistance) * 100);
 
   const lastPodiumItems = lastResultStage
@@ -180,7 +182,7 @@ export default function Dashboard() {
         <p className="subtitle" style={{ marginTop: 10 }}>{t(lang, "home.noResultsYet")}</p>
       )}
 
-      <a href={(lang === "es" ? "/es" : "") + "/leaderboard"} className="btn btn-outline" style={{
+      <a href={raceBase + "/leaderboard"} className="btn btn-outline" style={{
         display: "block",
         marginTop: 16,
         textAlign: "center",
@@ -219,7 +221,7 @@ export default function Dashboard() {
             <div>
               <span className="hero-v2-eyebrow">
                 {t(lang, "home.stageWord")} {stage.n} · {(() => {
-                  const d = stageStartDate(stage);
+                  const d = stageStartDate(stage, race);
                   const days = DAY_NAMES[lang] || DAY_NAMES.en;
                   const months = MONTH_NAMES[lang] || MONTH_NAMES.en;
                   return days[d.getDay()] + " " + d.getDate() + " " + months[d.getMonth()];
@@ -271,7 +273,7 @@ export default function Dashboard() {
             </div>
 
             {/* Overall progress only means something for a stage race. */}
-            {hasOverallClassification(getActiveRace()) && (
+            {hasOverallClassification(race) && (
             <div className="hero-v2-progress">
               <div className="hero-v2-prog-meta">
                 <span>{t(lang, "home.tourProgress")}</span>
@@ -294,7 +296,7 @@ export default function Dashboard() {
               </div>
               <div className="hero-v2-dots-labels">
                 <span>{t(lang, "home.stageWord")} 1</span>
-                <span>{t(lang, "home.stageWord")} {STAGES.length}</span>
+                <span>{t(lang, "home.stageWord")} {race.stages.length}</span>
               </div>
             </div>
             )}
@@ -311,13 +313,13 @@ export default function Dashboard() {
         </div>
       )}
 
-      {mounted && hasJerseys(getActiveRace()) && !jerseyPredictionsLocked() && (
-        <a href={(lang === "es" ? "/es" : "") + "/final-classification"} className="jersey-banner">
+      {mounted && hasJerseys(race) && !jerseyPredictionsLocked(undefined, race) && (
+        <a href={raceBase + "/final-classification"} className="jersey-banner">
           <span className="jersey-banner-icon">🏆</span>
           <span>
             <strong>{t(lang, "home.jerseyBannerLock")}</strong> {t(lang, "home.jerseyBannerBody")}{" "}
             {(() => {
-              const d = jerseyLockDate();
+              const d = jerseyLockDate(race);
               const days = DAY_NAMES[lang] || DAY_NAMES.en;
               const months = MONTH_NAMES[lang] || MONTH_NAMES.en;
               return days[d.getDay()] + " " + d.getDate() + " " + months[d.getMonth()] + " " + (lang === "es" ? "a las" : "at") + " " + d.toTimeString().slice(0, 5);
@@ -326,6 +328,12 @@ export default function Dashboard() {
           </span>
           <span className="jersey-banner-arrow">→</span>
         </a>
+      )}
+
+      {/* Championships are a set of separate races, so list them explicitly
+          rather than showing stage-race style progress. */}
+      {isChampionship(race) && (
+        <EventList race={race} lang={lang} base={raceBase} results={results} />
       )}
 
       {lastResultStage || prevStage ? (
@@ -353,12 +361,12 @@ export default function Dashboard() {
         <div style={{ marginTop: 22 }}>{leaderboardCard}</div>
       )}
 
-      <PreviewArticleContent lang={lang} variant="home" />
+      <PreviewArticleContent lang={lang} variant="home" raceSlug={race.slug} />
 
       <div className="card" style={{ marginTop: 16 }}>
         <h3 style={{ fontSize: 16 }}>{t(lang, "home.howScoringWorks")}</h3>
         <p className="subtitle" style={{ marginTop: 10 }}>
-          {t(lang, "home.scoringExplainer")} <a href={(lang === "es" ? "/es" : "") + "/rules"} style={{ textDecoration: "underline", color: "var(--black)" }}>{t(lang, "home.fullRules")}</a> {t(lang, "home.scoringExplainerAfter")}
+          {t(lang, "home.scoringExplainer")} <a href={raceBase + "/rules"} style={{ textDecoration: "underline", color: "var(--black)" }}>{t(lang, "home.fullRules")}</a> {t(lang, "home.scoringExplainerAfter")}
         </p>
       </div>
     </div>

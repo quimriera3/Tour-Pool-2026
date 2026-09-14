@@ -8,14 +8,16 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import AuthModal from "./AuthModal";
 import RaceSwitcher from "./RaceSwitcher";
+import CategorySwitcher from "./CategorySwitcher";
 import { raceFromPathname, localised, hasJerseys, getActiveRace } from "../lib/races";
+import { useRaceBase } from "../lib/useRace";
 import { useSession, logoutUser } from "../lib/store";
 import { useLang, t } from "../lib/i18n";
 
 // Stage/Jersey Predictions already get their own big buttons in the sitewide
 // CTA bar (components/CtaBar.js) -- no need to repeat them here too.
-function navLinks(lang) {
-  const prefix = lang === "es" ? "/es" : "";
+function navLinks(lang, base) {
+  const prefix = base !== undefined ? base : (lang === "es" ? "/es" : "");
   return [
     { href: prefix || "/", key: "nav.home", icon: "home", mobileOnly: true },
     // The three things people actually come to do. On desktop these sit first
@@ -126,7 +128,8 @@ export default function Nav() {
     setMenuOpen(false);
   }, [pathname]);
 
-  const links = navLinks(lang);
+  const raceBase = useRaceBase();
+  const links = navLinks(lang, raceBase);
   const logoHref = lang === "es" ? "/es" : "/";
 
   return (
@@ -140,6 +143,7 @@ export default function Nav() {
         </a>
 
         <span className="nav-meta">
+          <CategorySwitcher />
           <RaceSwitcher />
           <LangSwitcher pathname={pathname} />
         </span>
