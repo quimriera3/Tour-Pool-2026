@@ -18,7 +18,7 @@ import { buildEmailHtml } from "../../../../lib/emailTemplate";
 import { translateText } from "../../../../lib/translate";
 
 export async function POST(request) {
-  const { password, subject, message, testEmail, selectedEmails, sourceLang } = await request.json();
+  const { password, subject, message, testEmail, selectedEmails, sourceLang, race } = await request.json();
   const srcLang = sourceLang || "en";
 
   if (!process.env.ADMIN_PASSWORD) {
@@ -63,11 +63,10 @@ export async function POST(request) {
     });
 
     if (selectedEmails && selectedEmails.length > 0) {
-      // A hand-picked list of specific people -- opt-in doesn't gate this,
-      // since you're choosing exactly who on purpose.
+      // A hand-picked list still respects explicit opt-in.
       const selectedSet = new Set(selectedEmails);
       recipients = (authData?.users || [])
-        .filter((u) => u.email && selectedSet.has(u.email))
+        .filter((u) => u.email && selectedSet.has(u.email) && optInById[u.id] === true)
         .map((u) => ({ email: u.email, name: nameById[u.id] || "", lang: langById[u.id] || "en" }));
     } else {
       // Default: everyone who opted in.
@@ -125,7 +124,7 @@ export async function POST(request) {
         from: FROM,
         to: [r.email],
         subject: groupSubject,
-        html: buildEmailHtml({ name: r.name, bodyHtml: groupMessage, lang: groupLang, showGreeting: false }),
+        html: buildEmailHtml({ name: r.name, bodyHtml: groupMessage, lang: groupLang, showGreeting: false, raceSlug: race }),
       }));
 
       const res = await fetch("https://api.resend.com/emails/batch", {

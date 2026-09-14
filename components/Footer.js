@@ -1,40 +1,23 @@
 "use client";
-// components/Footer.js
 import { useLang } from "../lib/i18n";
+import { useRaceBase } from "../lib/useRace";
 
 export default function Footer() {
   const lang = useLang();
   const prefix = lang === "es" ? "/es" : "";
-
+  const base = useRaceBase();
   return (
-    <p className="footer-note container">
-      © 2026 Sports Pools 26. All rights reserved.
-      <br />
-      <span style={{ marginTop: 6, display: "inline-block" }}>
-        <a href={prefix + "/privacy"} style={{ textDecoration: "underline" }}>
-          {lang === "es" ? "Política de privacidad" : "Privacy policy"}
-        </a>
-        {" · "}
-        <a href={prefix + "/contact"} style={{ textDecoration: "underline" }}>
-          {lang === "es" ? "Contacto" : "Contact"}
-        </a>
-        {" · "}
-        {/* Keeps the archived race's pages internally linked so crawlers can
-            still reach them now that they're out of the main navigation. */}
-        <a href="/tour-de-france-2026" style={{ textDecoration: "underline" }}>
-          {lang === "es" ? "Archivo: Tour 2026" : "Archive: Tour 2026"}
-        </a>
-      </span>
-      <br />
-      <span style={{ marginTop: 6, display: "inline-block" }}>
-        {lang === "es" ? "También en:" : "Also in:"}{" "}
-        <a href="/" style={{ textDecoration: "underline" }}>English</a>{" · "}
-        <a href="/es" style={{ textDecoration: "underline" }}>Español</a>{" · "}
-        <a href="/fr" style={{ textDecoration: "underline" }}>Français</a>{" · "}
-        <a href="/it" style={{ textDecoration: "underline" }}>Italiano</a>{" · "}
-        <a href="/nl" style={{ textDecoration: "underline" }}>Nederlands</a>{" · "}
-        <a href="/ca" style={{ textDecoration: "underline" }}>Català</a>
-      </span>
-    </p>
+    <footer className="footer-note container">
+      <div className="footer-primary"><strong>Grand Tour Pool</strong><span>Free cycling prediction games.</span></div>
+      <nav className="footer-links" aria-label="Footer">
+        <a href={base + "/rules"}>{lang === "es" ? "Reglas" : "Rules"}</a>
+        <a href={base + "/faq"}>FAQ</a>
+        <a href={prefix + "/privacy"}>{lang === "es" ? "Privacidad" : "Privacy"}</a>
+        <a href={prefix + "/contact"}>{lang === "es" ? "Contacto" : "Contact"}</a>
+        <a href="/tour-de-france-2026">{lang === "es" ? "Archivo: Tour 2026" : "Archive: Tour 2026"}</a>
+      </nav>
+      <div className="footer-languages">{lang === "es" ? "Idiomas editoriales:" : "Editorial languages:"} <a href="/">English</a> · <a href="/es">Español</a> · <a href="/ca">Català</a> · <a href="/fr">Français</a> · <a href="/it">Italiano</a> · <a href="/nl">Nederlands</a></div>
+      <small>© 2026 Grand Tour Pool. All rights reserved.</small>
+    </footer>
   );
 }

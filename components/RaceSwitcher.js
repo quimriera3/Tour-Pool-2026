@@ -1,88 +1,69 @@
 "use client";
-// components/RaceSwitcher.js
-//
-// Small dropdown showing which race the pool is currently running, with links
-// to any archived races. Deliberately understated: for most visitors there is
-// only ever one race that matters (the live one), so this reads as a label
-// first and a menu second.
-//
-// Adding a race to lib/races/ makes it appear here automatically.
-import { useState, useEffect, useRef } from "react";
+
+import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import { getActiveRace, racesByDate, isArchived, localised, raceFromPathname } from "../lib/races";
+import { getActiveRace, racesByDate, isArchived, isRaceRunning, localised, raceFromPathname, raceBasePath } from "../lib/races";
 import { useLang } from "../lib/i18n";
 
 const COPY = {
-  en: { live: "Live now", finished: "Finished", heading: "Races" },
-  es: { live: "En directo", finished: "Finalizada", heading: "Carreras" },
-  ca: { live: "En directe", finished: "Finalitzada", heading: "Curses" },
-  fr: { live: "En direct", finished: "Terminée", heading: "Courses" },
-  it: { live: "In diretta", finished: "Conclusa", heading: "Corse" },
-  nl: { live: "Live", finished: "Afgelopen", heading: "Koersen" },
+  en: { live: "Live", upcoming: "Picks open", finished: "Finished", heading: "Pools" },
+  es: { live: "En directo", upcoming: "Picks abiertos", finished: "Finalizada", heading: "Porras" },
 };
 
-// Where a race lives on the site: the active race owns the root URLs, every
-// other race sits under its own slug.
-function raceHref(race, active, lang) {
-  const prefix = lang === "es" ? "/es" : "";
-  return race.slug === active.slug ? prefix || "/" : "/" + race.slug;
+function statusFor(race, c) {
+  if (isArchived(race)) return c.finished;
+  if (isRaceRunning(race)) return c.live;
+  return c.upcoming;
 }
 
 export default function RaceSwitcher() {
   const lang = useLang();
+  const pathname = usePathname();
+  const current = raceFromPathname(pathname);
+  const active = getActiveRace();
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
-  const pathname = usePathname();
-  const active = getActiveRace();
-  // What the button shows is the race you are currently looking at, which is
-  // not necessarily the live one — you may be browsing the archive.
-  const current = raceFromPathname(pathname);
-  const races = racesByDate();
   const c = COPY[lang] || COPY.en;
-  const viewingArchive = isArchived(current);
+
+  // Men/Women are categories of the same championship from the user's point
+  // of view, so list the Worlds once here and let CategorySwitcher handle sex.
+  const seenChampionship = new Set();
+  const pools = racesByDate().filter((r) => {
+    if (r.type !== "championship") return true;
+    const key = `${r.year}-${r.host?.city || ""}-${r.type}`;
+    if (seenChampionship.has(key)) return false;
+    seenChampionship.add(key);
+    return true;
+  });
 
   useEffect(() => {
     if (!open) return;
-    function onClick(e) {
-      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
-    }
-    document.addEventListener("mousedown", onClick);
-    return () => document.removeEventListener("mousedown", onClick);
+    function onDown(e) { if (ref.current && !ref.current.contains(e.target)) setOpen(false); }
+    function onKey(e) { if (e.key === "Escape") setOpen(false); }
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => { document.removeEventListener("mousedown", onDown); document.removeEventListener("keydown", onKey); };
   }, [open]);
 
-  // With only one race there is nothing to switch to — show a plain label.
-  if (races.length < 2) {
-    return (
-      <span className="race-switcher-label">
-        <span className="race-live-dot" />
-        {localised(current.shortName, lang)}
-      </span>
-    );
-  }
+  const currentLabel = current.type === "championship" ? localised(active.shortName, lang).replace(/\s[—-]\s.*$/, "") : localised(current.shortName, lang);
 
   return (
     <div className="race-switcher" ref={ref}>
-      <button type="button" className="race-switcher-btn" onClick={() => setOpen((v) => !v)}>
-        <span className={"race-live-dot" + (viewingArchive ? " archived" : "")} />
-        {localised(current.shortName, lang)}
-        <span className="race-switcher-caret">{open ? "▴" : "▾"}</span>
+      <button type="button" className="race-switcher-btn" onClick={() => setOpen((v) => !v)} aria-expanded={open} aria-haspopup="menu">
+        <span className={"race-live-dot" + (isArchived(current) ? " archived" : "")} />
+        {currentLabel}
+        <span className="race-switcher-caret" aria-hidden="true">{open ? "▴" : "▾"}</span>
       </button>
-
       {open && (
-        <div className="race-switcher-menu">
+        <div className="race-switcher-menu" role="menu">
           <span className="race-switcher-heading">{c.heading}</span>
-          {races.map((r) => {
-            const archived = isArchived(r);
+          {pools.map((r) => {
+            const href = r.slug === active.slug ? (lang === "es" ? "/es" : "/") : raceBasePath(r, lang) || "/";
+            const selected = current.type === "championship" && r.type === "championship" ? true : r.slug === current.slug;
             return (
-              <a
-                key={r.slug}
-                href={raceHref(r, active, lang)}
-                className={"race-switcher-item" + (r.slug === current.slug ? " current" : "")}
-              >
-                <span className="race-switcher-name">{localised(r.shortName, lang)}</span>
-                <span className={"race-switcher-status" + (archived ? " archived" : "")}>
-                  {archived ? c.finished : c.live}
-                </span>
+              <a key={r.slug} href={href} className={"race-switcher-item" + (selected ? " current" : "")} role="menuitem">
+                <span className="race-switcher-name">{r.type === "championship" ? localised(r.shortName, lang).replace(/\s[—-]\s.*$/, "") : localised(r.shortName, lang)}</span>
+                <span className={"race-switcher-status" + (isArchived(r) ? " archived" : "")}>{statusFor(r, c)}</span>
               </a>
             );
           })}

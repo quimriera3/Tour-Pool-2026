@@ -6,6 +6,7 @@ const article = getPreviewArticle("es");
 export const metadata = {
   title: article.metaTitle,
   description: article.metaDescription,
+  alternates: { canonical: "/es/preview", languages: { en: "/preview", es: "/es/preview" } },
 };
 
 export default function Preview() {

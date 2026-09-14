@@ -1,9 +1,2 @@
-// app/predictions/layout.js
-export const metadata = {
-  title: "Stage Predictions",
-  description: "Pick the winner of every stage of La Vuelta a España 2026. Riders ranked by how well they suit each stage profile.",
-};
-
-export default function PredictionsLayout({ children }) {
-  return children;
-}
+export const metadata = { title: "World Championships 2026 Predictions", description: "Pick the winners of the elite men's time trial and road race at the 2026 UCI Road World Championships in Montreal.", alternates: { canonical: "/predictions", languages: { en: "/predictions", es: "/es/predictions" } } };
+export default function Layout({ children }) { return children; }

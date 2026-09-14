@@ -9,14 +9,14 @@ import { useEffect, useState } from "react";
 import AuthModal from "./AuthModal";
 import RaceSwitcher from "./RaceSwitcher";
 import CategorySwitcher from "./CategorySwitcher";
-import { raceFromPathname, localised, hasJerseys, getActiveRace } from "../lib/races";
+import { raceFromPathname, localised, hasJerseys } from "../lib/races";
 import { useRaceBase } from "../lib/useRace";
 import { useSession, logoutUser } from "../lib/store";
 import { useLang, t } from "../lib/i18n";
 
 // Stage/Jersey Predictions already get their own big buttons in the sitewide
 // CTA bar (components/CtaBar.js) -- no need to repeat them here too.
-function navLinks(lang, base) {
+function navLinks(lang, base, race) {
   const prefix = base !== undefined ? base : (lang === "es" ? "/es" : "");
   return [
     { href: prefix || "/", key: "nav.home", icon: "home", mobileOnly: true },
@@ -24,7 +24,7 @@ function navLinks(lang, base) {
     // and carry an icon; the old separate red CTA bar is gone.
     { href: prefix + "/predictions", key: "nav.stages", icon: "flag", primary: true },
     // Only shown for races that actually have a general classification.
-    ...(hasJerseys(getActiveRace())
+    ...(hasJerseys(race)
       ? [{ href: prefix + "/final-classification", key: "nav.jerseys", icon: "jersey", primary: true }]
       : []),
     { href: prefix + "/leaderboard", key: "nav.leaderboard", icon: "trophy", primary: true },
@@ -64,6 +64,16 @@ function currentLangCode(pathname) {
   return match ? match.code : "en";
 }
 
+function languageHref(code, pathname) {
+  const stripped = pathname.replace(/^\/(es|fr|it|nl|ca)(?=\/|$)/, "") || "/";
+  if (code === "en") return stripped;
+  if (code === "es") return "/es" + (stripped === "/" ? "" : stripped);
+  // CA/FR/IT/NL currently have editorial landing + preview only. Preserve the
+  // preview route; for app-only screens send visitors to that language's home
+  // rather than to a broken/non-equivalent page.
+  return "/" + code + (stripped === "/preview" ? "/preview" : "");
+}
+
 function LangSwitcher({ pathname }) {
   const [open, setOpen] = useState(false);
   const current = currentLangCode(pathname);
@@ -71,42 +81,13 @@ function LangSwitcher({ pathname }) {
 
   return (
     <div className="lang-switcher" style={{ position: "relative" }}>
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        className="lang-switcher-btn"
-      >
-        {currentShort} <span style={{ fontSize: 9 }}>{open ? "▲" : "▼"}</span>
+      <button type="button" onClick={() => setOpen((v) => !v)} className="lang-switcher-btn" aria-expanded={open} aria-haspopup="menu">
+        {currentShort} <span style={{ fontSize: 9 }} aria-hidden="true">{open ? "▲" : "▼"}</span>
       </button>
       {open && (
-        <div
-          style={{
-            position: "absolute",
-            top: "100%",
-            right: 0,
-            marginTop: 4,
-            background: "var(--white)",
-            border: "1.5px solid var(--black)",
-            borderRadius: 8,
-            overflow: "hidden",
-            zIndex: 20,
-            minWidth: 140,
-          }}
-        >
+        <div className="lang-menu" role="menu">
           {LANGUAGES.map((l) => (
-            <a
-              key={l.code}
-              href={l.href}
-              style={{
-                display: "block",
-                padding: "10px 14px",
-                fontSize: 13,
-                fontWeight: 700,
-                color: l.code === current ? "var(--red)" : "var(--black)",
-                borderBottom: "1px solid var(--grey-light)",
-                textDecoration: "none",
-              }}
-            >
+            <a key={l.code} href={languageHref(l.code, pathname)} className={l.code === current ? "active" : ""} role="menuitem">
               {l.label}
             </a>
           ))}
@@ -129,16 +110,17 @@ export default function Nav() {
   }, [pathname]);
 
   const raceBase = useRaceBase();
-  const links = navLinks(lang, raceBase);
-  const logoHref = lang === "es" ? "/es" : "/";
+  const currentRace = raceFromPathname(pathname);
+  const links = navLinks(lang, raceBase, currentRace);
+  const logoHref = raceBase || "/";
 
   return (
     <nav className="nav">
       <div className="nav-inner">
         <a href={logoHref} className="logo-link">
           <span className={"brand" + (menuOpen ? " brand-hidden-mobile" : "")}>
-            <span style={{ color: "var(--accent)" }}>{localised(raceFromPathname(pathname).brandName, lang)}</span>{" "}
-            <span style={{ color: "var(--white)" }}>POOL</span>
+            <span className="brand-race">{localised(raceFromPathname(pathname).brandName, lang)}</span>{" "}
+            <span className="brand-pool">POOL</span>
           </span>
         </a>
 
@@ -150,7 +132,9 @@ export default function Nav() {
 
         <button
           className="nav-hamburger"
-          aria-label="Toggle menu"
+          aria-label={menuOpen ? "Close menu" : "Open menu"}
+          aria-expanded={menuOpen}
+          aria-controls="site-navigation"
           onClick={() => setMenuOpen((v) => !v)}
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round">
@@ -169,7 +153,7 @@ export default function Nav() {
           </svg>
         </button>
 
-        <div className={"nav-links" + (menuOpen ? " open" : "")}>
+        <div id="site-navigation" className={"nav-links" + (menuOpen ? " open" : "")}>
           {links.map((l, i) => {
             const prevPrimary = i > 0 && links[i - 1].primary;
             const needsDivider = prevPrimary && !l.primary;

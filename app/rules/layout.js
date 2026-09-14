@@ -1,9 +1,2 @@
-// app/rules/layout.js
-export const metadata = {
-  title: "Rules & Scoring",
-  description: "How Grand Tour Pool scoring works for La Vuelta 2026: 10 points for the stage winner, 5 for 2nd, 2 for 3rd, plus 3 cycling-gear prizes.",
-};
-
-export default function RulesLayout({ children }) {
-  return children;
-}
+export const metadata = { title: "World Championships Pool Rules", description: "How the 2026 World Championships prediction pool works: 10/5/2 scoring, one-hour pick deadline, tie-breaks and prizes.", alternates: { canonical: "/rules", languages: { en: "/rules", es: "/es/rules" } } };
+export default function Layout({ children }) { return children; }

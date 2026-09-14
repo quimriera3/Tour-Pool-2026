@@ -22,7 +22,7 @@ export default function Icon() {
             display: "flex",
             fontSize: 24,
             fontWeight: 900,
-            color: "#111111",
+            color: "#ffffff",
             lineHeight: 1,
           }}
         >

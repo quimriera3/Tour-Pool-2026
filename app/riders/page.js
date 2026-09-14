@@ -115,13 +115,13 @@ export default function Riders() {
               >
                 <span className="team-dot" style={{ background: teamColor(team) }} />
                 <span className="team-accordion-name">{team}</span>
-                {isTeamOfficial(team) && (
+                {isTeamOfficial(team, race) && (
                   <span className="official-badge" title={t(lang, "riders.officialLineup")}>
                     ✓ {t(lang, "riders.officialLineup")}
                   </span>
                 )}
                 <span className="team-accordion-count">
-                  {hasNoRidersAtAll ? t(lang, "riders.tbc") : visible.length + " rider" + (visible.length !== 1 ? "s" : "")}
+                  {hasNoRidersAtAll ? t(lang, "riders.tbc") : (lang === "es" ? visible.length + " corredor" + (visible.length !== 1 ? "es" : "") : visible.length + " rider" + (visible.length !== 1 ? "s" : ""))}
                 </span>
                 <span className="team-accordion-chevron">{isOpen ? "▲" : "▼"}</span>
               </button>

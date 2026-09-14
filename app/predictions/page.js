@@ -1,188 +1,217 @@
 "use client";
-// app/predictions/page.js
-import { useEffect, useState } from "react";
-import { STAGES, WEEKS, riderById, pointsForPick, stageIsLocked, stageStartDate, TYPE_LABEL } from "../../lib/data";
+
+import { useEffect, useMemo, useState } from "react";
+import { riderById, pointsForPick, stageIsLocked, stageStartDate, TYPE_LABEL } from "../../lib/data";
 import { useSession, savePick, getPicksFor, getResults } from "../../lib/store";
-import StageProfile from "../../components/StageProfile";
 import StageTypeIcon from "../../components/StageTypeIcon";
 import TeamRiderPicker from "../../components/TeamRiderPicker";
 import Podium from "../../components/Podium";
 import AutoSaveNotice from "../../components/AutoSaveNotice";
+import AuthModal from "../../components/AuthModal";
 import { useLang, t } from "../../lib/i18n";
 import { useRace, useRaceBase } from "../../lib/useRace";
+import { isChampionship, localised } from "../../lib/races";
 
-const WEEK_KEYS = ["week.1", "week.2", "week.3"];
-
-const EN_DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-const EN_MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-const ES_DAYS = ["dom", "lun", "mar", "mié", "jue", "vie", "sáb"];
-const ES_MONTHS = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
-
-function lockTimeLabel(stage, lang) {
-  const start = stageStartDate(stage);
-  const lock = new Date(start.getTime() - 60 * 60 * 1000);
-  const time = lock.toTimeString().slice(0, 5);
-  // Always show the date too, explicitly -- the lock is the same calendar
-  // day as the stage itself, but spelling it out avoids any ambiguity.
-  if (lang === "es") {
-    return ES_DAYS[lock.getDay()] + " " + lock.getDate() + " " + ES_MONTHS[lock.getMonth()] + ", " + time;
-  }
-  return EN_DAYS[lock.getDay()] + " " + lock.getDate() + " " + EN_MONTHS[lock.getMonth()] + ", " + time;
+function formatLock(stage, race, lang) {
+  const lock = new Date(stageStartDate(stage, race).getTime() - 60 * 60 * 1000);
+  const locale = lang === "es" ? "es-ES" : "en-GB";
+  const opts = {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+    ...(race.timeZone ? { timeZone: race.timeZone } : {}),
+  };
+  return new Intl.DateTimeFormat(locale, opts).format(lock) + (race.timeZone ? " · Montréal" : "");
 }
 
-function StageCard({ stage, pick, onPick, result, lang, stagePrefix }) {
-  const locked = stageIsLocked(stage);
-  const pts = result ? pointsForPick(pick, result) : null;
-  const pickedRider = pick ? riderById(pick) : null;
+function copyFor(race, lang) {
+  if (isChampionship(race)) {
+    return lang === "es"
+      ? {
+          eyebrow: "Tus pronósticos",
+          title: "Elige a los campeones del mundo",
+          subtitle: "Haz una predicción para cada prueba. Puedes cambiarla tantas veces como quieras hasta una hora antes de la salida.",
+          groupTitle: "Pruebas élite",
+          groupSubtitle: "Cada prueba puntúa por separado: 10 puntos al ganador, 5 al segundo y 2 al tercero.",
+        }
+      : {
+          eyebrow: "Your picks",
+          title: "Pick the world champions",
+          subtitle: "Make one prediction for each event. Change it as often as you like until one hour before the official start.",
+          groupTitle: "Elite events",
+          groupSubtitle: "Each event scores separately: 10 points for the winner, 5 for second and 2 for third.",
+        };
+  }
+  return {
+    eyebrow: t(lang, "predictions.eyebrow"),
+    title: t(lang, "predictions.title"),
+    subtitle: t(lang, "predictions.subtitle"),
+    groupTitle: lang === "es" ? "Etapas" : "Stages",
+    groupSubtitle: t(lang, "scoring.stage"),
+  };
+}
 
+function StageCard({ race, stage, pick, onPick, result, lang, base, saveState }) {
+  const locked = stageIsLocked(stage, undefined, race);
+  const pts = result ? pointsForPick(pick, result) : null;
+  const pickedRider = pick ? riderById(pick, race) : null;
+  const label = stage.eventName ? localised(stage.eventName, lang) : `${lang === "es" ? "Etapa" : "Stage"} ${stage.n}`;
   const podiumItems = result
-    ? [
-        { label: riderById(result.first)?.name || result.first },
-        { label: riderById(result.second)?.name || result.second },
-        { label: riderById(result.third)?.name || result.third },
-      ]
+    ? [result.first, result.second, result.third].map((id) => ({ label: riderById(id, race)?.name || id }))
     : null;
 
   return (
-    <div id={"stage-" + stage.n} className={"stage-card" + (locked && !result ? " locked" : "")}>
-      {locked && !result && <span className="locked-stamp">Locked</span>}
+    <article className={"stage-card prediction-card" + (locked && !result ? " locked" : "")}>
       <div className="stage-top">
         <span className="bib">{stage.n}</span>
-        <span className={"stage-type type-" + stage.type} style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
-          <StageTypeIcon type={stage.type} size={13} />
-          {TYPE_LABEL[stage.type]}
+        <span className={"stage-type type-" + stage.type}>
+          <StageTypeIcon type={stage.type} size={13} /> {TYPE_LABEL[stage.type]}
         </span>
       </div>
-      <div className="stage-route" style={{ marginTop: 8 }}>
-        {stage.from} → {stage.to}
-      </div>
+      <h2 className="prediction-event-title">{label}</h2>
+      <div className="stage-route">{stage.from}{stage.to !== stage.from ? " → " + stage.to : ""}</div>
       <div className="stage-meta">
-        {stage.date.split("-").reverse().join("/")} · {stage.km} km{stage.elevationGain ? " · ↗ " + stage.elevationGain.toLocaleString() + " m" : ""}
+        {stage.date.split("-").reverse().join("/")} · {stage.km} km
+        {stage.elevationGain ? " · ↗ " + stage.elevationGain.toLocaleString() + " m" : ""}
       </div>
 
-      <StageProfile type={stage.type} elevationGain={stage.elevationGain} />
-
-      <a
-        href={stagePrefix + "/stage/" + stage.n}
-        style={{ fontSize: 12, fontWeight: 700, color: "var(--red)" }}
-      >
-        {t(lang, "predictions.seeDetails")} ↗
+      <a href={base + "/stage/" + stage.n} className="text-link">
+        {t(lang, "predictions.seeDetails")} →
       </a>
 
-      {!result && (
+      {!result ? (
         <>
           <TeamRiderPicker
+            race={race}
             value={pick}
             onChange={(riderId) => onPick(stage.n, riderId)}
             disabled={locked}
             stageType={stage.type}
             selectedRiderName={pickedRider ? pickedRider.name + " — " + pickedRider.team : ""}
           />
-          {!locked && (
-            <p className="stage-meta" style={{ marginTop: 6 }}>
-              {t(lang, "predictions.closesAt")} {lockTimeLabel(stage, lang)}
-            </p>
-          )}
-          {locked && (
-            <p className="stage-meta" style={{ marginTop: 6 }}>
-              {t(lang, "predictions.locked")}
-            </p>
-          )}
-        </>
-      )}
-
-      {result && (
-        <>
-          <Podium items={podiumItems} />
-          <p className="stage-meta" style={{ marginTop: 8, textAlign: "center" }}>
-            {t(lang, "stage.yourPick")} {pick ? riderById(pick)?.name : "— " + t(lang, "stage.none") + " —"}
-          </p>
-          <div style={{ textAlign: "center" }}>
-            <span className={"points-pill points-" + pts}>{pts} {t(lang, "stage.points")}</span>
+          <div className="pick-status-row" aria-live="polite">
+            {!locked && <span>{lang === "es" ? "Cierra" : "Closes"}: {formatLock(stage, race, lang)}</span>}
+            {locked && <span>{lang === "es" ? "Predicción cerrada" : "Pick locked"}</span>}
+            {saveState === "saving" && <strong>{lang === "es" ? "Guardando…" : "Saving…"}</strong>}
+            {saveState === "saved" && <strong className="save-ok">{lang === "es" ? "Guardado ✓" : "Saved ✓"}</strong>}
+            {saveState === "error" && <strong className="save-error">{lang === "es" ? "No se ha guardado" : "Not saved"}</strong>}
           </div>
         </>
+      ) : (
+        <>
+          <Podium items={podiumItems} />
+          <p className="stage-meta result-pick-line">
+            {lang === "es" ? "Tu pick:" : "Your pick:"} {pick ? riderById(pick, race)?.name : "—"}
+          </p>
+          <div className="result-points"><span className={"points-pill points-" + pts}>{pts} pts</span></div>
+        </>
       )}
-    </div>
+    </article>
   );
 }
 
 export default function Predictions() {
   const lang = useLang();
   const race = useRace();
-  const raceBase = useRaceBase();
-  // Group this race's own events, not the active race's.
-  const weeks = (race.weeks || []).map((w) => ({
-    key: w.key,
-    stages: w.stages.map((n) => race.stages.find((st) => st.n === n)).filter(Boolean),
-  }));
-  const stagePrefix = lang === "es" ? "/es" : "";
+  const base = useRaceBase();
   const session = useSession();
   const [picks, setPicks] = useState({});
   const [results, setResults] = useState({});
+  const [saveStates, setSaveStates] = useState({});
   const [ready, setReady] = useState(false);
+  const [showAuth, setShowAuth] = useState(false);
+  const copy = copyFor(race, lang);
+
+  const groups = useMemo(() => {
+    const defined = (race.weeks || []).map((w) => ({
+      key: w.key,
+      stages: (w.stages || []).map((n) => race.stages.find((s) => s.n === n)).filter(Boolean),
+    })).filter((w) => w.stages.length);
+    return defined.length ? defined : [{ key: "all", stages: race.stages }];
+  }, [race]);
 
   useEffect(() => {
     let active = true;
-    async function load() {
-      const [userPicks, allResults] = await Promise.all([
-        session ? getPicksFor(session.id, race.slug) : Promise.resolve({}),
-        getResults(race.slug),
-      ]);
+    setReady(false);
+    Promise.all([
+      session ? getPicksFor(session.id, race.slug) : Promise.resolve({}),
+      getResults(race.slug),
+    ]).then(([userPicks, raceResults]) => {
       if (!active) return;
       setPicks(userPicks);
-      setResults(allResults);
+      setResults(raceResults);
       setReady(true);
-    }
-    load();
-    return () => {
-      active = false;
-    };
-  }, [session]);
+    });
+    return () => { active = false; };
+  }, [session, race.slug]);
 
   async function handlePick(stageN, riderId) {
     if (!session) {
-      alert(lang === "es" ? "Necesitas registrarte o iniciar sesión para hacer predicciones." : "You need to sign up or log in to make predictions.");
+      setShowAuth(true);
       return;
     }
+    const previous = picks[stageN] || null;
     setPicks((prev) => ({ ...prev, [stageN]: riderId }));
-    await savePick(session.id, stageN, riderId, race.slug);
+    setSaveStates((prev) => ({ ...prev, [stageN]: "saving" }));
+    const response = await savePick(session.id, stageN, riderId, race.slug);
+    if (response?.ok) {
+      setSaveStates((prev) => ({ ...prev, [stageN]: "saved" }));
+      window.setTimeout(() => setSaveStates((prev) => ({ ...prev, [stageN]: null })), 1800);
+    } else {
+      setPicks((prev) => ({ ...prev, [stageN]: previous }));
+      setSaveStates((prev) => ({ ...prev, [stageN]: "error" }));
+    }
   }
 
-  if (!ready) return null;
+  const completed = race.stages.filter((s) => picks[s.n]).length;
 
   return (
     <div>
-      <div className="page-header">
-        <span className="eyebrow">{t(lang, "predictions.eyebrow")}</span>
-        <h1>{t(lang, "predictions.title")}</h1>
-        <p className="subtitle">{t(lang, "predictions.subtitle")}</p>
-        <p className="scoring-note">{t(lang, "scoring.stage")}</p>
-      </div>
-
-      <div style={{ marginTop: 14 }}>
-        <AutoSaveNotice lang={lang} />
-      </div>
-
-      {weeks.map((week, i) => (
-        <div key={week.title}>
-          <div className="week-header">
-            <h2>{t(lang, WEEK_KEYS[i] + ".title")}</h2>
-            <p>{t(lang, WEEK_KEYS[i] + ".subtitle")}</p>
+      {showAuth && <AuthModal onClose={() => setShowAuth(false)} onAuth={() => setShowAuth(false)} />}
+      <div className="page-header predictions-header">
+        <span className="eyebrow">{copy.eyebrow}</span>
+        <h1>{copy.title}</h1>
+        <p className="subtitle">{copy.subtitle}</p>
+        {session && (
+          <div className="pick-progress" aria-label={`${completed} of ${race.stages.length} picks completed`}>
+            <span>{lang === "es" ? "Tus picks" : "Your picks"}</span>
+            <strong>{completed}/{race.stages.length}</strong>
+            <div><i style={{ width: `${race.stages.length ? (completed / race.stages.length) * 100 : 0}%` }} /></div>
           </div>
-          <div className="grid grid-3">
-            {STAGES.filter((s) => s.n >= week.from && s.n <= week.to).map((stage) => (
+        )}
+      </div>
+
+      <AutoSaveNotice lang={lang} />
+
+      {!ready ? (
+        <div className="grid grid-2 predictions-grid" style={{ marginTop: 18 }}>
+          {race.stages.map((s) => <div key={s.n} className="card skeleton-card" aria-hidden="true" />)}
+        </div>
+      ) : groups.map((group, i) => (
+        <section key={group.key || i} className="prediction-group">
+          <div className="week-header">
+            <h2>{isChampionship(race) ? copy.groupTitle : (lang === "es" ? `Semana ${i + 1}` : `Week ${i + 1}`)}</h2>
+            <p>{copy.groupSubtitle}</p>
+          </div>
+          <div className={"grid " + (group.stages.length <= 2 ? "grid-2" : "grid-3") + " predictions-grid"}>
+            {group.stages.map((stage) => (
               <StageCard
                 key={stage.n}
+                race={race}
                 stage={stage}
                 pick={picks[stage.n]}
                 onPick={handlePick}
                 result={results[stage.n]}
                 lang={lang}
-                stagePrefix={stagePrefix}
+                base={base}
+                saveState={saveStates[stage.n]}
               />
             ))}
           </div>
-        </div>
+        </section>
       ))}
     </div>
   );

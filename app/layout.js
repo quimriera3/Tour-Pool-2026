@@ -2,6 +2,8 @@ import "./globals.css";
 import Nav from "../components/Nav";
 import RaceTheme from "../components/RaceTheme";
 import CookieBanner from "../components/CookieBanner";
+import ConsentScripts from "../components/ConsentScripts";
+import DocumentLocale from "../components/DocumentLocale";
 import Footer from "../components/Footer";
 import { Analytics } from "@vercel/analytics/react";
 import { getActiveRace, localised } from "../lib/races";
@@ -20,7 +22,7 @@ export const metadata = {
     template: "%s | Grand Tour Pool",
   },
   description:
-    "Free 2026 UCI Road World Championships prediction pool. Predict who wins the rainbow jersey in Montreal: full route preview of the 273.4 km race, Mount Royal circuit analysis and the ten favourites.",
+    "Free 2026 UCI Road World Championships prediction pool. Pick the elite men’s time trial and road race winners in Montreal, score 10/5/2 points and compete on the live leaderboard.",
   keywords: [
     "Road World Championships 2026 predictions",
     "cycling Worlds 2026 Montreal",
@@ -35,34 +37,30 @@ export const metadata = {
     languages: {
       en: "/",
       es: "/es",
-      fr: "/fr",
-      it: "/it",
-      nl: "/nl",
-      ca: "/ca",
       "x-default": "/",
     },
   },
   openGraph: {
     title: "Road World Championships 2026 Predictions \u2014 Montreal Worlds Pool",
-    description: "Predict the rainbow jersey in Montreal: route preview, Mount Royal analysis and the ten favourites. Free to play.",
+    description: "Pick the 2026 road world champions in Montreal. Free to play: time trial and road race predictions, live leaderboard and prizes.",
     url: SITE_URL,
     siteName: "Grand Tour Pool",
     locale: "en_US",
     type: "website",
     images: [
       {
-        url: "/og-image.png?v=5",
-        width: 916,
-        height: 493,
-        alt: "Grand Tour Pool \u2014 Road World Championships 2026" + RACE_NAME,
+        url: "/og-image.png?v=6",
+        width: 1200,
+        height: 630,
+        alt: "Grand Tour Pool — " + RACE_NAME + " — Montreal 2026",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Road World Championships 2026 Predictions \u2014 Montreal Worlds Pool",
-    description: "Predict the rainbow jersey in Montreal: route preview, Mount Royal analysis and the ten favourites. Free to play.",
-    images: ["/og-image.png?v=5"],
+    description: "Pick the 2026 road world champions in Montreal. Free to play: time trial and road race predictions, live leaderboard and prizes.",
+    images: ["/og-image.png?v=6"],
   },
   robots: { index: true, follow: true },
 };
@@ -85,35 +83,11 @@ export default function RootLayout({ children }) {
             __html: `:root{--accent:${theme.accent};--accent-dark:${theme.accentDark};--accent-ink:${theme.accentInk};--accent-soft:${theme.accentSoft};}`,
           }}
         />
-        {/* Google Tag Manager */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-            })(window,document,'script','dataLayer','GTM-5JL4TSPS');`,
-          }}
-        />
-        {/* End Google Tag Manager */}
-        <script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1513665218593400"
-          crossOrigin="anonymous"
-        ></script>
       </head>
       <body>
         <RaceTheme />
-        {/* Google Tag Manager (noscript) */}
-        <noscript>
-          <iframe
-            src="https://www.googletagmanager.com/ns.html?id=GTM-5JL4TSPS"
-            height="0"
-            width="0"
-            style={{ display: "none", visibility: "hidden" }}
-          ></iframe>
-        </noscript>
-        {/* End Google Tag Manager (noscript) */}
+        <DocumentLocale />
+        <ConsentScripts />
         <Nav />
         <main className="container">{children}</main>
         <Footer />

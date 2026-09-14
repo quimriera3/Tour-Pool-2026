@@ -1,66 +1,20 @@
 export const metadata = {
   title: "Política de Privacidad",
-  description: "Política de privacidad de Grand Tour Pool: qué datos recogemos, cookies y anuncios.",
+  description: "Política de privacidad de Grand Tour Pool: cuenta, predicciones, emails opcionales, analítica y preferencias de cookies.",
+  alternates: { canonical: "/es/privacy", languages: { en: "/privacy", es: "/es/privacy" } },
 };
 
 export default function PrivacyEs() {
-  return (
-    <div>
-      <div className="page-header">
-        <span className="eyebrow">Legal</span>
-        <h1>Política de Privacidad</h1>
-        <p className="subtitle">Última actualización: junio de 2026</p>
-      </div>
-
-      <div className="card">
-        <h3 style={{ fontSize: 16 }}>Qué datos recogemos</h3>
-        <p className="subtitle" style={{ marginTop: 10 }}>
-          Cuando te registras, guardamos tu nombre y correo electrónico (a través de nuestro
-          proveedor de autenticación, Supabase) para que puedas iniciar sesión y para guardar
-          tus predicciones de etapas y maillots. No vendemos ni compartimos esta información con
-          terceros más allá de lo descrito aquí.
-        </p>
-      </div>
-
-      <div className="card" style={{ marginTop: 16 }}>
-        <h3 style={{ fontSize: 16 }}>Cookies y analítica</h3>
-        <p className="subtitle" style={{ marginTop: 10 }}>
-          Usamos una pequeña cantidad de cookies y almacenamiento local para mantener tu sesión
-          iniciada y recordar tu preferencia sobre cookies. También usamos Vercel Analytics, que
-          recoge estadísticas de visitas anónimas y agregadas (sin identificadores personales)
-          para entender cómo se usa el sitio.
-        </p>
-      </div>
-
-      <div className="card" style={{ marginTop: 16 }}>
-        <h3 style={{ fontSize: 16 }}>Publicidad</h3>
-        <p className="subtitle" style={{ marginTop: 10 }}>
-          Este sitio muestra anuncios servidos por Google AdSense. Google puede usar cookies
-          para mostrarte anuncios basados en tus visitas a este y otros sitios web. Puedes
-          aprender más sobre cómo Google usa estos datos, y gestionar tus preferencias de
-          personalización de anuncios, en{" "}
-          <a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener noreferrer" style={{ textDecoration: "underline" }}>
-            policies.google.com/technologies/partner-sites
-          </a>.
-        </p>
-      </div>
-
-      <div className="card" style={{ marginTop: 16 }}>
-        <h3 style={{ fontSize: 16 }}>Tus derechos</h3>
-        <p className="subtitle" style={{ marginTop: 10 }}>
-          Puedes pedirnos acceder, corregir o eliminar tus datos personales en cualquier momento
-          contactándonos — consulta nuestra{" "}
-          <a href="/es/contact" style={{ textDecoration: "underline" }}>página de contacto</a>.
-        </p>
-      </div>
-
-      <div className="card" style={{ marginTop: 16 }}>
-        <h3 style={{ fontSize: 16 }}>Cambios en esta política</h3>
-        <p className="subtitle" style={{ marginTop: 10 }}>
-          Podemos actualizar esta política de vez en cuando. Los cambios importantes se
-          reflejarán con una nueva fecha de &quot;última actualización&quot; arriba.
-        </p>
-      </div>
+  return <div>
+    <div className="page-header"><span className="eyebrow">Legal</span><h1>Política de Privacidad</h1><p className="subtitle">Última actualización: 14 de septiembre de 2026</p></div>
+    <div className="legal-stack">
+      <section className="card"><h2>Qué guardamos</h2><p className="subtitle">Cuando creas una cuenta, Supabase guarda la información necesaria para autenticarte y Grand Tour Pool guarda tu perfil, tus predicciones por carrera y tus puntos para que el juego funcione. No vendemos tus datos personales.</p></section>
+      <section className="card"><h2>Emails opcionales del juego</h2><p className="subtitle">Los recordatorios y avisos de resultados son opcionales. Solo se envían cuando tu perfil ha dado consentimiento explícito. Puedes cambiar esa preferencia desde los controles de tu cuenta o contactar con nosotros si necesitas ayuda.</p></section>
+      <section className="card"><h2>Cookies y analítica</h2><p className="subtitle">Usamos almacenamiento esencial para la autenticación y para recordar tu elección de cookies. Vercel Analytics proporciona estadísticas agregadas de uso. Google Tag Manager solo se carga después de pulsar “Aceptar analítica” en el aviso de consentimiento. Rechazar la analítica no impide jugar.</p></section>
+      <section className="card"><h2>Publicidad</h2><p className="subtitle">Grand Tour Pool no carga actualmente scripts publicitarios de Google AdSense. Si se activa publicidad en el futuro, actualizaremos esta política y los controles de consentimiento antes de cargar esos scripts para los visitantes que requieran consentimiento.</p></section>
+      <section className="card"><h2>Proveedores</h2><p className="subtitle">Usamos Supabase para autenticación y base de datos, Vercel para alojamiento y analítica agregada, y Resend para entregar emails transaccionales o comunicaciones del juego aceptadas por el usuario.</p></section>
+      <section className="card"><h2>Tus derechos</h2><p className="subtitle">Puedes pedir acceso, corrección o eliminación de tus datos, o retirar el consentimiento para emails opcionales, desde nuestra <a href="/es/contact">página de contacto</a>.</p></section>
+      <section className="card"><h2>Cambios</h2><p className="subtitle">Si esta política cambia de forma relevante, actualizaremos la fecha indicada arriba.</p></section>
     </div>
-  );
+  </div>;
 }

@@ -1,10 +1,2 @@
-// app/es/faq/layout.js
-export const metadata = {
-  title: "Preguntas Frecuentes — Porra La Vuelta 2026 | Grand Tour Pool",
-  description:
-    "Respuestas a las preguntas más frecuentes sobre Grand Tour Pool y La Vuelta a España 2026: cómo funciona la puntuación, cuándo cierran los picks, predicciones de maillots y todo sobre la carrera.",
-};
-
-export default function FAQEsLayout({ children }) {
-  return children;
-}
+export const metadata = { title: "FAQ — Porra Mundial de Ciclismo 2026", description: "Preguntas frecuentes sobre la porra del Mundial 2026: picks, puntuación, cierre, resultados, desempates y premios.", alternates: { canonical: "/es/faq", languages: { en: "/faq", es: "/es/faq" } } };
+export default function Layout({ children }) { return children; }

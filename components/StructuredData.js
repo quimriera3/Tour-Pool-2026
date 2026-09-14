@@ -1,20 +1,7 @@
-// components/StructuredData.js
 import { getWebSiteSchema, getSportsEventSchema } from "../lib/structuredData";
-
-export default function StructuredData({ lang, raceSlug }) {
-  const website = getWebSiteSchema(lang);
-  const sportsEvent = getSportsEventSchema(lang);
-
-  return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(website) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(sportsEvent) }}
-      />
-    </>
-  );
+export default function StructuredData({ lang = "en", raceSlug }) {
+  return <>
+    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(getWebSiteSchema(lang, raceSlug)) }} />
+    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(getSportsEventSchema(lang, raceSlug)) }} />
+  </>;
 }

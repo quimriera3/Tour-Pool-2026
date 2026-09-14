@@ -1,40 +1,14 @@
-// app/stage/[n]/layout.js
-import { STAGES, getActiveRace, localised } from "../../../lib/data";
-
-export function generateStaticParams() {
-  return STAGES.map((s) => ({ n: String(s.n) }));
-}
-
+import { getRace, localised } from "../../../lib/races";
+const RACE = getRace("worlds-2026");
+export function generateStaticParams() { return RACE.stages.map((s) => ({ n: String(s.n) })); }
 export function generateMetadata({ params }) {
-  const n = parseInt(params.n, 10);
-  const stage = STAGES.find((s) => s.n === n);
-  if (!stage) {
-    const race = getActiveRace();
-  const raceName = localised(race.name, "en");
-  const label = stage.eventName
-    ? localised(stage.eventName, "en")
-    : `Stage ${stage.n} Profile & Predictions`;
-
-  return { title: "Stage not found" };
-  }
-  const race = getActiveRace();
-  const raceName = localised(race.name, "en");
-  const label = stage.eventName
-    ? localised(stage.eventName, "en")
-    : `Stage ${stage.n} Profile & Predictions`;
-
+  const stage = RACE.stages.find((s) => s.n === Number(params.n));
+  if (!stage) return { title: "Event not found" };
+  const label = localised(stage.eventName, "en") || `Event ${stage.n}`;
   return {
-    // Event name and race name both come from the active race, so switching
-    // races never leaves a stale title behind.
-    title: {
-      absolute: `${label} | ${raceName} - Grand Tour Pool`,
-    },
-    description:
-      `Predict La Vuelta 2026 Stage ${stage.n}: ${stage.from} to ${stage.to} (${stage.km} km, ` +
-      `${stage.date.split("-").reverse().join("/")}). Free stage profile, route details, and rider picks for the best Vuelta pool online.`,
+    title: { absolute: `${label} | Road World Championships 2026` },
+    description: `${label} in Montreal: ${stage.km} km${stage.elevationGain ? `, ${stage.elevationGain.toLocaleString("en-US")} m of climbing` : ""}. Original route preview, favourites and free winner prediction.`,
+    alternates: { canonical: `/stage/${stage.n}`, languages: { en: `/stage/${stage.n}`, es: `/es/stage/${stage.n}` } },
   };
 }
-
-export default function StageLayout({ children }) {
-  return children;
-}
+export default function Layout({ children }) { return children; }

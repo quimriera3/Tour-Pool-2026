@@ -89,15 +89,15 @@ export default function TourArchive() {
         </h2>
         <p className="subtitle" style={{ marginTop: 8 }}>
           {lang === "es"
-            ? "La porra está ahora abierta para La Vuelta a España 2026."
-            : "The pool is now open for La Vuelta a España 2026."}
+            ? "La porra está ahora abierta para el Mundial de Ciclismo 2026 en Montreal."
+            : "The pool is now open for the 2026 Road World Championships in Montreal."}
         </p>
         <a
           href={lang === "es" ? "/es" : "/"}
           className="btn"
           style={{ marginTop: 14, display: "inline-block" }}
         >
-          {lang === "es" ? "Ir a La Vuelta 2026" : "Go to La Vuelta 2026"}
+          {lang === "es" ? "Ir al Mundial 2026" : "Go to Worlds 2026"}
         </a>
       </div>
     </div>

@@ -6,6 +6,8 @@ const article = getPreviewArticle("ca");
 export const metadata = {
   title: article.metaTitle,
   description: article.metaDescription,
+  alternates: { canonical: "/ca/preview" },
+  robots: { index: true, follow: true },
 };
 
 export default function Preview() {

@@ -3,15 +3,17 @@
 import { useState } from "react";
 import { registerUser, loginUser, requestPasswordReset } from "../lib/store";
 import { useLang, t } from "../lib/i18n";
+import { useRace } from "../lib/useRace";
 
 export default function AuthModal({ onClose, onAuth }) {
   const lang = useLang();
+  const race = useRace();
   const [mode, setMode] = useState("register"); // "register" | "login" | "forgot"
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [preferredLanguage, setPreferredLanguage] = useState(lang === "es" ? "es" : "en");
-  const [emailOptIn, setEmailOptIn] = useState(true);
+  const [emailOptIn, setEmailOptIn] = useState(false);
   const [error, setError] = useState("");
   const [resetSent, setResetSent] = useState(false);
 
@@ -51,7 +53,7 @@ export default function AuthModal({ onClose, onAuth }) {
       fetch("/api/send-welcome-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, lang: preferredLanguage }),
+        body: JSON.stringify({ name, email, lang: preferredLanguage, race: race.slug }),
       }).catch(() => {});
     } else {
       const res = await loginUser(email, password);

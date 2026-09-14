@@ -8,6 +8,7 @@ const article = getPreviewArticle("en", RACE);
 export const metadata = {
   title: article.metaTitle,
   description: article.metaDescription,
+  alternates: { canonical: "/women/preview", languages: { en: "/women/preview", es: "/es/women/preview" } },
 };
 
 export default function WomenPreview() {

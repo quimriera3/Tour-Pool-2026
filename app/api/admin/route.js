@@ -1,88 +1,86 @@
-// app/api/admin/route.js
-//
-// Server-side only. Checks the password against ADMIN_PASSWORD (set in
-// Vercel > Settings > Environment Variables -- never NEXT_PUBLIC_, so it's
-// never sent to the browser), then uses the service role key to pull
-// everything: real emails (from Supabase Auth, not from our own tables),
-// names, every stage pick, and every jersey pick.
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "../../../lib/supabaseAdmin";
-import { STAGES, riderById, ACTIVE_RACE_SLUG } from "../../../lib/data";
+import { getRace, ACTIVE_RACE_SLUG, localised, hasJerseys } from "../../../lib/races";
+import { riderById } from "../../../lib/data";
+
+function authorized(password) {
+  return process.env.ADMIN_PASSWORD && password === process.env.ADMIN_PASSWORD;
+}
 
 export async function POST(request) {
-  const { password } = await request.json();
+  const { password, race: requestedRace } = await request.json();
+  if (!process.env.ADMIN_PASSWORD) return NextResponse.json({ error: "ADMIN_PASSWORD is not set on the server." }, { status: 500 });
+  if (!authorized(password)) return NextResponse.json({ error: "Wrong password." }, { status: 401 });
+  if (!supabaseAdmin) return NextResponse.json({ error: "Service role key is not configured on the server." }, { status: 500 });
 
-  if (!process.env.ADMIN_PASSWORD) {
-    return NextResponse.json({ error: "ADMIN_PASSWORD is not set on the server." }, { status: 500 });
-  }
-  if (password !== process.env.ADMIN_PASSWORD) {
-    return NextResponse.json({ error: "Wrong password." }, { status: 401 });
-  }
-  if (!supabaseAdmin) {
-    return NextResponse.json({ error: "Service role key is not configured on the server." }, { status: 500 });
-  }
+  const race = getRace(requestedRace || ACTIVE_RACE_SLUG);
+  if (!race) return NextResponse.json({ error: "Unknown race." }, { status: 400 });
 
-  // Real emails + signup dates live in Supabase Auth, not in our own tables.
   const { data: authData, error: authError } = await supabaseAdmin.auth.admin.listUsers({ perPage: 1000 });
-  if (authError) {
-    return NextResponse.json({ error: authError.message }, { status: 500 });
-  }
+  if (authError) return NextResponse.json({ error: authError.message }, { status: 500 });
 
-  const [{ data: profiles }, { data: picks }, { data: finals }, { data: results }, { data: finalResultsRow }] = await Promise.all([
+  const [profilesRes, picksRes, finalsRes, resultsRes, finalResultsRes] = await Promise.all([
     supabaseAdmin.from("profiles").select("id, name, email_opt_in, preferred_language"),
-    supabaseAdmin.from("picks").select("user_id, stage_number, rider_id").eq("race", ACTIVE_RACE_SLUG),
-    supabaseAdmin.from("finals").select("user_id, yellow, green, polka, white").eq("race", ACTIVE_RACE_SLUG),
-    supabaseAdmin.from("results").select("stage_number, first, second, third").eq("race", ACTIVE_RACE_SLUG),
-    supabaseAdmin.from("final_results").select("yellow, green, polka, white").eq("race", ACTIVE_RACE_SLUG).maybeSingle(),
+    supabaseAdmin.from("picks").select("user_id, stage_number, rider_id").eq("race", race.slug),
+    supabaseAdmin.from("finals").select("user_id, yellow, green, polka, white").eq("race", race.slug),
+    supabaseAdmin.from("results").select("stage_number, first, second, third").eq("race", race.slug),
+    supabaseAdmin.from("final_results").select("yellow, green, polka, white").eq("race", race.slug).maybeSingle(),
   ]);
 
-  const nameById = {};
-  const optInById = {};
-  const langById = {};
-  (profiles || []).forEach((p) => {
-    nameById[p.id] = p.name;
-    optInById[p.id] = p.email_opt_in === true;
-    langById[p.id] = p.preferred_language || "en";
-  });
+  const dbError = [profilesRes, picksRes, finalsRes, resultsRes, finalResultsRes].find((r) => r.error)?.error;
+  if (dbError) return NextResponse.json({ error: dbError.message }, { status: 500 });
 
+  const profiles = profilesRes.data || [];
+  const picks = picksRes.data || [];
+  const finals = finalsRes.data || [];
+  const results = resultsRes.data || [];
+  const finalResultsRow = finalResultsRes.data || {};
+
+  const profileById = Object.fromEntries(profiles.map((p) => [p.id, p]));
   const picksByUser = {};
-  (picks || []).forEach((p) => {
-    picksByUser[p.user_id] = picksByUser[p.user_id] || {};
-    picksByUser[p.user_id][p.stage_number] = riderById(p.rider_id)?.name || p.rider_id;
-  });
-
-  const finalsByUser = {};
-  (finals || []).forEach((f) => {
-    finalsByUser[f.user_id] = f;
-  });
+  for (const p of picks) {
+    picksByUser[p.user_id] ||= {};
+    picksByUser[p.user_id][p.stage_number] = riderById(p.rider_id, race)?.name || p.rider_id;
+  }
+  const finalsByUser = Object.fromEntries(finals.map((f) => [f.user_id, f]));
 
   const users = (authData?.users || []).map((u) => {
+    const profile = profileById[u.id] || {};
     const userFinals = finalsByUser[u.id] || {};
-    const hasProfile = Object.prototype.hasOwnProperty.call(nameById, u.id);
     return {
       id: u.id,
       email: u.email,
-      name: hasProfile ? nameById[u.id] : "(no name set)",
+      name: profile.name || "(no name set)",
       joined: u.created_at,
       lastSignIn: u.last_sign_in_at,
-      hasProfile,
-      emailOptIn: optInById[u.id] === true,
-      preferredLanguage: langById[u.id] || "en",
+      hasProfile: Boolean(profileById[u.id]),
+      emailOptIn: profile.email_opt_in === true,
+      preferredLanguage: profile.preferred_language || "en",
       stagesPicked: Object.keys(picksByUser[u.id] || {}).length,
       picks: picksByUser[u.id] || {},
-      finals: {
-        yellow: userFinals.yellow ? riderById(userFinals.yellow)?.name || userFinals.yellow : null,
-        green: userFinals.green ? riderById(userFinals.green)?.name || userFinals.green : null,
-        polka: userFinals.polka ? riderById(userFinals.polka)?.name || userFinals.polka : null,
-        white: userFinals.white ? riderById(userFinals.white)?.name || userFinals.white : null,
-      },
+      finals: hasJerseys(race) ? {
+        yellow: userFinals.yellow ? riderById(userFinals.yellow, race)?.name || userFinals.yellow : null,
+        green: userFinals.green ? riderById(userFinals.green, race)?.name || userFinals.green : null,
+        polka: userFinals.polka ? riderById(userFinals.polka, race)?.name || userFinals.polka : null,
+        white: userFinals.white ? riderById(userFinals.white, race)?.name || userFinals.white : null,
+      } : {},
     };
   });
 
-  const resultsByStage = {};
-  (results || []).forEach((r) => {
-    resultsByStage[r.stage_number] = { first: r.first, second: r.second, third: r.third };
-  });
+  const resultsByStage = Object.fromEntries(results.map((r) => [r.stage_number, { first: r.first, second: r.second, third: r.third }]));
 
-  return NextResponse.json({ users, totalStages: STAGES.length, results: resultsByStage, finalResults: finalResultsRow || {} });
+  return NextResponse.json({
+    users,
+    totalStages: race.stages.length,
+    results: resultsByStage,
+    finalResults: finalResultsRow,
+    race: {
+      slug: race.slug,
+      name: localised(race.name, "en"),
+      category: race.category || null,
+      type: race.type,
+      hasJerseys: hasJerseys(race),
+      stages: race.stages.map((s) => ({ n: s.n, date: s.date, startTime: s.startTime, from: s.from, to: s.to, km: s.km, eventName: localised(s.eventName, "en") || null })),
+    },
+  });
 }
