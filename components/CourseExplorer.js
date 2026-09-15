@@ -23,8 +23,10 @@ const COURSE_MEDIA = {
     ttMapSource: "https://www.cyclingnews.com/races/uci-road-world-championships-2026-2026/map/",
     ttProfile: "https://cyclingoo.com/storage/media/stages/profiles/9DhwPkBplqmgVzaEBaWAvcocNuT7LCQnAQ3GBMcT.jpg",
     ttProfileSource: "https://cyclingoo.com/en/race/uci-road-world-championships-2026/485",
-    roadProfiles: "https://cdn.todomountainbike.net/images/articles/2026/recorridos-campeonato-mundo-carretera-2026-1.jpg",
-    roadProfileSource: "https://www.todomountainbike.net/competicion/montreal-presenta-recorridos-mundial-ciclismo-ruta-2026-200-dias-cita",
+    menRoadProfile: "https://www.procyclingstats.com/images/profiles/ap/bd/world-championship-2026-result-profile-e4e3872df654d1346a6d.jpg",
+    menRoadProfileSource: "https://www.procyclingstats.com/race/world-championship/2026/result/info/profiles",
+    womenRoadProfile: "https://d3g42de5vbfx19.cloudfront.net/competitions/6925ccd5734529d85ec0d1bf/stages/I5xbeF-stage_undefined_profile.png",
+    womenRoadProfileSource: "https://cyclingfantasy.cc/en/race/uci-road-world-championships-women-irr/2026/route-and-favourites",
   },
 };
 
@@ -62,10 +64,6 @@ function RealCourseMap({ race, stage, lang }) {
           decoding="async"
           referrerPolicy="no-referrer"
         />
-        <div className="course-real-badge">
-          <b>{lang === "es" ? "RECORRIDO REAL" : "REAL COURSE"}</b>
-          <span>{road ? `${stage.from} → ${stage.to}` : "Montréal · Avenue du Parc"}</span>
-        </div>
       </div>
       <MediaCredit href={source} lang={lang}>
         {lang === "es" ? "Mapa oficial UCI / Cycling Canada" : "Official UCI / Cycling Canada route map"}
@@ -90,34 +88,37 @@ function RealCourseProfile({ race, stage, lang }) {
             decoding="async"
             referrerPolicy="no-referrer"
           />
-          <div className="course-real-badge course-real-badge--dark">
-            <b>{lang === "es" ? "PERFIL REAL" : "REAL PROFILE"}</b>
-            <span>{stage.km} km · {stage.elevationGain?.toLocaleString()} m ↑</span>
-          </div>
         </div>
         <MediaCredit href={COURSE_MEDIA.shared.ttProfileSource} lang={lang}>
-          {lang === "es" ? "Perfil publicado del recorrido" : "Published course elevation profile"}
+          {women
+          ? (lang === "es" ? "Perfil publicado · élite femenina" : "Published profile · elite women")
+          : (lang === "es" ? "Perfil publicado · élite masculina" : "Published profile · elite men")}
         </MediaCredit>
       </div>
     );
   }
 
+  const profileSrc = women ? COURSE_MEDIA.shared.womenRoadProfile : COURSE_MEDIA.shared.menRoadProfile;
+  const profileSource = women ? COURSE_MEDIA.shared.womenRoadProfileSource : COURSE_MEDIA.shared.menRoadProfileSource;
+
   return (
     <div className="course-real-shell">
-      <div
-        className={`course-real-road-profile ${women ? "is-women" : "is-men"}`}
-        role="img"
-        aria-label={women
-          ? (lang === "es" ? "Perfil real de la prueba femenina en ruta de Montreal 2026" : "Real profile of the Montréal 2026 women's road race")
-          : (lang === "es" ? "Perfil real de la prueba masculina en ruta de Montreal 2026" : "Real profile of the Montréal 2026 men's road race")}
-      >
-        <div className="course-real-badge course-real-badge--dark">
-          <b>{lang === "es" ? "PERFIL REAL" : "REAL PROFILE"}</b>
-          <span>{stage.km} km · {stage.elevationGain?.toLocaleString()} m ↑</span>
-        </div>
+      <div className="course-real-road-profile">
+        <img
+          className="course-real-road-profile-img"
+          src={profileSrc}
+          alt={women
+            ? (lang === "es" ? "Perfil real de la prueba femenina en ruta de Montreal 2026" : "Real profile of the Montréal 2026 women's road race")
+            : (lang === "es" ? "Perfil real de la prueba masculina en ruta de Montreal 2026" : "Real profile of the Montréal 2026 men's road race")}
+          loading="lazy"
+          decoding="async"
+          referrerPolicy="no-referrer"
+        />
       </div>
-      <MediaCredit href={COURSE_MEDIA.shared.roadProfileSource} lang={lang}>
-        {lang === "es" ? "Perfil publicado del recorrido" : "Published course elevation profile"}
+      <MediaCredit href={profileSource} lang={lang}>
+        {women
+          ? (lang === "es" ? "Perfil publicado · élite femenina" : "Published profile · elite women")
+          : (lang === "es" ? "Perfil publicado · élite masculina" : "Published profile · elite men")}
       </MediaCredit>
     </div>
   );

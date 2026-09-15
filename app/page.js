@@ -16,13 +16,13 @@ import { useLang } from "../lib/i18n";
 function raceIntro(race, lang) {
   if (race.slug === "worlds-2026-women") {
     return lang === "es"
-      ? { eyebrow: "ÉLITE FEMENINA · MONTRÉAL · 20–26 SEPTIEMBRE", titleLines: ["ELIGE A LAS", "CAMPEONAS"], body: "Dos carreras. Dos picks. Elige quién vestirá el arcoíris en la contrarreloj y en la prueba en ruta." }
-      : { eyebrow: "ELITE WOMEN · MONTRÉAL · 20–26 SEPTEMBER", titleLines: ["PICK THE", "CHAMPIONS"], body: "Two races. Two picks. Choose who takes the rainbow jersey in the time trial and the road race." };
+      ? { eyebrow: "ÉLITE FEMENINA · MONTRÉAL · 20–26 SEPTIEMBRE", titleLines: ["CAMPEONAS", "DEL MUNDO"], body: "Dos carreras. Dos picks. Elige quién vestirá el arcoíris en la contrarreloj y en la prueba en ruta." }
+      : { eyebrow: "ELITE WOMEN · MONTRÉAL · 20–26 SEPTEMBER", titleLines: ["WOMEN'S", "WORLD CHAMPIONS"], body: "Two races. Two picks. Choose who takes the rainbow jersey in the time trial and the road race." };
   }
   if (race.slug === "worlds-2026") {
     return lang === "es"
-      ? { eyebrow: "ÉLITE MASCULINA · MONTRÉAL · 20–27 SEPTIEMBRE", titleLines: ["ELIGE A LOS", "CAMPEONES"], body: "Dos carreras. Dos picks. Elige quién vestirá el arcoíris en la contrarreloj y en la prueba en ruta." }
-      : { eyebrow: "ELITE MEN · MONTRÉAL · 20–27 SEPTEMBER", titleLines: ["PICK THE", "CHAMPIONS"], body: "Two races. Two picks. Choose who takes the rainbow jersey in the time trial and the road race." };
+      ? { eyebrow: "ÉLITE MASCULINA · MONTRÉAL · 20–27 SEPTIEMBRE", titleLines: ["CAMPEONES", "DEL MUNDO"], body: "Dos carreras. Dos picks. Elige quién vestirá el arcoíris en la contrarreloj y en la prueba en ruta." }
+      : { eyebrow: "ELITE MEN · MONTRÉAL · 20–27 SEPTEMBER", titleLines: ["MEN'S", "WORLD CHAMPIONS"], body: "Two races. Two picks. Choose who takes the rainbow jersey in the time trial and the road race." };
   }
   return {
     eyebrow: `${localised(race.name, lang)} · ${race.startDate} — ${race.endDate}`,
@@ -123,7 +123,7 @@ export default function Dashboard() {
             <div className="game-control-picks">
               {race.stages.map((stage) => {
                 const rider = picks[stage.n] ? riderById(picks[stage.n], race) : null;
-                return <div key={stage.n} className={rider ? "ready" : "missing"}><span>{stage.type === "itt" ? "ITT" : (lang === "es" ? "RUTA" : "ROAD")}</span><strong>{rider ? `${countryFlag(rider.team)} ${rider.name}` : (lang === "es" ? "Sin pick" : "No pick")}</strong><i>{rider ? "✓" : "○"}</i></div>;
+                return <a href={`${base}/predictions#event-${stage.n}`} key={stage.n} className={rider ? "ready" : "missing"}><span>{stage.type === "itt" ? "ITT" : (lang === "es" ? "RUTA" : "ROAD")}</span><strong>{rider ? `${countryFlag(rider.team)} ${rider.name}` : (lang === "es" ? "Sin pick" : "No pick")}</strong><i>{rider ? "✓" : "○"}</i></a>;
               })}
             </div>
           )}
@@ -169,7 +169,7 @@ export default function Dashboard() {
           </div>
           <div className="contender-strip">
             {contenders.map((rider, index) => (
-              <a href={base + "/stage/" + featureStage.n} key={rider.id} className="contender-tile">
+              <a href={base + "/predictions#event-" + featureStage.n} key={rider.id} className="contender-tile" title={lang === "es" ? "Ir al pick de Ruta" : "Go to the road-race pick"}>
                 <span className="contender-rank">{String(index + 1).padStart(2, "0")}</span>
                 <span className="contender-avatar">{initials(rider.name)}</span>
                 <span className="contender-copy"><strong>{rider.name}</strong><small>{countryFlag(rider.team)} {rider.team}</small></span>
@@ -180,10 +180,7 @@ export default function Dashboard() {
         </section>
       )}
 
-      <section className="cross-pool-cta">
-        <div><span className="eyebrow">{lang === "es" ? "DOBLE RETO" : "DOUBLE CHALLENGE"}</span><h2>{race.category === "women" ? (lang === "es" ? "¿Ya has jugado la masculina?" : "Played the men's pool yet?") : (lang === "es" ? "¿Ya has jugado la femenina?" : "Played the women's pool yet?")}</h2><p>{lang === "es" ? "Son clasificaciones separadas. Puedes competir en las dos." : "They are separate leaderboards. You can play both."}</p></div>
-        <a href={otherCategoryHref} className="btn secondary">{race.category === "women" ? (lang === "es" ? "Ir a masculino" : "Play men's") : (lang === "es" ? "Ir a femenino" : "Play women's")} →</a>
-      </section>
+
 
       <div className="grid grid-2 home-dashboard-grid">
         <section className="card home-score-card">

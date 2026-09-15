@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { teamsList, teamColor, riderSpecialty, specialtyToType, TYPE_COLOR, isTeamOfficial } from "../lib/data";
+import { teamsList, teamColor, riderSpecialty, specialtyToType, TYPE_COLOR, isTeamOfficial, countryFlag } from "../lib/data";
 import StageTypeIcon from "./StageTypeIcon";
 import { useLang } from "../lib/i18n";
 
@@ -73,7 +73,9 @@ export default function TeamRiderPicker({ race, value, onChange, disabled, selec
   }
 
   const searchMatches = query
-    ? teams.flatMap(({ team, riders }) => riders.filter((r) => r.name.toLowerCase().includes(query)).map((r) => ({ ...r, team })))
+    ? teams.flatMap(({ team, riders }) => riders
+        .filter((r) => `${r.name} ${team}`.toLowerCase().includes(query))
+        .map((r) => ({ ...r, team })))
     : null;
 
   return (
@@ -112,7 +114,7 @@ export default function TeamRiderPicker({ race, value, onChange, disabled, selec
                 const specType = specialtyToType(riderSpecialty(r));
                 return (
                   <button key={r.id} type="button" onClick={() => pick(r.id)} className={"picker-rider" + (value === r.id ? " selected" : "")}>
-                    <span className="team-dot" style={{ background: teamColor(r.team) }} />
+                    <span className="picker-country-flag" aria-hidden="true">{countryFlag(r.team)}</span>
                     <StageTypeIcon type={specType} size={13} color={TYPE_COLOR[specType]} />
                     <span className="picker-rider-name">{r.name}</span>
                     <span className="picker-rider-team">{r.team}</span>
@@ -127,7 +129,7 @@ export default function TeamRiderPicker({ race, value, onChange, disabled, selec
                 return (
                   <div key={team} className="picker-team">
                     <button type="button" onClick={() => setOpenTeam(isOpen ? null : team)} className={"picker-team-btn" + (isOpen ? " open" : "")} aria-expanded={isOpen}>
-                      <span className="team-dot" style={{ background: teamColor(team) }} />
+                      <span className="picker-country-flag" aria-hidden="true">{countryFlag(team)}</span>
                       <span className="picker-team-name">{team} {isTeamOfficial(team, race) && <span className="official-badge">✓</span>}</span>
                       <span className="picker-count">{riders.length}</span>
                       <span aria-hidden="true">{isOpen ? "▲" : "▼"}</span>

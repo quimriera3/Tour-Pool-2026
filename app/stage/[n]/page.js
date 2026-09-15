@@ -38,6 +38,7 @@ export default function StageDetail() {
   const [mounted, setMounted] = useState(false);
   const [saveState, setSaveState] = useState(null);
   const [showAuth, setShowAuth] = useState(false);
+  const [pendingPick, setPendingPick] = useState(null);
 
   useEffect(() => setMounted(true), []);
 
@@ -54,18 +55,8 @@ export default function StageDetail() {
     return () => { active = false; };
   }, [session, n, race.slug]);
 
-  if (!stage) {
-    return (
-      <div className="page-header">
-        <h1>{lang === "es" ? "Prueba no encontrada" : "Event not found"}</h1>
-        <p className="subtitle">{lang === "es" ? "Esta prueba no existe en esta competición." : "This event does not exist in this competition."}</p>
-        <a href={base + "/predictions"} className="btn">{lang === "es" ? "Volver a los picks" : "Back to picks"}</a>
-      </div>
-    );
-  }
-
   async function handlePick(riderId) {
-    if (!session) { setShowAuth(true); return; }
+    if (!session) { setPendingPick(riderId); setShowAuth(true); return; }
     const previous = pick;
     setPick(riderId);
     setSaveState("saving");
@@ -79,6 +70,23 @@ export default function StageDetail() {
     }
   }
 
+  useEffect(() => {
+    if (!session || !pendingPick) return;
+    const queued = pendingPick;
+    setPendingPick(null);
+    handlePick(queued);
+  }, [session, pendingPick]);
+
+  if (!stage) {
+    return (
+      <div className="page-header">
+        <h1>{lang === "es" ? "Prueba no encontrada" : "Event not found"}</h1>
+        <p className="subtitle">{lang === "es" ? "Esta prueba no existe en esta competición." : "This event does not exist in this competition."}</p>
+        <a href={base + "/predictions"} className="btn">{lang === "es" ? "Volver a los picks" : "Back to picks"}</a>
+      </div>
+    );
+  }
+
   const locked = mounted ? stageIsLocked(stage, undefined, race) : true;
   const pts = result ? pointsForPick(pick, result) : null;
   const pickedRider = pick ? riderById(pick, race) : null;
@@ -88,10 +96,18 @@ export default function StageDetail() {
   const label = stage.eventName ? localised(stage.eventName, lang) : `${lang === "es" ? "Etapa" : "Stage"} ${stage.n}`;
   const podiumItems = result ? [result.first, result.second, result.third].map((id) => ({ label: riderById(id, race)?.name || id })) : null;
 
-  const navBlock = (
+  const navBlock = isChampionship(race) ? (
+    <div className="stage-nav stage-nav-game">
+      <a href={base + "/predictions"} className="stage-nav-link stage-nav-back">← {lang === "es" ? "Todos los picks" : "All picks"}</a>
+      <div className="stage-nav-event-links">
+        {prevStage && <a href={base + "/stage/" + prevStage.n} className="stage-nav-link">← {prevStage.type === "itt" ? "ITT" : (lang === "es" ? "Ruta" : "Road race")}</a>}
+        {nextStage && <a href={base + "/stage/" + nextStage.n} className="stage-nav-link stage-nav-next">{nextStage.type === "itt" ? "ITT" : (lang === "es" ? "Ruta" : "Road race")} →</a>}
+      </div>
+    </div>
+  ) : (
     <div className="stage-nav">
       {prevStage ? <a href={base + "/stage/" + prevStage.n} className="stage-nav-link">← {prevStage.eventName ? localised(prevStage.eventName, lang) : `${lang === "es" ? "Etapa" : "Stage"} ${prevStage.n}`}</a> : <span className="stage-nav-link disabled">←</span>}
-      <a href={base + "/predictions"} className="stage-nav-link center">{lang === "es" ? "Todos los picks" : "All picks"}</a>
+      <a href={base + "/predictions"} className="stage-nav-link center">{lang === "es" ? "Todas las etapas" : "All stages"}</a>
       {nextStage ? <a href={base + "/stage/" + nextStage.n} className="stage-nav-link">{nextStage.eventName ? localised(nextStage.eventName, lang) : `${lang === "es" ? "Etapa" : "Stage"} ${nextStage.n}`} →</a> : <span className="stage-nav-link disabled">→</span>}
     </div>
   );
@@ -113,28 +129,14 @@ export default function StageDetail() {
         {!result && <div className="event-detail-countdown"><GameCountdown stage={stage} race={race} lang={lang} /></div>}
       </div>
 
-      {isChampionship(race) ? (
-        <CourseExplorer stage={stage} race={race} lang={lang} />
-      ) : (
-        <section className="card" aria-labelledby={"course-character-" + n}>
-          <div className="section-title-row">
-            <h2 id={"course-character-" + n}>{lang === "es" ? "Carácter del recorrido" : "Course character"}</h2>
-            <span className="data-note">{lang === "es" ? "visual orientativo" : "illustrative visual"}</span>
+      <section id="make-pick" className="card pick-card event-pick-first" style={{ marginTop: 12 }} aria-labelledby={"stage-pick-" + n}>
+        <div className="event-pick-first-head">
+          <div>
+            <span className="mini-eyebrow">{lang === "es" ? "JUEGA PRIMERO" : "PLAY FIRST"}</span>
+            <h2 id={"stage-pick-" + n}>{lang === "es" ? "Tu predicción" : "Your pick"}</h2>
           </div>
-          <StageProfile type={stage.type} elevationGain={stage.elevationGain} />
-        </section>
-      )}
-
-      <section className="card" style={{ marginTop: 16 }} aria-labelledby={"stage-preview-" + n}>
-        <h2 id={"stage-preview-" + n}>{lang === "es" ? "Previa" : "Preview"}</h2>
-        <p className="subtitle" style={{ marginTop: 10 }}>{lang === "es" && stage.previewEs ? stage.previewEs : stage.preview}</p>
-      </section>
-
-      <StageFavourites stage={stage} lang={lang} race={race} />
-
-      <section className="card pick-card" style={{ marginTop: 16 }} aria-labelledby={"stage-pick-" + n}>
-        <h2 id={"stage-pick-" + n}>{lang === "es" ? "Tu predicción" : "Your pick"}</h2>
-        <p className="scoring-note">10 pts · 5 pts · 2 pts</p>
+          <p className="scoring-note">10 {lang === "es" ? "puntos" : "points"} · 5 {lang === "es" ? "puntos" : "points"} · 2 {lang === "es" ? "puntos" : "points"}</p>
+        </div>
 
         {!result ? (
           <>
@@ -165,6 +167,27 @@ export default function StageDetail() {
           </>
         )}
       </section>
+
+      {isChampionship(race) ? (
+        <div id="course">
+          <CourseExplorer stage={stage} race={race} lang={lang} />
+        </div>
+      ) : (
+        <section className="card" aria-labelledby={"course-character-" + n}>
+          <div className="section-title-row">
+            <h2 id={"course-character-" + n}>{lang === "es" ? "Carácter del recorrido" : "Course character"}</h2>
+            <span className="data-note">{lang === "es" ? "visual orientativo" : "illustrative visual"}</span>
+          </div>
+          <StageProfile type={stage.type} elevationGain={stage.elevationGain} />
+        </section>
+      )}
+
+      <section className="card" style={{ marginTop: 16 }} aria-labelledby={"stage-preview-" + n}>
+        <h2 id={"stage-preview-" + n}>{lang === "es" ? "Previa" : "Preview"}</h2>
+        <p className="subtitle" style={{ marginTop: 10 }}>{lang === "es" && stage.previewEs ? stage.previewEs : stage.preview}</p>
+      </section>
+
+      <StageFavourites stage={stage} lang={lang} race={race} />
 
       <div style={{ marginTop: 16 }}>{navBlock}</div>
     </article>

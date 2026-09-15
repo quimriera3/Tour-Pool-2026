@@ -1,7 +1,7 @@
 "use client";
 
 import { useLang } from "../../lib/i18n";
-import { useRace } from "../../lib/useRace";
+import { useRace, useRaceBase } from "../../lib/useRace";
 import { hasJerseys, isChampionship, localised } from "../../lib/races";
 
 function Rule({ n, title, children }) {
@@ -11,6 +11,7 @@ function Rule({ n, title, children }) {
 export default function Rules() {
   const lang = useLang();
   const race = useRace();
+  const base = useRaceBase();
   const championship = isChampionship(race);
   const jerseys = hasJerseys(race);
   const es = lang === "es";
@@ -21,6 +22,7 @@ export default function Rules() {
         <span className="eyebrow">{es ? "Reglas del juego" : "Game rules"}</span>
         <h1>{es ? "Normas y puntuación" : "Rules & scoring"}</h1>
         <p className="subtitle">{localised(race.name, lang)} · {es ? "versión vigente" : "current rules"}</p>
+        {championship && <div className="page-header-actions"><a href={base + "/predictions"} className="btn hero-primary">{es ? "JUGAR AHORA" : "PLAY NOW"} →</a></div>}
       </div>
 
       <div className="rules-list">

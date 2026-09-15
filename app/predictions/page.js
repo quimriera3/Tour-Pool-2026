@@ -70,7 +70,7 @@ function StageCard({ race, stage, pick, onPick, result, lang, base, saveState })
     : null;
 
   return (
-    <article className={"stage-card prediction-card game-pick-card" + (locked && !result ? " locked" : "") + (pick ? " has-selection" : "")}>
+    <article id={`event-${stage.n}`} className={"stage-card prediction-card game-pick-card" + (locked && !result ? " locked" : "") + (pick ? " has-selection" : "")}>
       <div className="game-card-topline">
         <span className="game-event-index">{String(stage.n).padStart(2, "0")}</span>
         <span className={"stage-type type-" + stage.type}>
@@ -151,6 +151,7 @@ export default function Predictions() {
   const [saveStates, setSaveStates] = useState({});
   const [ready, setReady] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
+  const [pendingPick, setPendingPick] = useState(null);
   const copy = copyFor(race, lang);
 
   const groups = useMemo(() => {
@@ -178,6 +179,7 @@ export default function Predictions() {
 
   async function handlePick(stageN, riderId) {
     if (!session) {
+      setPendingPick({ stageN, riderId });
       setShowAuth(true);
       return;
     }
@@ -193,6 +195,14 @@ export default function Predictions() {
       setSaveStates((prev) => ({ ...prev, [stageN]: "error" }));
     }
   }
+
+
+  useEffect(() => {
+    if (!session || !pendingPick) return;
+    const queued = pendingPick;
+    setPendingPick(null);
+    handlePick(queued.stageN, queued.riderId);
+  }, [session, pendingPick]);
 
   const completed = race.stages.filter((s) => picks[s.n]).length;
 

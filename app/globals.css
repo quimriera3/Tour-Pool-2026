@@ -3655,3 +3655,470 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   .course-real-badge span { font-size:9px; }
   .course-real-credit { align-items:flex-start; padding:8px 10px 10px; font-size:8px; }
 }
+
+/* ========================================================================
+   v100 — navigation clarity, friction reduction and route-media polish
+   ======================================================================== */
+
+/* The Men/Women choice is a primary game decision, not a utility tucked into
+   the account tools. Keep it large, persistent and on its own row. */
+.nav-category-row {
+  border-top:1px solid #23262b;
+  background:#15171b;
+}
+.nav-category-inner {
+  max-width:1180px;
+  min-height:48px;
+  margin:0 auto;
+  padding:7px 20px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+}
+.nav-category-kicker {
+  color:#7f868e;
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:1.05px;
+  text-transform:uppercase;
+  white-space:nowrap;
+}
+.nav-category-row .cat-switch {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  width:min(100%,360px);
+  padding:4px;
+  gap:4px;
+  border:1px solid #30343a;
+  border-radius:12px;
+  background:#202329;
+}
+[data-surface="light"] .nav-category-row .cat-switch { background:#202329; border-color:#30343a; }
+.nav-category-row .cat-switch-btn {
+  min-height:34px;
+  display:grid;
+  place-items:center;
+  padding:8px 18px;
+  border-radius:8px;
+  color:#a7adb5;
+  font-size:10px;
+  font-weight:950;
+  letter-spacing:.65px;
+  text-transform:uppercase;
+}
+.nav-category-row .cat-switch-btn:hover { color:#fff; background:#292d33; }
+.nav-category-row .cat-switch-btn.active,
+[data-surface="light"] .nav-category-row .cat-switch-btn.active {
+  background:#fff;
+  color:#111;
+  box-shadow:0 2px 9px rgba(0,0,0,.18);
+}
+
+/* Keep the utility cluster lightweight now that category lives below. */
+.nav-v98-tools { min-width:auto; }
+
+/* Home game-status rows are now shortcuts straight into the relevant pick. */
+.game-control-picks > a {
+  display:grid;
+  grid-template-columns:45px minmax(0,1fr) 20px;
+  align-items:center;
+  gap:10px;
+  min-height:53px;
+  padding:10px 22px;
+  border-bottom:1px solid #eef0f2;
+  color:inherit;
+  text-decoration:none;
+}
+.game-control-picks > a:hover { background:#fafbfc; }
+.game-control-picks > a > span { color:var(--text-muted); font-size:9px; font-weight:900; letter-spacing:.7px; }
+.game-control-picks > a strong { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:12px; }
+.game-control-picks > a i { font-style:normal; font-weight:900; text-align:right; }
+.game-control-picks > a.ready i { color:var(--success); }
+.game-control-picks > a.missing i { color:#adb2b8; }
+
+/* Event cards have two explicit jobs now: PLAY and inspect the course. */
+.game-event-card h3 a { color:inherit; text-decoration:none; }
+.game-event-card h3 a:hover { color:var(--accent); }
+.game-event-course-note a {
+  flex:0 0 auto;
+  color:var(--accent);
+  font-size:7.5px;
+  font-weight:900;
+  letter-spacing:.45px;
+  text-decoration:none;
+}
+.game-event-course-note a:hover { text-decoration:underline; text-underline-offset:2px; }
+.game-event-action { text-decoration:none; }
+.game-event-action.selected b { font-size:9px; letter-spacing:.6px; }
+
+/* Hash navigation lands below the sticky two-row header. */
+.game-pick-card,
+#make-pick,
+#course { scroll-margin-top:140px; }
+
+/* On event detail pages the game action comes first; analysis follows. */
+.event-pick-first {
+  border-color:color-mix(in srgb,var(--accent) 24%,#dfe3e7);
+  box-shadow:0 12px 32px rgba(17,17,17,.065);
+}
+.event-pick-first-head {
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:16px;
+  margin-bottom:8px;
+}
+.event-pick-first-head h2 { margin-top:3px; }
+.event-pick-first-head .scoring-note { margin:0; text-align:right; }
+
+.stage-nav-game {
+  align-items:center;
+  min-height:54px;
+  padding:10px 0;
+}
+.stage-nav-game .stage-nav-back {
+  border-color:#d9dde2;
+  background:#fff;
+  color:#30343a;
+}
+.stage-nav-event-links { display:flex; align-items:center; gap:7px; margin-left:auto; }
+.stage-nav-game .stage-nav-next { border-color:var(--accent); color:var(--accent); }
+
+/* Real media must be displayed as real images, never as a crop of a combined
+   men+women artwork. This prevents the neighbouring profile bleeding through. */
+.course-real-map-frame,
+.course-real-profile-frame,
+.course-real-road-profile {
+  height:auto;
+  aspect-ratio:auto;
+  background:#fff;
+}
+.course-real-map-frame.is-road,
+.course-real-map-frame.is-tt { aspect-ratio:auto; max-height:none; }
+.course-real-img {
+  width:100%;
+  height:auto;
+  max-height:720px;
+  object-fit:contain;
+  object-position:center;
+  background:#fff;
+}
+.course-real-map-frame.is-road .course-real-img,
+.course-real-map-frame.is-tt .course-real-img { object-position:center; }
+.course-real-profile-frame.is-tt-profile {
+  min-height:0;
+  padding:18px 16px 12px;
+  background:#fff;
+}
+.course-real-profile-img {
+  width:100%;
+  height:auto;
+  max-height:330px;
+  object-fit:contain;
+  object-position:center;
+}
+.course-real-road-profile {
+  overflow:hidden;
+  background:#fff;
+  background-image:none;
+}
+.course-real-road-profile-img {
+  display:block;
+  width:100%;
+  height:auto;
+  max-height:390px;
+  object-fit:contain;
+  object-position:center;
+  background:#fff;
+}
+.course-real-badge { pointer-events:none; }
+
+@media (max-width:1040px) {
+  .nav-category-inner { min-height:46px; padding:6px 14px; }
+  .nav-category-row .cat-switch { width:min(100%,330px); }
+}
+
+@media (max-width:700px) {
+  .nav-category-inner {
+    min-height:auto;
+    padding:7px 12px 8px;
+    display:block;
+  }
+  .nav-category-kicker { display:none; }
+  .nav-category-row .cat-switch { width:100%; }
+  .nav-category-row .cat-switch-btn { min-height:38px; font-size:10.5px; }
+  .event-pick-first-head { align-items:flex-start; flex-direction:column; gap:5px; }
+  .event-pick-first-head .scoring-note { text-align:left; }
+  .stage-nav-game { gap:8px; }
+  .stage-nav-game .stage-nav-link { min-height:38px; display:inline-flex; align-items:center; }
+  .stage-nav-event-links { min-width:0; margin-left:auto; }
+  .stage-nav-event-links .stage-nav-link { max-width:145px; overflow:hidden; text-overflow:ellipsis; }
+  .course-real-profile-frame.is-tt-profile { padding:12px 8px 8px; }
+  .course-real-profile-img,
+  .course-real-road-profile-img { max-height:none; }
+}
+
+@media (max-width:430px) {
+  .nav-category-row .cat-switch-btn { padding:8px 10px; }
+  .stage-nav-game { align-items:stretch; flex-direction:column; }
+  .stage-nav-event-links { width:100%; margin-left:0; justify-content:flex-end; }
+  .stage-nav-event-links .stage-nav-link { flex:1; max-width:none; justify-content:center; }
+  .stage-nav-game .stage-nav-back { width:100%; justify-content:center; }
+}
+
+.nav-v100-mobile-play { display:none; }
+@media (max-width:1040px) {
+  .nav-v100-mobile-play {
+    min-height:36px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    padding:8px 13px;
+    border-radius:9px;
+    background:var(--accent);
+    color:var(--accent-ink);
+    font-size:9px;
+    font-weight:950;
+    letter-spacing:.55px;
+    text-decoration:none;
+  }
+}
+@media (max-width:430px) {
+  .nav-v100-mobile-play { min-height:34px; padding:7px 10px; }
+}
+
+/* ========================================================================
+   v100.1 — UX pass: visible category choice, clean course media, fewer exits
+   ======================================================================== */
+
+/* Men / Women is a primary choice. Make it impossible to miss. */
+.nav-category-row {
+  background:#0d0f12;
+  border-top:1px solid #24272d;
+  border-bottom:1px solid #24272d;
+}
+.nav-category-inner {
+  min-height:66px;
+  padding:9px 20px;
+  gap:24px;
+}
+.nav-category-kicker {
+  color:#a1a7af;
+  font-size:10px;
+  letter-spacing:1.25px;
+}
+.nav-category-row .cat-switch {
+  width:min(100%,520px);
+  padding:5px;
+  gap:5px;
+  border-radius:14px;
+  border-color:#343941;
+  background:#1d2025;
+}
+.nav-category-row .cat-switch-btn {
+  min-height:46px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:8px 20px;
+  border-radius:10px;
+  text-decoration:none;
+}
+.nav-category-row .cat-switch-btn strong {
+  color:inherit;
+  font-size:12px;
+  font-weight:950;
+  letter-spacing:.55px;
+  text-transform:uppercase;
+}
+.nav-category-row .cat-switch-btn small {
+  color:#747b84;
+  font-size:8px;
+  font-weight:850;
+  letter-spacing:.4px;
+  text-transform:uppercase;
+}
+.nav-category-row .cat-switch-btn.active small { color:#6c7178; }
+.nav-category-row .cat-switch-btn:hover small { color:#b7bcc2; }
+.nav-category-row .cat-switch-btn.active:hover small { color:#6c7178; }
+
+/* Route images are treated like editorial photography: no overlays, no crops. */
+.course-visual-card--real {
+  overflow:hidden;
+  border-color:#dde1e5;
+  background:#fff;
+  box-shadow:0 10px 28px rgba(18,22,27,.055);
+}
+.course-visual-card--real .course-visual-title {
+  padding:15px 17px 13px;
+  border-bottom:1px solid #eceef1;
+  background:#fff;
+}
+.course-real-shell { background:#fff; }
+.course-real-map-frame,
+.course-real-profile-frame,
+.course-real-road-profile {
+  overflow:hidden;
+  padding:0;
+  background:#fff;
+}
+.course-real-img,
+.course-real-profile-img,
+.course-real-road-profile-img {
+  display:block;
+  width:100%;
+  height:auto;
+  max-height:none;
+  object-fit:contain;
+  object-position:center;
+  background:#fff;
+}
+.course-real-badge { display:none; }
+.course-real-credit {
+  min-height:40px;
+  padding:10px 14px;
+  border-top:1px solid #eceef1;
+  background:#fafbfc;
+  font-size:9px;
+}
+.course-real-credit span { color:#737a82; }
+.course-real-credit a { font-weight:850; }
+
+/* Riders is a game funnel, not an exit to another website. */
+.page-header-actions { margin-top:17px; display:flex; gap:8px; flex-wrap:wrap; }
+.rider-event-badges > a,
+.rider-event-badges > b,
+.rider-pool-badge {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:24px;
+  padding:5px 8px;
+  border-radius:999px;
+  font-size:7.5px;
+  font-weight:950;
+  letter-spacing:.55px;
+  line-height:1;
+  text-decoration:none;
+}
+.legend-road, .rider-event-badges > a.road, .rider-event-badges > b.road { background:#edf5ff; color:#0b4ea2; }
+.legend-itt, .rider-event-badges > a.itt, .rider-event-badges > b.itt { background:#f0ecff; color:#6042a6; }
+.rider-event-badges > a:hover { filter:brightness(.96); box-shadow:0 0 0 1px currentColor inset; }
+.rider-external-link {
+  width:28px;
+  height:28px;
+  display:inline-grid;
+  place-items:center;
+  flex:0 0 auto;
+  border-radius:8px;
+  color:#8a9199;
+  text-decoration:none;
+  font-size:11px;
+}
+.rider-external-link:hover { background:#f0f2f4; color:#20242a; }
+.rider-row-v98,
+.rider-result-card { cursor:default; }
+
+/* Make the large home headline predictable on both categories. */
+.worlds-hero-v96 .hero-title span { display:block; max-width:100%; }
+.worlds-hero-v96 .hero-title span:last-child { font-size:.76em; letter-spacing:-.025em; }
+
+/* Safer breakpoint: avoid a squeezed desktop nav at laptop widths. */
+@media (max-width:1120px) {
+  .nav-v98-links {
+    display:none;
+    position:absolute;
+    top:calc(100% - 1px);
+    left:14px;
+    right:14px;
+    z-index:135;
+    padding:10px;
+    border:1px solid #2a2d32;
+    border-radius:0 0 14px 14px;
+    background:#111317;
+    box-shadow:0 18px 34px rgba(0,0,0,.22);
+    flex-direction:column;
+    align-items:stretch;
+    gap:3px;
+  }
+  .nav-v98-links.open { display:flex; }
+  .nav-v98-links .nav-v98-link { width:100%; min-height:43px; justify-content:flex-start; padding:11px 12px; }
+  .nav-v98-links .nav-v98-play { order:-1; }
+  .nav-v98-hamburger { display:grid; place-items:center; width:38px; height:38px; border-radius:9px; background:#1c1f24; }
+  .nav-v98-tools { grid-column:2; justify-self:end; }
+  .nav-v98-desktop-tool { display:none; }
+  .nav-v98-mobile-actions { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:6px; padding:10px 4px 2px; border-top:1px solid #2b2e33; }
+  .nav-v100-mobile-play { display:inline-flex; }
+}
+
+@media (max-width:700px) {
+  .nav-category-inner { padding:8px 12px 9px; }
+  .nav-category-row .cat-switch { width:100%; }
+  .nav-category-row .cat-switch-btn { min-height:48px; padding:7px 9px; flex-direction:column; gap:2px; }
+  .nav-category-row .cat-switch-btn strong { font-size:11px; }
+  .nav-category-row .cat-switch-btn small { font-size:7.5px; }
+  .course-visual-card--real .course-visual-title { padding:12px 12px 10px; }
+  .course-real-credit { min-height:38px; padding:9px 10px; }
+  .page-header-actions .btn { width:100%; }
+}
+.picker-country-flag { width:22px; flex:0 0 22px; text-align:center; font-size:15px; line-height:1; }
+.modal { position:relative; }
+.modal-close {
+  position:absolute;
+  top:10px;
+  right:10px;
+  width:34px;
+  height:34px;
+  display:grid;
+  place-items:center;
+  border:0;
+  border-radius:999px;
+  background:#f0f2f4;
+  color:#4d545c;
+  font-size:22px;
+  line-height:1;
+  cursor:pointer;
+}
+.modal-close:hover { background:#e4e7ea; color:#111; }
+
+/* Mobile game dock: the four core actions are always one tap away. */
+.mobile-game-dock { display:none; }
+@media (max-width:700px) {
+  body { padding-bottom:68px; }
+  .mobile-game-dock {
+    position:fixed;
+    left:0;
+    right:0;
+    bottom:0;
+    z-index:155;
+    height:62px;
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    padding:5px max(8px,env(safe-area-inset-right)) calc(5px + env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));
+    border-top:1px solid #262a30;
+    background:rgba(14,16,19,.97);
+    backdrop-filter:blur(14px);
+    box-shadow:0 -8px 24px rgba(0,0,0,.18);
+  }
+  .mobile-game-dock a {
+    min-width:0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:3px;
+    border-radius:9px;
+    color:#8d949d;
+    text-decoration:none;
+    font-size:7.5px;
+    font-weight:900;
+    letter-spacing:.35px;
+    text-transform:uppercase;
+  }
+  .mobile-game-dock a svg { width:18px; height:18px; }
+  .mobile-game-dock a.active { color:#fff; background:#1f2328; }
+  .mobile-game-dock a.play { color:var(--accent); }
+  .mobile-game-dock a.play.active { background:var(--accent); color:var(--accent-ink); }
+}

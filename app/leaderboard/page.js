@@ -48,6 +48,7 @@ export default function Leaderboard() {
             ? (lang === "es" ? "Cada prueba vale 10/5/2. Si hay empate: primero ganadores acertados, después podios acertados." : "Each event scores 10/5/2. Ties: correct winners first, then total podium hits.")
             : (lang === "es" ? "La clasificación se actualiza al introducir cada resultado." : "Standings update whenever a result is entered.")}
         </p>
+        {championship && <div className="page-header-actions"><a href={base + "/predictions"} className="btn hero-primary">{lang === "es" ? "HACER MIS PICKS" : "MAKE MY PICKS"} →</a></div>}
         <div className="leaderboard-stat-strip">
           <div><small>{lang === "es" ? "JUGADORES" : "PLAYERS"}</small><strong>{loading ? "—" : board.length}</strong></div>
           <div><small>{lang === "es" ? "PRUEBAS PUNTUADAS" : "EVENTS SCORED"}</small><strong>{scoredEvents}/{race.stages.length}</strong></div>

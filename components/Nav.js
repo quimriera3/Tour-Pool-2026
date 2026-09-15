@@ -15,7 +15,7 @@ import { useLang, t } from "../lib/i18n";
 function navLinks(lang, base, race) {
   const prefix = base !== undefined ? base : (lang === "es" ? "/es" : "");
   return [
-    { href: prefix || "/", key: "nav.home", icon: "home", mobileOnly: true },
+    { href: prefix || "/", key: "nav.home", icon: "home" },
     { href: prefix + "/predictions", key: "nav.stages", icon: "flag", play: true },
     ...(hasJerseys(race) ? [{ href: prefix + "/final-classification", key: "nav.jerseys", icon: "jersey" }] : []),
     { href: prefix + "/leaderboard", key: "nav.leaderboard", icon: "trophy" },
@@ -139,7 +139,7 @@ export default function Nav() {
         </div>
 
         <div className="nav-v98-tools">
-          <CategorySwitcher />
+          <a href={raceBase + "/predictions"} className="nav-v100-mobile-play">{lang === "es" ? "JUGAR" : "PLAY"} →</a>
           <div className="nav-v98-desktop-tool"><LangSwitcher pathname={pathname} /></div>
           <div className="nav-user nav-v98-user nav-v98-desktop-tool">
             {session ? (
@@ -165,8 +165,30 @@ export default function Nav() {
           </svg>
         </button>
       </div>
-      {showModal && <AuthModal onClose={() => setShowModal(false)} onAuth={() => setShowModal(false)} />}
       {currentRace.theme?.rainbow && <div className="rainbow-band" />}
+      {currentRace.type === "championship" && (
+        <div className="nav-category-row">
+          <div className="nav-category-inner">
+            <span className="nav-category-kicker">{lang === "es" ? "MUNDIAL 2026" : "WORLD CHAMPIONSHIPS 2026"}</span>
+            <CategorySwitcher />
+          </div>
+        </div>
+      )}
+      <div className="mobile-game-dock" aria-label={lang === "es" ? "Navegación rápida" : "Quick navigation"}>
+        <a href={logoHref} className={pathname === logoHref || (logoHref === "/" && pathname === "/") ? "active" : ""}>
+          <NavIcon name="home" /><span>{lang === "es" ? "Inicio" : "Home"}</span>
+        </a>
+        <a href={raceBase + "/predictions"} className={pathname.includes("/predictions") || pathname.includes("/stage/") ? "active play" : "play"}>
+          <NavIcon name="flag" /><span>{lang === "es" ? "JUGAR" : "PLAY"}</span>
+        </a>
+        <a href={raceBase + "/leaderboard"} className={pathname.includes("/leaderboard") ? "active" : ""}>
+          <NavIcon name="trophy" /><span>{lang === "es" ? "Ranking" : "Ranks"}</span>
+        </a>
+        <a href={raceBase + "/riders"} className={pathname.includes("/riders") ? "active" : ""}>
+          <NavIcon name="riders" /><span>{lang === "es" ? "Corredores" : "Riders"}</span>
+        </a>
+      </div>
+      {showModal && <AuthModal onClose={() => setShowModal(false)} onAuth={() => setShowModal(false)} />}
     </nav>
   );
 }

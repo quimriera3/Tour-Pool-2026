@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useLang } from "../../lib/i18n";
-import { useRace } from "../../lib/useRace";
+import { useRace, useRaceBase } from "../../lib/useRace";
 import { isChampionship, localised } from "../../lib/races";
 
 function FAQItem({ q, a }) {
@@ -20,6 +20,7 @@ function FAQItem({ q, a }) {
 export default function FAQ() {
   const lang = useLang();
   const race = useRace();
+  const base = useRaceBase();
   const es = lang === "es";
   const championship = isChampionship(race);
 
@@ -63,6 +64,7 @@ export default function FAQ() {
         <span className="eyebrow">{es ? "Ayuda e información" : "Help & information"}</span>
         <h1>{es ? "Preguntas frecuentes" : "Frequently asked questions"}</h1>
         <p className="subtitle">{es ? `Todo lo que necesitas saber para jugar a ${localised(race.name, lang)}.` : `Everything you need to play ${localised(race.name, lang)}.`}</p>
+        {championship && <div className="page-header-actions"><a href={base + "/predictions"} className="btn hero-primary">{es ? "JUGAR AHORA" : "PLAY NOW"} →</a></div>}
       </div>
 
       <div className="card faq-card"><h2>{es ? "Sobre el juego" : "About the game"}</h2>{general.map(([q,a]) => <FAQItem key={q} q={q} a={a} />)}</div>

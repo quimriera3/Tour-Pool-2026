@@ -12,7 +12,7 @@ import { useRace, useRaceCategories } from "../lib/useRace";
 import { useLang } from "../lib/i18n";
 
 const LABEL = {
-  en: { men: "Men", women: "Women" },
+  en: { men: "Men's pool", women: "Women's pool" },
   es: { men: "Masculino", women: "Femenino" },
   ca: { men: "Masculí", women: "Femení" },
   fr: { men: "Hommes", women: "Femmes" },
@@ -51,7 +51,8 @@ export default function CategorySwitcher() {
             className={"cat-switch-btn" + (active ? " active" : "")}
             aria-current={active ? "page" : undefined}
           >
-            {labels[r.category] || r.category}
+            <strong>{labels[r.category] || r.category}</strong>
+            <small>{r.stages.length} {lang === "es" ? "picks" : "picks"}</small>
           </a>
         );
       })}

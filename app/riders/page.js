@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { countryFlag, teamsList, teamColor, teamPastelBg, pcsUrl, riderSpecialty, isTeamOfficial, riderEligibleForStage } from "../../lib/data";
 import { useLang, t } from "../../lib/i18n";
-import { useRace } from "../../lib/useRace";
+import { useRace, useRaceBase } from "../../lib/useRace";
 import { isChampionship } from "../../lib/races";
 
 const SPECIALTIES = ["All", "Climber", "Puncheur", "Sprinter", "Time triallist"];
@@ -12,50 +12,58 @@ function riderEvents(rider, race) {
   return race.stages.filter((stage) => riderEligibleForStage(rider, stage));
 }
 
-function EventBadges({ rider, race, lang }) {
+function EventBadges({ rider, race, lang, base }) {
   if (!isChampionship(race)) return <span className="specialty-tag">{riderSpecialty(rider)}</span>;
   const events = riderEvents(rider, race);
   if (!events.length) return <span className="rider-pool-badge">POOL</span>;
   return (
     <span className="rider-event-badges">
-      {events.map((stage) => <b key={stage.n} className={stage.type === "itt" ? "itt" : "road"}>{stage.type === "itt" ? "ITT" : (lang === "es" ? "RUTA" : "ROAD")}</b>)}
+      {events.map((stage) => (
+        <a
+          key={stage.n}
+          href={`${base}/predictions#event-${stage.n}`}
+          className={stage.type === "itt" ? "itt" : "road"}
+          title={lang === "es" ? "Ir directamente a este pick" : "Go straight to this pick"}
+        >
+          {stage.type === "itt" ? "ITT" : (lang === "es" ? "RUTA" : "ROAD")}
+        </a>
+      ))}
     </span>
   );
 }
 
-function RiderResult({ rider, race, lang }) {
+function RiderResult({ rider, race, lang, base }) {
   const url = pcsUrl(rider);
-  const content = <>
-    <span className="rider-result-flag">{countryFlag(rider.team)}</span>
-    <span className="rider-result-copy"><strong>{rider.name}</strong><small>{rider.team}{!isChampionship(race) ? ` · ${riderSpecialty(rider)}` : ""}</small></span>
-    <EventBadges rider={rider} race={race} lang={lang} />
-    {url && <b className="external-arrow">↗</b>}
-  </>;
-  return url
-    ? <a href={url} target="_blank" rel="noopener noreferrer" className="rider-result-card">{content}</a>
-    : <div className="rider-result-card rider-result-static">{content}</div>;
+  return (
+    <div className="rider-result-card rider-result-static">
+      <span className="rider-result-flag">{countryFlag(rider.team)}</span>
+      <span className="rider-result-copy"><strong>{rider.name}</strong><small>{rider.team}{!isChampionship(race) ? ` · ${riderSpecialty(rider)}` : ""}</small></span>
+      <EventBadges rider={rider} race={race} lang={lang} base={base} />
+      {url && <a href={url} target="_blank" rel="noopener noreferrer" className="rider-external-link" aria-label={`${rider.name} · ProCyclingStats`}>↗</a>}
+    </div>
+  );
 }
 
-function RiderCountryRow({ rider, team, race, lang }) {
+function RiderCountryRow({ rider, team, race, lang, base }) {
   const url = pcsUrl(rider);
-  const content = <>
-    <span className="rider-row-main">
-      <span className="team-dot" style={{ background: teamColor(team) }} />
-      <strong>{rider.name}</strong>
-      {!rider.confirmed && <span className="unconfirmed-tag"> · {t(lang, "riders.unconfirmed")}</span>}
-      {!isChampionship(race) && <small>{riderSpecialty(rider)}</small>}
-    </span>
-    <EventBadges rider={rider} race={race} lang={lang} />
-    {url && <span className="rider-row-external" aria-hidden="true">↗</span>}
-  </>;
-  return url
-    ? <a href={url} target="_blank" rel="noopener noreferrer" className="team-rider-row rider-row-v96 rider-row-v98">{content}</a>
-    : <div className="team-rider-row rider-row-v96 rider-row-v98 rider-row-static">{content}</div>;
+  return (
+    <div className="team-rider-row rider-row-v96 rider-row-v98 rider-row-static">
+      <span className="rider-row-main">
+        <span className="team-dot" style={{ background: teamColor(team) }} />
+        <strong>{rider.name}</strong>
+        {!rider.confirmed && <span className="unconfirmed-tag"> · {t(lang, "riders.unconfirmed")}</span>}
+        {!isChampionship(race) && <small>{riderSpecialty(rider)}</small>}
+      </span>
+      <EventBadges rider={rider} race={race} lang={lang} base={base} />
+      {url && <a href={url} target="_blank" rel="noopener noreferrer" className="rider-external-link" aria-label={`${rider.name} · ProCyclingStats`}>↗</a>}
+    </div>
+  );
 }
 
 export default function Riders() {
   const lang = useLang();
   const race = useRace();
+  const base = useRaceBase();
   const teams = teamsList(race);
   const championship = isChampionship(race);
   const [filter, setFilter] = useState("All");
@@ -100,6 +108,7 @@ export default function Riders() {
             ? "Lista completa que estamos siguiendo para el Mundial. Cambia entre Todos, Ruta e ITT para ver exactamente quién figura en cada prueba."
             : "The complete rider pool we are tracking for the Worlds. Switch between All, Road and ITT to see exactly who is listed for each event.")
           : t(lang, "riders.subtitle")}</p>
+        {championship && <div className="page-header-actions"><a href={base + "/predictions"} className="btn hero-primary">{lang === "es" ? "HACER MIS PICKS" : "MAKE MY PICKS"} →</a></div>}
       </div>
 
       {championship && (
@@ -138,7 +147,7 @@ export default function Riders() {
 
       {query ? (
         <div className="rider-search-results">
-          {filteredTeams.flatMap(({ team, riders }) => riders.map((r) => ({ ...r, team }))).map((r) => <RiderResult key={r.id} rider={r} race={race} lang={lang} />)}
+          {filteredTeams.flatMap(({ team, riders }) => riders.map((r) => ({ ...r, team }))).map((r) => <RiderResult key={r.id} rider={r} race={race} lang={lang} base={base} />)}
           {totalVisible === 0 && <div className="empty-state-card">{lang === "es" ? `No encontramos “${search}” con estos filtros.` : `No riders match “${search}” with these filters.`}</div>}
         </div>
       ) : (
@@ -157,7 +166,7 @@ export default function Riders() {
                 </button>
                 {isOpen && (
                   <div className="team-accordion-body">
-                    {riders.map((r) => <RiderCountryRow key={r.id} rider={r} team={team} race={race} lang={lang} />)}
+                    {riders.map((r) => <RiderCountryRow key={r.id} rider={r} team={team} race={race} lang={lang} base={base} />)}
                     {championship && eventFilter === "all" && currentListCount === 0 && <p className="team-pending-note">{lang === "es" ? "Estos nombres siguen en el pool, pero no figuran todavía en la startlist de Ruta o ITT que estamos usando." : "These riders remain in the pool but are not currently listed for Road or ITT in the startlists we are using."}</p>}
                   </div>
                 )}

@@ -1,6 +1,6 @@
 "use client";
 // components/AuthModal.js
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { registerUser, loginUser, requestPasswordReset } from "../lib/store";
 import { useLang, t } from "../lib/i18n";
 import { useRace } from "../lib/useRace";
@@ -16,37 +16,52 @@ export default function AuthModal({ onClose, onAuth }) {
   const [emailOptIn, setEmailOptIn] = useState(false);
   const [error, setError] = useState("");
   const [resetSent, setResetSent] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    const onKey = (event) => { if (event.key === "Escape") onClose(); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
 
   async function submit(e) {
     e.preventDefault();
+    if (submitting) return;
     setError("");
+    setSubmitting(true);
 
     if (mode === "forgot") {
       if (!email) {
         setError(t(lang, "auth.fillFields"));
+        setSubmitting(false);
         return;
       }
       const res = await requestPasswordReset(email);
       if (!res.ok) {
         setError(res.error);
+        setSubmitting(false);
         return;
       }
       setResetSent(true);
+      setSubmitting(false);
       return;
     }
 
     if (mode === "register") {
       if (!name || !email || !password) {
         setError(t(lang, "auth.fillFields"));
+        setSubmitting(false);
         return;
       }
       if (password.length < 6) {
         setError(t(lang, "auth.passwordLength"));
+        setSubmitting(false);
         return;
       }
       const res = await registerUser(name, email, password, preferredLanguage, emailOptIn);
       if (!res.ok) {
         setError(res.error);
+        setSubmitting(false);
         return;
       }
       // Best-effort welcome email -- never blocks sign-up if it fails.
@@ -59,9 +74,11 @@ export default function AuthModal({ onClose, onAuth }) {
       const res = await loginUser(email, password);
       if (!res.ok) {
         setError(res.error);
+        setSubmitting(false);
         return;
       }
     }
+    setSubmitting(false);
     onAuth();
   }
 
@@ -74,6 +91,7 @@ export default function AuthModal({ onClose, onAuth }) {
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
+        <button type="button" className="modal-close" onClick={onClose} aria-label={lang === "es" ? "Cerrar" : "Close"}>×</button>
         {mode !== "forgot" && (
           <div className="tab-switch">
             <button
@@ -181,7 +199,7 @@ export default function AuthModal({ onClose, onAuth }) {
             {error && <p className="error-text">{error}</p>}
 
             <div className="modal-actions">
-              <button type="submit" className="btn">
+              <button type="submit" className="btn" disabled={submitting}>
                 {mode === "register" && t(lang, "auth.createAccount")}
                 {mode === "login" && t(lang, "auth.login")}
                 {mode === "forgot" && t(lang, "auth.sendResetLink")}
