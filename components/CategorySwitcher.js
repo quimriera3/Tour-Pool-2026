@@ -20,6 +20,8 @@ const LABEL = {
   nl: { men: "Mannen", women: "Vrouwen" },
 };
 
+const PICK_LABEL = { en: "picks", es: "picks", ca: "picks", fr: "pronostics", it: "pronostici", nl: "voorspellingen" };
+
 export default function CategorySwitcher() {
   const pathname = usePathname();
   const lang = useLang();
@@ -52,7 +54,7 @@ export default function CategorySwitcher() {
             aria-current={active ? "page" : undefined}
           >
             <strong>{labels[r.category] || r.category}</strong>
-            <small>{r.stages.length} {lang === "es" ? "picks" : "picks"}</small>
+            <small>{r.stages.length} {PICK_LABEL[lang] || PICK_LABEL.en}</small>
           </a>
         );
       })}

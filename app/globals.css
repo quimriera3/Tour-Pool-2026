@@ -3196,6 +3196,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   color:#fff;
 }
 .nav-v98-brand .brand { display:flex; align-items:baseline; gap:6px; font-size:20px; line-height:1; }
+.nav-v98-brand .brand-race { letter-spacing:.65px; }
 [data-surface="light"] .nav-v98-brand .brand-race,
 [data-surface="light"] .nav-v98-brand .brand-pool,
 .nav-v98-brand .brand-race,
@@ -3459,7 +3460,8 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 
 @media (max-width:700px) {
   .nav-v98-inner { min-height:62px; padding:0 12px; gap:9px; }
-  .nav-v98-brand .brand { font-size:17px; gap:4px; }
+  .nav-v98-brand .brand { font-size:15px; gap:4px; }
+  .nav-v98-brand .brand-race { letter-spacing:.45px; }
   .nav-v98-brand small { display:none; }
   .nav-v98-tools { gap:6px; }
   .nav-v98-tools .cat-switch-btn { min-height:27px; padding:5px 7px; font-size:8px; }

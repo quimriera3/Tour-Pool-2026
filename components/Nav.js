@@ -82,6 +82,24 @@ function LangSwitcher({ pathname }) {
   );
 }
 
+const CHAMPIONSHIP_LABEL = {
+  en: "WORLD CHAMPIONSHIPS 2026",
+  es: "MUNDIAL 2026",
+  ca: "MUNDIAL 2026",
+  fr: "MONDIAUX 2026",
+  it: "MONDIALI 2026",
+  nl: "WK 2026",
+};
+
+const QUICK_LABELS = {
+  en: { play: "PLAY", home: "Home", ranking: "Ranks", riders: "Riders", quick: "Quick navigation" },
+  es: { play: "JUGAR", home: "Inicio", ranking: "Ranking", riders: "Corredores", quick: "Navegación rápida" },
+  ca: { play: "JUGAR", home: "Inici", ranking: "Classificació", riders: "Ciclistes", quick: "Navegació ràpida" },
+  fr: { play: "JOUER", home: "Accueil", ranking: "Classement", riders: "Coureurs", quick: "Navigation rapide" },
+  it: { play: "GIOCA", home: "Home", ranking: "Classifica", riders: "Corridori", quick: "Navigazione rapida" },
+  nl: { play: "SPEEL", home: "Home", ranking: "Klassement", riders: "Renners", quick: "Snelle navigatie" },
+};
+
 export default function Nav() {
   const pathname = usePathname();
   const lang = useLang();
@@ -101,12 +119,13 @@ export default function Nav() {
   const currentRace = raceFromPathname(pathname);
   const links = navLinks(lang, raceBase, currentRace);
   const logoHref = raceBase || "/";
+  const quick = QUICK_LABELS[lang] || QUICK_LABELS.en;
 
   return (
     <nav className="nav nav-v98">
       <div className="nav-inner nav-v98-inner">
-        <a href={logoHref} className="logo-link nav-v98-brand" aria-label={localised(currentRace.brandName, lang)}>
-          <span className="brand"><span className="brand-race">{localised(currentRace.brandName, lang)}</span><span className="brand-pool">POOL</span></span>
+        <a href={logoHref} className="logo-link nav-v98-brand" aria-label={localised(currentRace.poolBrandName || currentRace.brandName, lang)}>
+          <span className="brand"><span className="brand-race">{localised(currentRace.poolBrandName || currentRace.brandName, lang)}</span></span>
           <small>MONTRÉAL · 2026</small>
         </a>
 
@@ -139,7 +158,7 @@ export default function Nav() {
         </div>
 
         <div className="nav-v98-tools">
-          <a href={raceBase + "/predictions"} className="nav-v100-mobile-play">{lang === "es" ? "JUGAR" : "PLAY"} →</a>
+          <a href={raceBase + "/predictions"} className="nav-v100-mobile-play">{quick.play} →</a>
           <div className="nav-v98-desktop-tool"><LangSwitcher pathname={pathname} /></div>
           <div className="nav-user nav-v98-user nav-v98-desktop-tool">
             {session ? (
@@ -166,26 +185,26 @@ export default function Nav() {
         </button>
       </div>
       {currentRace.theme?.rainbow && <div className="rainbow-band" />}
-      {currentRace.type === "championship" && (
+      {currentRace.type === "championship" && (lang === "en" || lang === "es") && (
         <div className="nav-category-row">
           <div className="nav-category-inner">
-            <span className="nav-category-kicker">{lang === "es" ? "MUNDIAL 2026" : "WORLD CHAMPIONSHIPS 2026"}</span>
+            <span className="nav-category-kicker">{CHAMPIONSHIP_LABEL[lang] || CHAMPIONSHIP_LABEL.en}</span>
             <CategorySwitcher />
           </div>
         </div>
       )}
-      <div className="mobile-game-dock" aria-label={lang === "es" ? "Navegación rápida" : "Quick navigation"}>
+      <div className="mobile-game-dock" aria-label={quick.quick}>
         <a href={logoHref} className={pathname === logoHref || (logoHref === "/" && pathname === "/") ? "active" : ""}>
-          <NavIcon name="home" /><span>{lang === "es" ? "Inicio" : "Home"}</span>
+          <NavIcon name="home" /><span>{quick.home}</span>
         </a>
         <a href={raceBase + "/predictions"} className={pathname.includes("/predictions") || pathname.includes("/stage/") ? "active play" : "play"}>
-          <NavIcon name="flag" /><span>{lang === "es" ? "JUGAR" : "PLAY"}</span>
+          <NavIcon name="flag" /><span>{quick.play}</span>
         </a>
         <a href={raceBase + "/leaderboard"} className={pathname.includes("/leaderboard") ? "active" : ""}>
-          <NavIcon name="trophy" /><span>{lang === "es" ? "Ranking" : "Ranks"}</span>
+          <NavIcon name="trophy" /><span>{quick.ranking}</span>
         </a>
         <a href={raceBase + "/riders"} className={pathname.includes("/riders") ? "active" : ""}>
-          <NavIcon name="riders" /><span>{lang === "es" ? "Corredores" : "Riders"}</span>
+          <NavIcon name="riders" /><span>{quick.riders}</span>
         </a>
       </div>
       {showModal && <AuthModal onClose={() => setShowModal(false)} onAuth={() => setShowModal(false)} />}
