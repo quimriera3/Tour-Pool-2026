@@ -7,7 +7,6 @@
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import AuthModal from "./AuthModal";
-import RaceSwitcher from "./RaceSwitcher";
 import CategorySwitcher from "./CategorySwitcher";
 import { raceFromPathname, localised, hasJerseys } from "../lib/races";
 import { useRaceBase } from "../lib/useRace";
@@ -126,7 +125,6 @@ export default function Nav() {
 
         <span className="nav-meta">
           <CategorySwitcher />
-          <RaceSwitcher />
           <LangSwitcher pathname={pathname} />
         </span>
 

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { riderById, riderEligibleForStage, pointsForPick, stageIsLocked, stageStartDate, TYPE_LABEL } from "../../../lib/data";
 import { useSession, savePick, getPicksFor, getResults } from "../../../lib/store";
+import CourseExplorer from "../../../components/CourseExplorer";
 import StageProfile from "../../../components/StageProfile";
 import StageTypeIcon from "../../../components/StageTypeIcon";
 import TeamRiderPicker from "../../../components/TeamRiderPicker";
@@ -112,13 +113,17 @@ export default function StageDetail() {
         {!result && <div className="event-detail-countdown"><GameCountdown stage={stage} race={race} lang={lang} /></div>}
       </div>
 
-      <section className="card" aria-labelledby={"course-character-" + n}>
-        <div className="section-title-row">
-          <h2 id={"course-character-" + n}>{lang === "es" ? "Carácter del recorrido" : "Course character"}</h2>
-          <span className="data-note">{lang === "es" ? "visual orientativo" : "illustrative visual"}</span>
-        </div>
-        <StageProfile type={stage.type} elevationGain={stage.elevationGain} />
-      </section>
+      {isChampionship(race) ? (
+        <CourseExplorer stage={stage} race={race} lang={lang} />
+      ) : (
+        <section className="card" aria-labelledby={"course-character-" + n}>
+          <div className="section-title-row">
+            <h2 id={"course-character-" + n}>{lang === "es" ? "Carácter del recorrido" : "Course character"}</h2>
+            <span className="data-note">{lang === "es" ? "visual orientativo" : "illustrative visual"}</span>
+          </div>
+          <StageProfile type={stage.type} elevationGain={stage.elevationGain} />
+        </section>
+      )}
 
       <section className="card" style={{ marginTop: 16 }} aria-labelledby={"stage-preview-" + n}>
         <h2 id={"stage-preview-" + n}>{lang === "es" ? "Previa" : "Preview"}</h2>

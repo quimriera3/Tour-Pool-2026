@@ -54,6 +54,10 @@ export default function EventList({ race, lang = "en", base = "", results = {}, 
                 <span><small>{lang === "es" ? "DESN." : "CLIMB"}</small><strong>{stage.elevationGain ? stage.elevationGain.toLocaleString() + " m" : "—"}</strong></span>
                 <span><small>{lang === "es" ? "LISTA" : "FIELD"}</small><strong>{eligible || "—"}</strong></span>
               </div>
+              <div className="game-event-course-note">
+                <span>{stage.type === "itt" ? (lang === "es" ? "Old Montréal · Gilles-Villeneuve · Parc Jean-Drapeau" : "Old Montréal · Gilles-Villeneuve · Parc Jean-Drapeau") : `${race.category === "women" ? 8 : 12} × Mount Royal · Camillien-Houde · >11%`}</span>
+                <b>{lang === "es" ? "MAPA + PERFIL" : "MAP + PROFILE"} →</b>
+              </div>
               <div className={"game-event-action" + (rider ? " selected" : "")}>
                 {rider ? (
                   <><span className="game-picked-flag" aria-hidden="true">{countryFlag(rider.team)}</span><span><small>{c.yourPick}</small><strong>{rider.name}</strong></span><b>✓</b></>

@@ -16,17 +16,17 @@ import { useLang } from "../lib/i18n";
 function raceIntro(race, lang) {
   if (race.slug === "worlds-2026-women") {
     return lang === "es"
-      ? { eyebrow: "Montreal · 20–26 septiembre 2026", title: "EL MUNDIAL SE JUEGA AQUÍ", body: "Elige a las campeonas del mundo de contrarreloj y ruta. Dos picks, puntuación 10/5/2 y premios para el top 3." }
-      : { eyebrow: "Montreal · 20–26 September 2026", title: "PLAY THE WOMEN'S WORLDS", body: "Pick the time trial and road race world champions. Two picks, 10/5/2 scoring and prizes for the top three." };
+      ? { eyebrow: "Montreal · 20–26 septiembre 2026", titleLines: ["MUNDIAL", "FEMENINO"], body: "Elige a las campeonas del mundo de contrarreloj y ruta. Dos picks, guardado automático y premios para el top 3." }
+      : { eyebrow: "Montreal · 20–26 September 2026", titleLines: ["WOMEN'S", "WORLDS"], body: "Pick the time trial and road race world champions. Two picks, auto-save and prizes for the top three." };
   }
   if (race.slug === "worlds-2026") {
     return lang === "es"
-      ? { eyebrow: "Montreal · 20–27 septiembre 2026", title: "EL MUNDIAL SE JUEGA AQUÍ", body: "Elige a los campeones del mundo de contrarreloj y ruta. Dos picks, puntuación 10/5/2 y premios para el top 3." }
-      : { eyebrow: "Montreal · 20–27 September 2026", title: "PLAY THE ROAD WORLDS", body: "Pick the time trial and road race world champions. Two picks, 10/5/2 scoring and prizes for the top three." };
+      ? { eyebrow: "Montreal · 20–27 septiembre 2026", titleLines: ["MUNDIAL", "MASCULINO"], body: "Elige a los campeones del mundo de contrarreloj y ruta. Dos picks, guardado automático y premios para el top 3." }
+      : { eyebrow: "Montreal · 20–27 September 2026", titleLines: ["MEN'S", "WORLDS"], body: "Pick the time trial and road race world champions. Two picks, auto-save and prizes for the top three." };
   }
   return {
     eyebrow: `${localised(race.name, lang)} · ${race.startDate} — ${race.endDate}`,
-    title: localised(race.name, lang),
+    titleLines: [localised(race.name, lang)],
     body: lang === "es" ? "Haz tus predicciones, suma puntos y sigue la clasificación en directo." : "Make your picks, score points and follow the live leaderboard.",
   };
 }
@@ -90,13 +90,8 @@ export default function Dashboard() {
       <section className="worlds-hero worlds-hero-v96">
         <div className="worlds-hero-copy">
           <span className="eyebrow">{copy.eyebrow}</span>
-          <h1>{copy.title}</h1>
+          <h1 className={race.category === "women" ? "hero-title hero-title-women" : "hero-title"}>{copy.titleLines.map((line) => <span key={line}>{line}</span>)}</h1>
           <p>{copy.body}</p>
-          <div className="hero-score-pills" aria-label="Game scoring">
-            <span><strong>10</strong>{lang === "es" ? "ganador" : "winner"}</span>
-            <span><strong>5</strong>{lang === "es" ? "2º" : "2nd"}</span>
-            <span><strong>2</strong>{lang === "es" ? "3º" : "3rd"}</span>
-          </div>
           <div className="hero-actions">
             <a href={base + "/predictions"} className="btn hero-primary hero-play-btn">{lang === "es" ? "JUGAR AHORA" : "PLAY NOW"} <span aria-hidden="true">→</span></a>
             {!session && <button type="button" className="btn btn-outline" onClick={() => setShowAuth(true)}>{lang === "es" ? "Crear cuenta gratis" : "Create free account"}</button>}
@@ -144,7 +139,21 @@ export default function Dashboard() {
       </section>
 
       {isChampionship(race) ? (
-        <EventList race={race} lang={lang} base={base} results={results} picks={picks} />
+        <>
+          <EventList race={race} lang={lang} base={base} results={results} picks={picks} />
+          <section className="home-scoring-strip" aria-label={lang === "es" ? "Sistema de puntos" : "Scoring system"}>
+            <div className="home-scoring-copy">
+              <span className="eyebrow">{lang === "es" ? "PUNTUACIÓN" : "SCORING"}</span>
+              <strong>{lang === "es" ? "Un pick. Tres formas de sumar." : "One pick. Three ways to score."}</strong>
+            </div>
+            <div className="home-scoring-values">
+              <span><b>10 <em>{lang === "es" ? "puntos" : "points"}</em></b><small>{lang === "es" ? "GANADOR" : "WINNER"}</small></span>
+              <span><b>5 <em>{lang === "es" ? "puntos" : "points"}</em></b><small>{lang === "es" ? "2º PUESTO" : "2ND PLACE"}</small></span>
+              <span><b>2 <em>{lang === "es" ? "puntos" : "points"}</em></b><small>{lang === "es" ? "3º PUESTO" : "3RD PLACE"}</small></span>
+            </div>
+            <a href={base + "/rules"} className="home-scoring-link">{lang === "es" ? "Ver reglas" : "Full rules"} →</a>
+          </section>
+        </>
       ) : (
         <section className="card" style={{ marginTop: 20 }}>
           <h2>{lang === "es" ? "Próxima etapa" : "Next stage"}</h2>
