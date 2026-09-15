@@ -1,4 +1,4 @@
-import { RIDERS } from "../lib/data";
+import { RIDERS, ridersForStage } from "../lib/data";
 import { isChampionship, localised } from "../lib/races";
 
 const SCORE_KEY = { flat: "flat", hills: "hills", mountains: "mountains", itt: "itt", ttt: "ttt" };
@@ -26,7 +26,7 @@ function terrainIntro(stage, lang, championship) {
 
 export default function StageFavourites({ stage, lang = "en", race }) {
   const key = SCORE_KEY[stage.type] || "flat";
-  const pool = race ? race.riders : RIDERS;
+  const pool = race ? ridersForStage(stage, race) : RIDERS;
   const top5 = [...pool].sort((a, b) => (b.scores?.[key] || 0) - (a.scores?.[key] || 0)).slice(0, 5);
   const championship = race ? isChampionship(race) : false;
   const heading = championship

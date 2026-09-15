@@ -39,7 +39,7 @@ export default function TeamRiderPicker({ race, value, onChange, disabled, selec
     ? baseTeams.map((t) => ({ team: t.team, riders: t.riders.filter(riderFilter) })).filter((t) => t.riders.length > 0)
     : baseTeams;
   const query = search.trim().toLowerCase();
-  const noStartlist = baseTeams.length === 0;
+  const noStartlist = teams.length === 0;
 
   useEffect(() => {
     function closeOutside(e) {

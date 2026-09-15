@@ -29,8 +29,8 @@ function navLinks(lang, base, race) {
       : []),
     { href: prefix + "/leaderboard", key: "nav.leaderboard", icon: "trophy", primary: true },
     { href: prefix + "/riders", key: "nav.riders", icon: "riders" },
-    { href: prefix + "/rules", key: "nav.rules", icon: "book" },
-    { href: prefix + "/faq", key: "nav.faq", icon: "help" },
+    { href: prefix + "/rules", key: "nav.rules", icon: "book", mobileOnly: true },
+    { href: prefix + "/faq", key: "nav.faq", icon: "help", mobileOnly: true },
   ];
 }
 

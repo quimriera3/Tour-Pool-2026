@@ -3,6 +3,7 @@
 import { Fragment, useMemo, useState } from "react";
 import RichTextEditor from "../../components/RichTextEditor";
 import TeamRiderPicker from "../../components/TeamRiderPicker";
+import { riderEligibleForStage } from "../../lib/data";
 import { buildEmailHtml } from "../../lib/emailTemplate";
 import { racesByDate, getRace, hasJerseys, localised } from "../../lib/races";
 
@@ -290,9 +291,9 @@ export default function Admin() {
         </div>
         {selectedRace?.riders.length ? (
           <div className="admin-podium-grid">
-            <TeamRiderPicker race={selectedRace} value={resultFirst} onChange={setResultFirst} label="1st — winner" />
-            <TeamRiderPicker race={selectedRace} value={resultSecond} onChange={setResultSecond} label="2nd" />
-            <TeamRiderPicker race={selectedRace} value={resultThird} onChange={setResultThird} label="3rd" />
+            <TeamRiderPicker race={selectedRace} value={resultFirst} onChange={setResultFirst} label="1st — winner" stageType={selectedRace?.stages.find((s) => s.n === resultStage)?.type} riderFilter={(rider) => riderEligibleForStage(rider, selectedRace?.stages.find((s) => s.n === resultStage))} />
+            <TeamRiderPicker race={selectedRace} value={resultSecond} onChange={setResultSecond} label="2nd" stageType={selectedRace?.stages.find((s) => s.n === resultStage)?.type} riderFilter={(rider) => riderEligibleForStage(rider, selectedRace?.stages.find((s) => s.n === resultStage))} />
+            <TeamRiderPicker race={selectedRace} value={resultThird} onChange={setResultThird} label="3rd" stageType={selectedRace?.stages.find((s) => s.n === resultStage)?.type} riderFilter={(rider) => riderEligibleForStage(rider, selectedRace?.stages.find((s) => s.n === resultStage))} />
           </div>
         ) : <p className="admin-message warning">This race has no complete startlist yet. Results cannot be entered safely.</p>}
         <div className="admin-actions">

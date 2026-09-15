@@ -7,7 +7,8 @@ import JerseyIcon from "../../components/JerseyIcon";
 import TeamRiderPicker from "../../components/TeamRiderPicker";
 import AutoSaveNotice from "../../components/AutoSaveNotice";
 import { useLang, t } from "../../lib/i18n";
-import { getActiveRace, hasJerseys, localised } from "../../lib/races";
+import { hasJerseys, localised } from "../../lib/races";
+import { useRace, useRaceBase } from "../../lib/useRace";
 
 const QUESTIONS = [
   { key: "yellow", jersey: "yellow", labelKey: "jersey.yellow", subKey: "jersey.yellowSub", sortType: "mountains" },
@@ -32,6 +33,8 @@ function formatLockDateTime(date, lang) {
 
 export default function FinalClassification() {
   const lang = useLang();
+  const race = useRace();
+  const base = useRaceBase();
   const session = useSession();
   const [answers, setAnswers] = useState({});
   const [open, setOpen] = useState(null);
@@ -45,14 +48,14 @@ export default function FinalClassification() {
     let active = true;
     async function load() {
       if (!session) return;
-      const finals = await getFinalsFor(session.id);
+      const finals = await getFinalsFor(session.id, race.slug);
       if (active) setAnswers(finals);
     }
     load();
     return () => {
       active = false;
     };
-  }, [session]);
+  }, [session, race.slug]);
 
   async function update(key, value) {
     if (!session) {
@@ -61,16 +64,15 @@ export default function FinalClassification() {
     }
     const next = { ...answers, [key]: value };
     setAnswers(next);
-    await saveFinals(session.id, next);
+    await saveFinals(session.id, next, race.slug);
   }
 
-  const locked = mounted ? jerseyPredictionsLocked() : true;
-  const lockLabel = formatLockDateTime(jerseyLockDate(), lang);
+  const locked = mounted ? jerseyPredictionsLocked(undefined, race) : true;
+  const lockLabel = formatLockDateTime(jerseyLockDate(race), lang);
 
   // Championships and one-day races have no general classification, so there
   // are no jerseys to predict. Say so rather than rendering a broken page.
-  if (!hasJerseys(getActiveRace())) {
-    const race = getActiveRace();
+  if (!hasJerseys(race)) {
     return (
       <div>
         <div className="page-header">
@@ -83,7 +85,7 @@ export default function FinalClassification() {
           </p>
         </div>
         <div className="card" style={{ textAlign: "center" }}>
-          <a href={(lang === "es" ? "/es" : "") + "/predictions"} className="btn" style={{ display: "inline-block" }}>
+          <a href={base + "/predictions"} className="btn" style={{ display: "inline-block" }}>
             {lang === "es" ? "Ir a las predicciones" : "Go to predictions"}
           </a>
         </div>
@@ -113,7 +115,7 @@ export default function FinalClassification() {
 
       <div className="jersey-row">
         {QUESTIONS.map((q) => {
-          const pickedRider = answers[q.key] ? riderById(answers[q.key]) : null;
+          const pickedRider = answers[q.key] ? riderById(answers[q.key], race) : null;
           const isOpen = open === q.key;
           return (
             <div
@@ -131,6 +133,7 @@ export default function FinalClassification() {
               {isOpen && (
                 <div onClick={(e) => e.stopPropagation()}>
                   <TeamRiderPicker
+                    race={race}
                     value={answers[q.key]}
                     onChange={(riderId) => update(q.key, riderId)}
                     disabled={locked}

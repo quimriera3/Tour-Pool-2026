@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "../../../../lib/supabaseAdmin";
 import { getRace, ACTIVE_RACE_SLUG } from "../../../../lib/races";
-import { riderById } from "../../../../lib/data";
+import { riderById, riderEligibleForStage } from "../../../../lib/data";
 
 export async function POST(request) {
   const { password, race: requestedRace, stageNumber, first, second, third } = await request.json();
@@ -16,7 +16,9 @@ export async function POST(request) {
   if (!stage) return NextResponse.json({ error: "Not a valid event number for this race." }, { status: 400 });
   if (!first || !second || !third) return NextResponse.json({ error: "Winner, 2nd and 3rd are all required." }, { status: 400 });
   if (new Set([first, second, third]).size !== 3) return NextResponse.json({ error: "Winner, 2nd and 3rd must be three different riders." }, { status: 400 });
-  if (![first, second, third].every((id) => riderById(id, race))) return NextResponse.json({ error: "One of the selected riders is not in this race's startlist." }, { status: 400 });
+  const podiumRiders = [first, second, third].map((id) => riderById(id, race));
+  if (podiumRiders.some((rider) => !rider)) return NextResponse.json({ error: "One of the selected riders is not in this race's startlist." }, { status: 400 });
+  if (!podiumRiders.every((rider) => riderEligibleForStage(rider, stage))) return NextResponse.json({ error: "One of the selected riders is not eligible for this event." }, { status: 400 });
 
   const { error } = await supabaseAdmin.from("results")
     .upsert({ race: race.slug, stage_number: n, first, second, third }, { onConflict: "race,stage_number" });

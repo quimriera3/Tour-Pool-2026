@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "../../../../lib/supabaseAdmin";
 import { getRace, ACTIVE_RACE_SLUG } from "../../../../lib/races";
-import { riderById } from "../../../../lib/data";
+import { riderById, riderEligibleForStage } from "../../../../lib/data";
 import { buildStageResultEmail } from "../../../../lib/emailTemplate";
 
 export async function POST(request) {
@@ -24,6 +24,7 @@ export async function POST(request) {
 
   const podium = [result.first, result.second, result.third].map((id) => riderById(id, race));
   if (podium.some((r) => !r)) return NextResponse.json({ error: "A result rider is no longer present in this race's startlist." }, { status: 400 });
+  if (!podium.every((rider) => riderEligibleForStage(rider, stage))) return NextResponse.json({ error: "A result rider is not eligible for this event." }, { status: 400 });
 
   let recipients = [];
   if (testEmail) {

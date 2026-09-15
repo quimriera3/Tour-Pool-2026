@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { riderById, pointsForPick, stageIsLocked, stageStartDate, TYPE_LABEL } from "../../../lib/data";
+import { riderById, riderEligibleForStage, pointsForPick, stageIsLocked, stageStartDate, TYPE_LABEL } from "../../../lib/data";
 import { useSession, savePick, getPicksFor, getResults } from "../../../lib/store";
 import StageProfile from "../../../components/StageProfile";
 import StageTypeIcon from "../../../components/StageTypeIcon";
@@ -10,6 +10,8 @@ import TeamRiderPicker from "../../../components/TeamRiderPicker";
 import Podium from "../../../components/Podium";
 import StageFavourites from "../../../components/StageFavourites";
 import AuthModal from "../../../components/AuthModal";
+import GameCountdown from "../../../components/GameCountdown";
+import QuickPickGrid from "../../../components/QuickPickGrid";
 import { useLang } from "../../../lib/i18n";
 import { useRace, useRaceBase } from "../../../lib/useRace";
 import { isChampionship, localised } from "../../../lib/races";
@@ -107,6 +109,7 @@ export default function StageDetail() {
           {stage.elevationGain ? <span>↗ {stage.elevationGain.toLocaleString()} m</span> : null}
           <span>{stage.from}{stage.to !== stage.from ? " → " + stage.to : ""}</span>
         </p>
+        {!result && <div className="event-detail-countdown"><GameCountdown stage={stage} race={race} lang={lang} /></div>}
       </div>
 
       <section className="card" aria-labelledby={"course-character-" + n}>
@@ -130,13 +133,16 @@ export default function StageDetail() {
 
         {!result ? (
           <>
+            <QuickPickGrid race={race} stage={stage} value={pick} onPick={handlePick} disabled={locked} lang={lang} />
             <TeamRiderPicker
               race={race}
               value={pick}
               onChange={handlePick}
               disabled={locked}
               stageType={stage.type}
+              riderFilter={(rider) => riderEligibleForStage(rider, stage)}
               selectedRiderName={pickedRider ? pickedRider.name + " — " + pickedRider.team : ""}
+              label={lang === "es" ? "O busca en la lista completa" : "Or search the full startlist"}
             />
             <div className="pick-status-row" aria-live="polite">
               {!locked && <span>{lang === "es" ? "Cierra" : "Closes"}: {lockLabel(stage, race, lang)}</span>}

@@ -1,13 +1,15 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { riderById, pointsForPick, stageIsLocked, stageStartDate, TYPE_LABEL } from "../../lib/data";
+import { pointsForPick, riderById, riderEligibleForStage, ridersForStage, stageIsLocked, stageStartDate, TYPE_LABEL, countryFlag } from "../../lib/data";
 import { useSession, savePick, getPicksFor, getResults } from "../../lib/store";
 import StageTypeIcon from "../../components/StageTypeIcon";
 import TeamRiderPicker from "../../components/TeamRiderPicker";
 import Podium from "../../components/Podium";
 import AutoSaveNotice from "../../components/AutoSaveNotice";
 import AuthModal from "../../components/AuthModal";
+import GameCountdown from "../../components/GameCountdown";
+import QuickPickGrid from "../../components/QuickPickGrid";
 import { useLang, t } from "../../lib/i18n";
 import { useRace, useRaceBase } from "../../lib/useRace";
 import { isChampionship, localised } from "../../lib/races";
@@ -31,18 +33,20 @@ function copyFor(race, lang) {
   if (isChampionship(race)) {
     return lang === "es"
       ? {
-          eyebrow: "Tus pronósticos",
-          title: "Elige a los campeones del mundo",
-          subtitle: "Haz una predicción para cada prueba. Puedes cambiarla tantas veces como quieras hasta una hora antes de la salida.",
-          groupTitle: "Pruebas élite",
-          groupSubtitle: "Cada prueba puntúa por separado: 10 puntos al ganador, 5 al segundo y 2 al tercero.",
+          eyebrow: "Zona de juego",
+          title: "Elige a tus campeones",
+          subtitle: "Dos picks. Dos maillots arcoíris. Elige un corredor por prueba y cámbialo cuando quieras hasta una hora antes de la salida.",
+          groupTitle: "Tus dos picks",
+          groupSubtitle: "10 puntos si gana, 5 si acaba 2º y 2 si acaba 3º.",
+          login: "Inicia sesión para que tus picks cuenten.",
         }
       : {
-          eyebrow: "Your picks",
-          title: "Pick the world champions",
-          subtitle: "Make one prediction for each event. Change it as often as you like until one hour before the official start.",
-          groupTitle: "Elite events",
-          groupSubtitle: "Each event scores separately: 10 points for the winner, 5 for second and 2 for third.",
+          eyebrow: "Game zone",
+          title: "Pick your world champions",
+          subtitle: "Two picks. Two rainbow jerseys. Choose one rider per event and change your mind until one hour before the start.",
+          groupTitle: "Your two picks",
+          groupSubtitle: "10 points for a winner, 5 for 2nd and 2 for 3rd.",
+          login: "Log in so your picks count.",
         };
   }
   return {
@@ -51,6 +55,7 @@ function copyFor(race, lang) {
     subtitle: t(lang, "predictions.subtitle"),
     groupTitle: lang === "es" ? "Etapas" : "Stages",
     groupSubtitle: t(lang, "scoring.stage"),
+    login: lang === "es" ? "Inicia sesión para guardar tus picks." : "Log in to save your picks.",
   };
 }
 
@@ -59,45 +64,64 @@ function StageCard({ race, stage, pick, onPick, result, lang, base, saveState })
   const pts = result ? pointsForPick(pick, result) : null;
   const pickedRider = pick ? riderById(pick, race) : null;
   const label = stage.eventName ? localised(stage.eventName, lang) : `${lang === "es" ? "Etapa" : "Stage"} ${stage.n}`;
+  const eligibleCount = ridersForStage(stage, race).length;
   const podiumItems = result
     ? [result.first, result.second, result.third].map((id) => ({ label: riderById(id, race)?.name || id }))
     : null;
 
   return (
-    <article className={"stage-card prediction-card" + (locked && !result ? " locked" : "")}>
-      <div className="stage-top">
-        <span className="bib">{stage.n}</span>
+    <article className={"stage-card prediction-card game-pick-card" + (locked && !result ? " locked" : "") + (pick ? " has-selection" : "")}>
+      <div className="game-card-topline">
+        <span className="game-event-index">{String(stage.n).padStart(2, "0")}</span>
         <span className={"stage-type type-" + stage.type}>
           <StageTypeIcon type={stage.type} size={13} /> {TYPE_LABEL[stage.type]}
         </span>
-      </div>
-      <h2 className="prediction-event-title">{label}</h2>
-      <div className="stage-route">{stage.from}{stage.to !== stage.from ? " → " + stage.to : ""}</div>
-      <div className="stage-meta">
-        {stage.date.split("-").reverse().join("/")} · {stage.km} km
-        {stage.elevationGain ? " · ↗ " + stage.elevationGain.toLocaleString() + " m" : ""}
+        {!result && <GameCountdown stage={stage} race={race} lang={lang} compact />}
+        {result && <span className="game-result-badge">{lang === "es" ? "Resultado" : "Result"}</span>}
       </div>
 
-      <a href={base + "/stage/" + stage.n} className="text-link">
-        {t(lang, "predictions.seeDetails")} →
-      </a>
+      <h2 className="prediction-event-title">{label}</h2>
+      <div className="game-event-route">{stage.from}{stage.to !== stage.from ? " → " + stage.to : ""}</div>
+      <div className="game-stat-row">
+        <span><small>{lang === "es" ? "Distancia" : "Distance"}</small><strong>{stage.km} km</strong></span>
+        <span><small>{lang === "es" ? "Desnivel" : "Climbing"}</small><strong>{stage.elevationGain ? `${stage.elevationGain.toLocaleString()} m` : "—"}</strong></span>
+        <span><small>{lang === "es" ? "Lista" : "Startlist"}</small><strong>{eligibleCount || "—"}</strong></span>
+      </div>
+
+      {pickedRider && !result && (
+        <div className="current-pick-hero">
+          <span className="current-pick-flag" aria-hidden="true">{countryFlag(pickedRider.team)}</span>
+          <span><small>{lang === "es" ? "Tu pick actual" : "Your current pick"}</small><strong>{pickedRider.name}</strong></span>
+          <b>✓</b>
+        </div>
+      )}
 
       {!result ? (
         <>
+          <QuickPickGrid
+            race={race}
+            stage={stage}
+            value={pick}
+            onPick={(riderId) => onPick(stage.n, riderId)}
+            disabled={locked}
+            lang={lang}
+          />
           <TeamRiderPicker
             race={race}
             value={pick}
             onChange={(riderId) => onPick(stage.n, riderId)}
             disabled={locked}
             stageType={stage.type}
+            riderFilter={(rider) => riderEligibleForStage(rider, stage)}
             selectedRiderName={pickedRider ? pickedRider.name + " — " + pickedRider.team : ""}
+            label={lang === "es" ? "O busca en la lista completa" : "Or search the full startlist"}
           />
           <div className="pick-status-row" aria-live="polite">
             {!locked && <span>{lang === "es" ? "Cierra" : "Closes"}: {formatLock(stage, race, lang)}</span>}
             {locked && <span>{lang === "es" ? "Predicción cerrada" : "Pick locked"}</span>}
             {saveState === "saving" && <strong>{lang === "es" ? "Guardando…" : "Saving…"}</strong>}
             {saveState === "saved" && <strong className="save-ok">{lang === "es" ? "Guardado ✓" : "Saved ✓"}</strong>}
-            {saveState === "error" && <strong className="save-error">{lang === "es" ? "No se ha guardado" : "Not saved"}</strong>}
+            {saveState === "error" && <strong className="save-error">{lang === "es" ? "No se ha guardado · inténtalo otra vez" : "Not saved · try again"}</strong>}
           </div>
         </>
       ) : (
@@ -109,6 +133,10 @@ function StageCard({ race, stage, pick, onPick, result, lang, base, saveState })
           <div className="result-points"><span className={"points-pill points-" + pts}>{pts} pts</span></div>
         </>
       )}
+
+      <a href={base + "/stage/" + stage.n} className="game-details-link">
+        {t(lang, "predictions.seeDetails")} <span aria-hidden="true">→</span>
+      </a>
     </article>
   );
 }
@@ -169,18 +197,26 @@ export default function Predictions() {
   const completed = race.stages.filter((s) => picks[s.n]).length;
 
   return (
-    <div>
+    <div className="game-zone-page">
       {showAuth && <AuthModal onClose={() => setShowAuth(false)} onAuth={() => setShowAuth(false)} />}
-      <div className="page-header predictions-header">
+      <div className="page-header predictions-header game-page-header">
         <span className="eyebrow">{copy.eyebrow}</span>
         <h1>{copy.title}</h1>
         <p className="subtitle">{copy.subtitle}</p>
-        {session && (
-          <div className="pick-progress" aria-label={`${completed} of ${race.stages.length} picks completed`}>
-            <span>{lang === "es" ? "Tus picks" : "Your picks"}</span>
-            <strong>{completed}/{race.stages.length}</strong>
+        <div className="game-header-strip">
+          <span><b>10</b>{lang === "es" ? "ganador" : "winner"}</span>
+          <span><b>5</b>{lang === "es" ? "2º" : "2nd"}</span>
+          <span><b>2</b>{lang === "es" ? "3º" : "3rd"}</span>
+          <span className="game-header-prize">{lang === "es" ? "Premios TOP 3" : "TOP 3 prizes"}</span>
+        </div>
+        {session ? (
+          <div className="pick-progress game-progress" aria-label={`${completed} of ${race.stages.length} picks completed`}>
+            <span>{lang === "es" ? "Tu partida" : "Your game"}</span>
+            <strong>{completed}/{race.stages.length} {lang === "es" ? "picks listos" : "picks ready"}</strong>
             <div><i style={{ width: `${race.stages.length ? (completed / race.stages.length) * 100 : 0}%` }} /></div>
           </div>
+        ) : (
+          <button type="button" className="login-game-banner" onClick={() => setShowAuth(true)}>{copy.login} <strong>{lang === "es" ? "Entrar →" : "Log in →"}</strong></button>
         )}
       </div>
 
@@ -192,11 +228,11 @@ export default function Predictions() {
         </div>
       ) : groups.map((group, i) => (
         <section key={group.key || i} className="prediction-group">
-          <div className="week-header">
-            <h2>{isChampionship(race) ? copy.groupTitle : (lang === "es" ? `Semana ${i + 1}` : `Week ${i + 1}`)}</h2>
+          <div className="week-header game-week-header">
+            <div><span className="mini-eyebrow">{isChampionship(race) ? (lang === "es" ? "2 decisiones · 1 clasificación" : "2 decisions · 1 leaderboard") : ""}</span><h2>{isChampionship(race) ? copy.groupTitle : (lang === "es" ? `Semana ${i + 1}` : `Week ${i + 1}`)}</h2></div>
             <p>{copy.groupSubtitle}</p>
           </div>
-          <div className={"grid " + (group.stages.length <= 2 ? "grid-2" : "grid-3") + " predictions-grid"}>
+          <div className={"grid " + (group.stages.length <= 2 ? "grid-2" : "grid-3") + " predictions-grid game-picks-grid"}>
             {group.stages.map((stage) => (
               <StageCard
                 key={stage.n}
