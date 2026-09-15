@@ -3513,3 +3513,145 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   .home-scoring-values > span { padding:8px 7px; }
   .startlist-dashboard-v98 { grid-template-columns:1fr 1fr; }
 }
+
+/* v99 — real course media */
+.course-explorer--real .course-explorer-deck {
+  max-width:760px;
+  margin:9px 0 0;
+  color:var(--text-muted);
+  font-size:12px;
+  line-height:1.55;
+}
+.course-real-media-stack {
+  display:grid;
+  gap:14px;
+  margin-top:14px;
+}
+.course-visual-card--real {
+  background:#fff;
+  box-shadow:0 12px 34px rgba(17,24,39,.055);
+}
+.course-real-shell {
+  min-width:0;
+}
+.course-real-map-frame,
+.course-real-profile-frame,
+.course-real-road-profile {
+  position:relative;
+  overflow:hidden;
+  background:#eef1f4;
+}
+.course-real-map-frame.is-road {
+  aspect-ratio:16 / 9;
+}
+.course-real-map-frame.is-tt {
+  aspect-ratio:16 / 10;
+  max-height:680px;
+}
+.course-real-img {
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+.course-real-map-frame.is-road .course-real-img {
+  object-position:center 62%;
+}
+.course-real-map-frame.is-tt .course-real-img {
+  object-position:center 58%;
+}
+.course-real-badge {
+  position:absolute;
+  left:15px;
+  bottom:15px;
+  display:grid;
+  gap:2px;
+  max-width:calc(100% - 30px);
+  padding:9px 11px;
+  border:1px solid rgba(255,255,255,.55);
+  border-radius:10px;
+  background:rgba(255,255,255,.93);
+  box-shadow:0 6px 24px rgba(0,0,0,.10);
+  backdrop-filter:blur(8px);
+}
+.course-real-badge b {
+  font-size:8px;
+  line-height:1;
+  letter-spacing:.8px;
+}
+.course-real-badge span {
+  overflow:hidden;
+  color:#4b5259;
+  font-size:10px;
+  font-weight:800;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.course-real-badge--dark {
+  color:#fff;
+  border-color:rgba(255,255,255,.15);
+  background:rgba(10,12,15,.88);
+}
+.course-real-badge--dark span { color:rgba(255,255,255,.78); }
+.course-real-credit {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  padding:9px 13px 11px;
+  border-top:1px solid #edf0f2;
+  background:#fff;
+  color:#7e858c;
+  font-size:8.5px;
+  font-weight:700;
+}
+.course-real-credit a {
+  flex:0 0 auto;
+  color:var(--accent);
+  font-weight:900;
+}
+.course-real-profile-frame.is-tt-profile {
+  min-height:260px;
+  padding:34px 22px 18px;
+  background:#fff;
+}
+.course-real-profile-img {
+  display:block;
+  width:100%;
+  height:235px;
+  object-fit:contain;
+  object-position:center;
+}
+.course-real-road-profile {
+  aspect-ratio:16 / 6.2;
+  background-image:url("https://cdn.todomountainbike.net/images/articles/2026/recorridos-campeonato-mundo-carretera-2026-1.jpg");
+  background-repeat:no-repeat;
+  background-size:100% auto;
+}
+.course-real-road-profile.is-men { background-position:center 4%; }
+.course-real-road-profile.is-women { background-position:center 98%; }
+.course-visual-card--real .course-visual-title {
+  padding:14px 16px;
+}
+.course-visual-card--real .course-visual-title > span {
+  font-size:9px;
+  letter-spacing:.9px;
+}
+.course-visual-card--real .course-visual-title > strong {
+  font-size:11px;
+}
+
+@media (max-width: 760px) {
+  .course-explorer--real .course-explorer-deck { font-size:11px; }
+  .course-real-map-frame.is-road { aspect-ratio:4 / 3; }
+  .course-real-map-frame.is-tt { aspect-ratio:1 / 1.08; }
+  .course-real-map-frame.is-tt .course-real-img { object-position:center 54%; }
+  .course-real-profile-frame.is-tt-profile { min-height:205px; padding:28px 10px 10px; }
+  .course-real-profile-img { height:175px; }
+  .course-real-road-profile { aspect-ratio:16 / 8.4; background-size:132% auto; }
+  .course-real-road-profile.is-men { background-position:center 0; }
+  .course-real-road-profile.is-women { background-position:center 100%; }
+  .course-real-badge { left:9px; bottom:9px; max-width:calc(100% - 18px); padding:7px 9px; }
+  .course-real-badge span { font-size:9px; }
+  .course-real-credit { align-items:flex-start; padding:8px 10px 10px; font-size:8px; }
+}
