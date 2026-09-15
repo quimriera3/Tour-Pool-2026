@@ -87,7 +87,25 @@ export default function Dashboard() {
       <StructuredData lang={lang} raceSlug={race.slug} />
       {showAuth && <AuthModal onClose={() => setShowAuth(false)} onAuth={() => setShowAuth(false)} />}
 
-      <section className="worlds-hero worlds-hero-v96">
+      {isChampionship(race) && (
+        <div className="home-play-first">
+          <EventList race={race} lang={lang} base={base} results={results} picks={picks} />
+          <section className="home-scoring-strip" aria-label={lang === "es" ? "Sistema de puntos" : "Scoring system"}>
+            <div className="home-scoring-copy">
+              <span className="eyebrow">{lang === "es" ? "PUNTUACIÓN" : "SCORING"}</span>
+              <strong>{lang === "es" ? "Un pick. Tres formas de sumar." : "One pick. Three ways to score."}</strong>
+            </div>
+            <div className="home-scoring-values">
+              <span><b>10 <em>{lang === "es" ? "puntos" : "points"}</em></b><small>{lang === "es" ? "GANADOR" : "WINNER"}</small></span>
+              <span><b>5 <em>{lang === "es" ? "puntos" : "points"}</em></b><small>{lang === "es" ? "2º PUESTO" : "2ND PLACE"}</small></span>
+              <span><b>2 <em>{lang === "es" ? "puntos" : "points"}</em></b><small>{lang === "es" ? "3º PUESTO" : "3RD PLACE"}</small></span>
+            </div>
+            <a href={base + "/rules"} className="home-scoring-link">{lang === "es" ? "Ver reglas" : "Full rules"} →</a>
+          </section>
+        </div>
+      )}
+
+      <section className={`worlds-hero worlds-hero-v96${isChampionship(race) ? " worlds-hero-after-play" : ""}`}>
         <div className="worlds-hero-copy">
           <span className="eyebrow">{copy.eyebrow}</span>
           <h1 className="hero-title">{copy.titleLines.map((line) => <span key={line}>{line}</span>)}</h1>
@@ -138,23 +156,7 @@ export default function Dashboard() {
         </aside>
       </section>
 
-      {isChampionship(race) ? (
-        <>
-          <EventList race={race} lang={lang} base={base} results={results} picks={picks} />
-          <section className="home-scoring-strip" aria-label={lang === "es" ? "Sistema de puntos" : "Scoring system"}>
-            <div className="home-scoring-copy">
-              <span className="eyebrow">{lang === "es" ? "PUNTUACIÓN" : "SCORING"}</span>
-              <strong>{lang === "es" ? "Un pick. Tres formas de sumar." : "One pick. Three ways to score."}</strong>
-            </div>
-            <div className="home-scoring-values">
-              <span><b>10 <em>{lang === "es" ? "puntos" : "points"}</em></b><small>{lang === "es" ? "GANADOR" : "WINNER"}</small></span>
-              <span><b>5 <em>{lang === "es" ? "puntos" : "points"}</em></b><small>{lang === "es" ? "2º PUESTO" : "2ND PLACE"}</small></span>
-              <span><b>2 <em>{lang === "es" ? "puntos" : "points"}</em></b><small>{lang === "es" ? "3º PUESTO" : "3RD PLACE"}</small></span>
-            </div>
-            <a href={base + "/rules"} className="home-scoring-link">{lang === "es" ? "Ver reglas" : "Full rules"} →</a>
-          </section>
-        </>
-      ) : (
+      {!isChampionship(race) && (
         <section className="card" style={{ marginTop: 20 }}>
           <h2>{lang === "es" ? "Próxima etapa" : "Next stage"}</h2>
           {next ? <a href={base + "/stage/" + next.n} className="text-link">{next.from} → {next.to} · {next.km} km →</a> : <p className="subtitle">{lang === "es" ? "La carrera ha terminado." : "The race is finished."}</p>}

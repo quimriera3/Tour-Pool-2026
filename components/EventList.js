@@ -7,8 +7,8 @@ import GameCountdown from "./GameCountdown";
 import { localised } from "../lib/races";
 
 const COPY = {
-  en: { heading: "Choose your race", lead: "Two events. Two picks. Every decision counts.", open: "OPEN", closed: "LOCKED", done: "RESULT", yourPick: "Your pick", choose: "MAKE PICK", riders: "riders" },
-  es: { heading: "Elige tu prueba", lead: "Dos pruebas. Dos picks. Cada decisión cuenta.", open: "ABIERTO", closed: "CERRADO", done: "RESULTADO", yourPick: "Tu pick", choose: "HACER PICK", riders: "corredores" },
+  en: { heading: "Pick the World Champions", lead: "2 races · 2 picks · Top 3 win prizes", open: "OPEN", closed: "LOCKED", done: "RESULT", yourPick: "Your pick", choose: "MAKE PICK", riders: "riders" },
+  es: { heading: "Elige a los campeones del mundo", lead: "2 pruebas · 2 picks · Premios para el top 3", open: "ABIERTO", closed: "CERRADO", done: "RESULTADO", yourPick: "Tu pick", choose: "HACER PICK", riders: "corredores" },
 };
 
 export default function EventList({ race, lang = "en", base = "", results = {}, picks = {} }) {
@@ -20,7 +20,7 @@ export default function EventList({ race, lang = "en", base = "", results = {}, 
     <section className="events game-events" aria-labelledby="events-heading">
       <div className="events-head game-events-head">
         <div>
-          <span className="eyebrow">{lang === "es" ? "Zona de juego" : "Game board"}</span>
+          <span className="eyebrow game-play-eyebrow">{lang === "es" ? "JUGAR AHORA" : "PLAY NOW"}</span>
           <h2 id="events-heading">{c.heading}</h2>
         </div>
         <p className="events-lead">{c.lead}</p>

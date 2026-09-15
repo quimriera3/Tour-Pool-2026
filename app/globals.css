@@ -4122,3 +4122,84 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   .mobile-game-dock a.play { color:var(--accent); }
   .mobile-game-dock a.play.active { background:var(--accent); color:var(--accent-ink); }
 }
+
+/* ========================================================================
+   v101 — play-first home: put the game before the editorial hero
+   ======================================================================== */
+.home-play-first {
+  position:relative;
+  margin-top:18px;
+  padding:8px 0 2px;
+}
+.home-play-first .game-events {
+  margin-top:0;
+  padding-top:14px;
+}
+.home-play-first .game-events-head {
+  margin-bottom:20px;
+}
+.home-play-first .game-events-head h2 {
+  margin-top:5px;
+  font-size:clamp(34px,4.6vw,56px);
+  line-height:.96;
+  letter-spacing:-.025em;
+}
+.home-play-first .game-play-eyebrow {
+  color:var(--accent);
+  font-size:12px;
+  letter-spacing:1.25px;
+}
+.home-play-first .events-lead {
+  max-width:410px;
+  padding:9px 12px;
+  border:1px solid #e1e5e9;
+  border-radius:999px;
+  background:#fff;
+  color:#5e646b;
+  font-size:11px;
+  font-weight:800;
+  text-align:center;
+}
+.home-play-first .game-event-card {
+  box-shadow:0 10px 30px rgba(17,17,17,.07);
+}
+.home-play-first .game-event-action {
+  min-height:62px;
+  font-size:12px;
+  box-shadow:0 10px 24px color-mix(in srgb,var(--accent) 14%,transparent);
+}
+.home-play-first .game-event-action:hover {
+  filter:brightness(.96);
+  transform:translateY(-1px);
+}
+.worlds-hero-after-play {
+  margin-top:56px !important;
+  padding-top:34px;
+  border-top:1px solid var(--border);
+}
+.worlds-hero-after-play .hero-actions .hero-play-btn {
+  background:#fff;
+  color:var(--accent);
+  border:1px solid var(--accent);
+  box-shadow:none;
+}
+.worlds-hero-after-play .hero-actions .hero-play-btn:hover {
+  background:var(--accent-soft);
+  box-shadow:none;
+}
+
+@media (max-width:760px) {
+  .home-play-first { margin-top:8px; padding-top:4px; }
+  .home-play-first .game-events { padding-top:10px; }
+  .home-play-first .game-events-head { align-items:flex-start; gap:10px; }
+  .home-play-first .game-events-head h2 { font-size:36px; }
+  .home-play-first .events-lead {
+    max-width:none;
+    padding:0;
+    border:0;
+    background:transparent;
+    text-align:left;
+    font-size:10px;
+  }
+  .worlds-hero-after-play { margin-top:38px !important; padding-top:24px; }
+}
