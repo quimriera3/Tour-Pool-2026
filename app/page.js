@@ -16,13 +16,13 @@ import { useLang } from "../lib/i18n";
 function raceIntro(race, lang) {
   if (race.slug === "worlds-2026-women") {
     return lang === "es"
-      ? { eyebrow: "Montreal · 20–26 septiembre 2026", titleLines: ["MUNDIAL", "FEMENINO"], body: "Elige a las campeonas del mundo de contrarreloj y ruta. Dos picks, guardado automático y premios para el top 3." }
-      : { eyebrow: "Montreal · 20–26 September 2026", titleLines: ["WOMEN'S", "WORLDS"], body: "Pick the time trial and road race world champions. Two picks, auto-save and prizes for the top three." };
+      ? { eyebrow: "ÉLITE FEMENINA · MONTRÉAL · 20–26 SEPTIEMBRE", titleLines: ["ELIGE A LAS", "CAMPEONAS"], body: "Dos carreras. Dos picks. Elige quién vestirá el arcoíris en la contrarreloj y en la prueba en ruta." }
+      : { eyebrow: "ELITE WOMEN · MONTRÉAL · 20–26 SEPTEMBER", titleLines: ["PICK THE", "CHAMPIONS"], body: "Two races. Two picks. Choose who takes the rainbow jersey in the time trial and the road race." };
   }
   if (race.slug === "worlds-2026") {
     return lang === "es"
-      ? { eyebrow: "Montreal · 20–27 septiembre 2026", titleLines: ["MUNDIAL", "MASCULINO"], body: "Elige a los campeones del mundo de contrarreloj y ruta. Dos picks, guardado automático y premios para el top 3." }
-      : { eyebrow: "Montreal · 20–27 September 2026", titleLines: ["MEN'S", "WORLDS"], body: "Pick the time trial and road race world champions. Two picks, auto-save and prizes for the top three." };
+      ? { eyebrow: "ÉLITE MASCULINA · MONTRÉAL · 20–27 SEPTIEMBRE", titleLines: ["ELIGE A LOS", "CAMPEONES"], body: "Dos carreras. Dos picks. Elige quién vestirá el arcoíris en la contrarreloj y en la prueba en ruta." }
+      : { eyebrow: "ELITE MEN · MONTRÉAL · 20–27 SEPTEMBER", titleLines: ["PICK THE", "CHAMPIONS"], body: "Two races. Two picks. Choose who takes the rainbow jersey in the time trial and the road race." };
   }
   return {
     eyebrow: `${localised(race.name, lang)} · ${race.startDate} — ${race.endDate}`,
@@ -90,7 +90,7 @@ export default function Dashboard() {
       <section className="worlds-hero worlds-hero-v96">
         <div className="worlds-hero-copy">
           <span className="eyebrow">{copy.eyebrow}</span>
-          <h1 className={race.category === "women" ? "hero-title hero-title-women" : "hero-title"}>{copy.titleLines.map((line) => <span key={line}>{line}</span>)}</h1>
+          <h1 className="hero-title">{copy.titleLines.map((line) => <span key={line}>{line}</span>)}</h1>
           <p>{copy.body}</p>
           <div className="hero-actions">
             <a href={base + "/predictions"} className="btn hero-primary hero-play-btn">{lang === "es" ? "JUGAR AHORA" : "PLAY NOW"} <span aria-hidden="true">→</span></a>

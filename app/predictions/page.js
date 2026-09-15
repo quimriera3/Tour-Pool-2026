@@ -204,9 +204,9 @@ export default function Predictions() {
         <h1>{copy.title}</h1>
         <p className="subtitle">{copy.subtitle}</p>
         <div className="game-header-strip">
-          <span><b>10</b>{lang === "es" ? "ganador" : "winner"}</span>
-          <span><b>5</b>{lang === "es" ? "2º" : "2nd"}</span>
-          <span><b>2</b>{lang === "es" ? "3º" : "3rd"}</span>
+          <span><b>10</b><em>{lang === "es" ? "puntos" : "points"}</em><small>{lang === "es" ? "ganador" : "winner"}</small></span>
+          <span><b>5</b><em>{lang === "es" ? "puntos" : "points"}</em><small>{lang === "es" ? "2º" : "2nd"}</small></span>
+          <span><b>2</b><em>{lang === "es" ? "puntos" : "points"}</em><small>{lang === "es" ? "3º" : "3rd"}</small></span>
           <span className="game-header-prize">{lang === "es" ? "Premios TOP 3" : "TOP 3 prizes"}</span>
         </div>
         {session ? (

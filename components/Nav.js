@@ -1,9 +1,8 @@
 "use client";
-// components/Nav.js
-//
-// Deliberately using plain <a> tags (not next/link's <Link>) -- see the note
-// in the git history: Link's client-side navigation silently failed in a way
-// we couldn't fully root-cause, while plain anchors always work reliably.
+
+// The Worlds navigation is intentionally game-first. Historical races stay in
+// the archive/footer; the top bar only contains actions that matter right now.
+// Plain <a> tags are deliberate — see HANDOFF: next/link caused silent failures.
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import AuthModal from "./AuthModal";
@@ -13,28 +12,19 @@ import { useRaceBase } from "../lib/useRace";
 import { useSession, logoutUser } from "../lib/store";
 import { useLang, t } from "../lib/i18n";
 
-// Stage/Jersey Predictions already get their own big buttons in the sitewide
-// CTA bar (components/CtaBar.js) -- no need to repeat them here too.
 function navLinks(lang, base, race) {
   const prefix = base !== undefined ? base : (lang === "es" ? "/es" : "");
   return [
     { href: prefix || "/", key: "nav.home", icon: "home", mobileOnly: true },
-    // The three things people actually come to do. On desktop these sit first
-    // and carry an icon; the old separate red CTA bar is gone.
-    { href: prefix + "/predictions", key: "nav.stages", icon: "flag", primary: true },
-    // Only shown for races that actually have a general classification.
-    ...(hasJerseys(race)
-      ? [{ href: prefix + "/final-classification", key: "nav.jerseys", icon: "jersey", primary: true }]
-      : []),
-    { href: prefix + "/leaderboard", key: "nav.leaderboard", icon: "trophy", primary: true },
+    { href: prefix + "/predictions", key: "nav.stages", icon: "flag", play: true },
+    ...(hasJerseys(race) ? [{ href: prefix + "/final-classification", key: "nav.jerseys", icon: "jersey" }] : []),
+    { href: prefix + "/leaderboard", key: "nav.leaderboard", icon: "trophy" },
     { href: prefix + "/riders", key: "nav.riders", icon: "riders" },
-    { href: prefix + "/rules", key: "nav.rules", icon: "book", mobileOnly: true },
+    { href: prefix + "/rules", key: "nav.rules", icon: "book", info: true },
     { href: prefix + "/faq", key: "nav.faq", icon: "help", mobileOnly: true },
   ];
 }
 
-// Small inline icons for the mobile menu. Kept as tiny inline SVG rather than
-// an icon font so there's no extra network request and they inherit colour.
 function NavIcon({ name }) {
   const common = { width: 17, height: 17, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 2, strokeLinecap: "round", strokeLinejoin: "round" };
   const paths = {
@@ -50,12 +40,12 @@ function NavIcon({ name }) {
 }
 
 const LANGUAGES = [
-  { code: "en", short: "ENG", label: "English", href: "/" },
-  { code: "es", short: "ESP", label: "Español", href: "/es" },
-  { code: "fr", short: "FRA", label: "Français", href: "/fr" },
-  { code: "it", short: "ITA", label: "Italiano", href: "/it" },
-  { code: "nl", short: "NLD", label: "Nederlands", href: "/nl" },
-  { code: "ca", short: "CAT", label: "Català", href: "/ca" },
+  { code: "en", short: "EN", label: "English" },
+  { code: "es", short: "ES", label: "Español" },
+  { code: "fr", short: "FR", label: "Français" },
+  { code: "it", short: "IT", label: "Italiano" },
+  { code: "nl", short: "NL", label: "Nederlands" },
+  { code: "ca", short: "CA", label: "Català" },
 ];
 
 function currentLangCode(pathname) {
@@ -67,28 +57,24 @@ function languageHref(code, pathname) {
   const stripped = pathname.replace(/^\/(es|fr|it|nl|ca)(?=\/|$)/, "") || "/";
   if (code === "en") return stripped;
   if (code === "es") return "/es" + (stripped === "/" ? "" : stripped);
-  // CA/FR/IT/NL currently have editorial landing + preview only. Preserve the
-  // preview route; for app-only screens send visitors to that language's home
-  // rather than to a broken/non-equivalent page.
+  // CA/FR/IT/NL have editorial landing + preview only.
   return "/" + code + (stripped === "/preview" ? "/preview" : "");
 }
 
 function LangSwitcher({ pathname }) {
   const [open, setOpen] = useState(false);
   const current = currentLangCode(pathname);
-  const currentShort = LANGUAGES.find((l) => l.code === current)?.short || "ENG";
+  const currentShort = LANGUAGES.find((l) => l.code === current)?.short || "EN";
 
   return (
-    <div className="lang-switcher" style={{ position: "relative" }}>
-      <button type="button" onClick={() => setOpen((v) => !v)} className="lang-switcher-btn" aria-expanded={open} aria-haspopup="menu">
-        {currentShort} <span style={{ fontSize: 9 }} aria-hidden="true">{open ? "▲" : "▼"}</span>
+    <div className="lang-switcher nav-v98-language">
+      <button type="button" onClick={() => setOpen((v) => !v)} className="lang-switcher-btn" aria-expanded={open} aria-haspopup="menu" aria-label="Language">
+        {currentShort}<span aria-hidden="true">⌄</span>
       </button>
       {open && (
         <div className="lang-menu" role="menu">
           {LANGUAGES.map((l) => (
-            <a key={l.code} href={languageHref(l.code, pathname)} className={l.code === current ? "active" : ""} role="menuitem">
-              {l.label}
-            </a>
+            <a key={l.code} href={languageHref(l.code, pathname)} className={l.code === current ? "active" : ""} role="menuitem">{l.label}</a>
           ))}
         </div>
       )}
@@ -103,10 +89,13 @@ export default function Nav() {
   const [showModal, setShowModal] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // Close the mobile menu whenever the route changes
+  useEffect(() => setMenuOpen(false), [pathname]);
   useEffect(() => {
-    setMenuOpen(false);
-  }, [pathname]);
+    if (!menuOpen) return;
+    const onKey = (event) => { if (event.key === "Escape") setMenuOpen(false); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [menuOpen]);
 
   const raceBase = useRaceBase();
   const currentRace = raceFromPathname(pathname);
@@ -114,86 +103,70 @@ export default function Nav() {
   const logoHref = raceBase || "/";
 
   return (
-    <nav className="nav">
-      <div className="nav-inner">
-        <a href={logoHref} className="logo-link">
-          <span className={"brand" + (menuOpen ? " brand-hidden-mobile" : "")}>
-            <span className="brand-race">{localised(raceFromPathname(pathname).brandName, lang)}</span>{" "}
-            <span className="brand-pool">POOL</span>
-          </span>
+    <nav className="nav nav-v98">
+      <div className="nav-inner nav-v98-inner">
+        <a href={logoHref} className="logo-link nav-v98-brand" aria-label={localised(currentRace.brandName, lang)}>
+          <span className="brand"><span className="brand-race">{localised(currentRace.brandName, lang)}</span><span className="brand-pool">POOL</span></span>
+          <small>MONTRÉAL · 2026</small>
         </a>
 
-        <span className="nav-meta">
+        <div id="site-navigation" className={"nav-links nav-v98-links" + (menuOpen ? " open" : "")}>
+          {links.map((l) => (
+            <a
+              key={l.href}
+              href={l.href}
+              className={
+                "nav-btn nav-v98-link" +
+                (l.play ? " nav-v98-play" : "") +
+                (l.info ? " nav-v98-info" : "") +
+                (pathname === l.href ? " active" : "") +
+                (l.mobileOnly ? " mobile-only" : "")
+              }
+            >
+              <span className="nav-btn-icon"><NavIcon name={l.icon} /></span>
+              <span>{t(lang, l.key)}</span>
+              {l.play && <b aria-hidden="true">→</b>}
+            </a>
+          ))}
+          <div className="nav-v98-mobile-actions">
+            <LangSwitcher pathname={pathname} />
+            {session ? (
+              <button className="btn btn-ghost nav-v98-mobile-account" onClick={() => logoutUser()}>{session.name} · {t(lang, "nav.logout")}</button>
+            ) : (
+              <button className="btn nav-v98-mobile-account" onClick={() => setShowModal(true)}>{t(lang, "nav.signup")}</button>
+            )}
+          </div>
+        </div>
+
+        <div className="nav-v98-tools">
           <CategorySwitcher />
-          <LangSwitcher pathname={pathname} />
-        </span>
+          <div className="nav-v98-desktop-tool"><LangSwitcher pathname={pathname} /></div>
+          <div className="nav-user nav-v98-user nav-v98-desktop-tool">
+            {session ? (
+              <>
+                <span className="nav-v98-username">{session.name}</span>
+                <button className="btn btn-ghost nav-v98-account" onClick={() => logoutUser()}>{t(lang, "nav.logout")}</button>
+              </>
+            ) : (
+              <button className="btn nav-v98-account" onClick={() => setShowModal(true)}>{t(lang, "nav.signup")}</button>
+            )}
+          </div>
+        </div>
 
         <button
-          className="nav-hamburger"
+          className="nav-hamburger nav-v98-hamburger"
           aria-label={menuOpen ? "Close menu" : "Open menu"}
           aria-expanded={menuOpen}
           aria-controls="site-navigation"
           onClick={() => setMenuOpen((v) => !v)}
         >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round">
-            {menuOpen ? (
-              <>
-                <line x1="5" y1="5" x2="19" y2="19" />
-                <line x1="19" y1="5" x2="5" y2="19" />
-              </>
-            ) : (
-              <>
-                <line x1="3" y1="6" x2="21" y2="6" />
-                <line x1="3" y1="12" x2="21" y2="12" />
-                <line x1="3" y1="18" x2="21" y2="18" />
-              </>
-            )}
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            {menuOpen ? <><line x1="5" y1="5" x2="19" y2="19" /><line x1="19" y1="5" x2="5" y2="19" /></> : <><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" /></>}
           </svg>
         </button>
-
-        <div id="site-navigation" className={"nav-links" + (menuOpen ? " open" : "")}>
-          {links.map((l, i) => {
-            const prevPrimary = i > 0 && links[i - 1].primary;
-            const needsDivider = prevPrimary && !l.primary;
-            return (
-              <span key={l.href} className="nav-link-wrap">
-                {needsDivider && <span className="nav-divider" aria-hidden="true" />}
-                <a
-                  href={l.href}
-                  className={
-                    "nav-btn" +
-                    (l.primary ? " primary-link" : " secondary") +
-                    (pathname === l.href ? " active" : "") +
-                    (l.mobileOnly ? " mobile-only" : "")
-                  }
-                >
-                  <span className="nav-btn-icon"><NavIcon name={l.icon} /></span>
-                  <span>{t(lang, l.key)}</span>
-                </a>
-              </span>
-            );
-          })}
-        </div>
-
-        <div className={"nav-user" + (menuOpen ? " open" : "")}>
-          {session ? (
-            <>
-              <span>{session.name}</span>
-              <button className="btn btn-ghost" onClick={() => logoutUser()}>
-                {t(lang, "nav.logout")}
-              </button>
-            </>
-          ) : (
-            <button className="btn" onClick={() => setShowModal(true)}>
-              {t(lang, "nav.signup")}
-            </button>
-          )}
-        </div>
       </div>
-      {showModal && (
-        <AuthModal onClose={() => setShowModal(false)} onAuth={() => setShowModal(false)} />
-      )}
-      {raceFromPathname(pathname).theme?.rainbow && <div className="rainbow-band" />}
+      {showModal && <AuthModal onClose={() => setShowModal(false)} onAuth={() => setShowModal(false)} />}
+      {currentRace.theme?.rainbow && <div className="rainbow-band" />}
     </nav>
   );
 }
