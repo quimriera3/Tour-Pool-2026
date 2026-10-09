@@ -1,56 +1,17 @@
-# Grand Tour Pool — Montréal 2026
+# Mallorca Friends Tour 2026 — classificacions en directe
 
-Current public game: **2026 UCI Road World Championships** in Montréal.
+Aquesta versió **SUBSTITUEIX TOTA LA WEB** publicada a www.grandtourpool.com, fent servir el mateix repositori de GitHub i el mateix Vercel. Sense porra: només classificacions en directe.
 
-## Stack
+## Instruccions Finder (mateix mètode de sempre)
 
-- Next.js 14.2.35
-- Supabase Auth + Postgres
-- Vercel
-- English + Spanish full app; CA/FR/IT/NL editorial landing/preview pages
+1. Fes una còpia de seguretat de tota la carpeta local `tour-pool` i guarda-la fora del repositori.
+2. A la carpeta ORIGINAL `tour-pool` connectada a GitHub, elimina **només** les quatre carpetes `app`, `components`, `lib`, `public`. **No esborris `.git`, `.env.local`, `package.json`, `package-lock.json`, `next.config.mjs`**.
+3. Descomprimeix aquest ZIP en una carpeta a part i arrossega les quatre carpetes noves `app`, `components`, `lib`, `public` a dins de `tour-pool`. Copia també `README.md` i `mallorca-supabase.sql` (substituint-los si ja existeixen).
+4. Obre Terminal a la carpeta `tour-pool` i executa `git add -A app components lib public README.md mallorca-supabase.sql && git commit -m "Mallorca live 2026 - web completa" && git push origin main`.
+5. Espera el desplegament de Vercel a https://www.grandtourpool.com/.
 
-## Current game structure
+Les dades de classificació en directe requereixen la taula `mallorca_tour_state` a Supabase i les variables `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `ADMIN_PASSWORD` de Vercel. Si ja has executat `mallorca-supabase.sql` no cal tornar-ho a fer. Sense això només funciona en mode demo local.
 
-The platform is multi-race. The active men's Worlds owns the root URLs and the
-women's pool lives under `/women` (Spanish: `/es/women`). Men and women have
-separate picks, results and leaderboards.
+És una general A PUNTS (no per temps). La direcció registra qui arriba a cada port, esprint i meta; la web refresca automàticament cada 20 segons. Els GPX no fan cronometratge en viu.
 
-Each Worlds category has two independent events:
-
-- Individual Time Trial
-- Road Race
-
-Road and ITT startlists are tracked separately in
-`lib/races/worlds2026startlists.js`.
-
-## Scoring
-
-- Correct winner: 10 points
-- Pick finishes 2nd: 5 points
-- Pick finishes 3rd: 2 points
-- Picks lock 1 hour before official start
-- Picks auto-save; no submit button
-
-## Important project rules
-
-- Use plain `<a href>` links; do not introduce `next/link`.
-- Any time-dependent client UI must avoid hydration mismatches.
-- Always pass the race slug to pick/result/leaderboard store functions on shared
-  pages so men's and women's data can never mix.
-- `elevationGain` may be null.
-- Optional email consent is only true when `email_opt_in === true`.
-- Do not invent sporting data.
-
-## Admin
-
-`/admin` can switch between the men's and women's Worlds pools. Saving a result
-and sending the result email are separate actions.
-
-## Local check before pushing
-
-```bash
-npm ci
-npm run build
-```
-
-Only push after the build succeeds.
+Per recuperar la web antiga, tens la còpia que has fet al Finder i l'historial de Git, sense haver tocat el domini ni el projecte de Vercel.
