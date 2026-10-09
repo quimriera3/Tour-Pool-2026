@@ -92,3 +92,57 @@ button,input,select{font-family:inherit}
 @media (max-width:1100px){.mt-live-leader-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.mt-live-leader{min-height:125px}}
 @media (max-width:820px){.mt-live-two-col{grid-template-columns:1fr}.mt-live-bar{gap:12px}.mt-live-leader-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:620px){.mt-live-flag{font-size:11px}.mt-live-bar{padding:15px 13px}.mt-live-meta{order:3;flex-basis:100%;font-size:9px}.mt-live-leader{padding:15px 12px;min-height:115px}.mt-live-leader strong{font-size:16px}.mt-live-leader-foot{font-size:9px}.mt-live-leader-top{font-size:9px}.mt-live-events,.mt-live-stage-board,.mt-live-list{padding:17px}.mt-live-subhead h3{font-size:22px}.mt-live-route-control{grid-template-columns:1fr}.mt-live-route-control>div:last-child{justify-content:flex-start}.mt-live-stage-tabs button{min-width:66px;padding:10px 2px;font-size:10px}}
+
+/* Mallorca 2026 · route explorer, peloton-grade profiles, additional classifications */
+.mt-profile svg{width:100%;height:auto;aspect-ratio:1000 / 288;margin:6px 0 2px;display:block}
+.mt-gradient-legend{display:flex;gap:10px 13px;flex-wrap:wrap;align-items:center;padding:12px 8px 10px;border-top:1px solid rgba(220,235,220,.15);color:#e0ebd9;font-size:10px;font-weight:700}
+.mt-gradient-legend strong{font-size:9px;letter-spacing:1px;margin-right:8px}
+.mt-gradient-legend span{display:flex;gap:5px;align-items:center;white-space:nowrap}
+.mt-gradient-legend i{width:18px;height:7px;display:inline-block;border-radius:3px}
+.mt-method-note{color:#b3c9bc;font-size:10px;margin:0;padding:5px 8px 16px;line-height:1.5}
+.mt-climb-source{display:block!important;width:fit-content;margin-top:6px;font-size:10px!important;color:#336552!important;text-decoration:underline!important;letter-spacing:normal!important;font-weight:700!important}
+.mt-day-awards{margin-top:17px;border-top:1px solid #bdcdc1;display:grid;grid-template-columns:1fr 1fr;gap:8px;padding-top:16px}
+.mt-day-awards span{font-size:10px;letter-spacing:.4px;font-weight:900;color:#557362}
+.mt-day-awards strong{margin-top:6px;display:block;font-size:12px;color:#163c32;line-height:1.4;letter-spacing:0}
+.mt-live-leader-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+.mt-cats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+.mt-cat{justify-content:flex-start;text-align:left;min-height:52px}
+.mt-rider{min-height:290px}
+.mt-rider-small{min-height:240px}
+.mt-rider-nick{font-weight:600;font-size:11px;color:#6a8277;margin-top:8px}
+.mt-osm-wrap{width:100%;position:relative;background:#e6eee4}
+.mt-osm{position:relative;width:100%;height:520px;overflow:hidden;touch-action:none;background:#dce9dc;cursor:grab;user-select:none;isolation:isolate}
+.mt-osm:active{cursor:grabbing}
+.mt-osm-background{position:absolute;inset:0;background:repeating-linear-gradient(45deg,#e0ebde 0 12px,#eaf1e6 12px 24px)}
+.mt-osm-tile{width:256px;height:256px;position:absolute;max-width:none;pointer-events:none;image-rendering:auto;user-select:none}
+.mt-osm-overlay{position:absolute;inset:0;overflow:visible;pointer-events:none;z-index:2;filter:drop-shadow(0px 2px 2px #183b3899)}
+.mt-osm-marker{position:absolute;z-index:3;width:32px;height:32px;min-width:32px;min-height:32px;transform:translate(-50%,-50%);border:3px solid #163d36;outline:2px solid #fff;box-shadow:0 3px 9px #112e3999;background:#f3ce65;color:#173b36;border-radius:50%;display:grid;place-items:center;font-weight:1000;font-size:10px;line-height:1;cursor:pointer;touch-action:manipulation}
+.mt-osm-marker span{pointer-events:none}
+.mt-osm-marker.sprint{background:#49e0cb}
+.mt-osm-marker.finish{background:#ffffff}
+.mt-osm-marker.selected{z-index:7;outline:4px solid #d8ff72;transform:translate(-50%,-50%) scale(1.2)}
+.mt-osm-controls{position:absolute;right:14px;top:14px;z-index:5;display:flex;flex-direction:column;gap:4px;box-shadow:0 2px 6px #253f3955}
+.mt-osm-controls button{border:0;min-width:39px;min-height:39px;background:#f8faf5;color:#1e4034;font-size:25px;font-weight:800;cursor:pointer;touch-action:manipulation}
+.mt-osm-controls button:hover{background:#d4fa7a}
+.mt-osm-attribution{position:absolute;bottom:0;right:0;z-index:4;color:#273b35;background:#ffffffd9;padding:5px 8px;font-size:10px;cursor:auto}
+.mt-osm-attribution a{color:#184d7b;text-decoration:underline}
+.mt-osm-tooltip{position:absolute;z-index:8;transform:translate(-50%,-100%);background:#113a36;border:1px solid #92b5a8;box-shadow:0 10px 24px #18372f88;color:#fff;padding:14px 28px 14px 15px;min-width:240px;max-width:260px;pointer-events:auto;cursor:auto}
+.mt-osm-tooltip>b{display:block;font-size:13px;margin-bottom:7px;line-height:1.25}
+.mt-osm-tooltip small{font-size:10px;display:block;color:#d2eab9;margin-top:4px;line-height:1.4}
+.mt-osm-tooltip>button{position:absolute;right:5px;top:2px;border:0;background:transparent;color:#fff;font-size:23px;cursor:pointer}
+.mt-osm-warning{position:absolute;left:10px;top:10px;background:#fff9c7;color:#5f4d24;padding:7px 9px;max-width:250px;font-size:11px;line-height:1.4;z-index:5}
+.mt-osm-legend{background:#133e39;color:#eaf3e8;display:flex;align-items:center;gap:16px 19px;flex-wrap:wrap;font-size:11px;font-weight:750;padding:15px 17px;line-height:1.5}
+.mt-osm-legend>span{display:inline-flex;align-items:center;gap:6px}
+.mt-osm-legend i{display:inline-block}
+.mt-map-line{width:21px;height:4px;background:#d4ff47;border:1px solid white}
+.mt-map-dot{width:12px;height:12px;border:2px solid #fff;border-radius:50%}
+.mt-map-dot.mountain{background:#f3ce65}.mt-map-dot.sprint{background:#49e0cb}.mt-map-dot.finish{background:#fff}
+.mt-osm-help{color:#b7d2be;margin-left:auto;font-weight:500}
+.mt-page .mt-nav-links button{font-size:11px}
+@media(max-width:1050px){.mt-nav-cta{display:none}.mt-nav-links{max-width:calc(100vw - 235px)}.mt-live-leader-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:700px){.mt-nav{flex-wrap:wrap;padding-bottom:0}.mt-nav-links{width:calc(100% + 36px);max-width:none;order:3;margin:0 -18px;padding:0 12px;overflow-x:auto}.mt-nav-links button{padding:12px 11px}.mt-osm{height:440px}.mt-osm-legend{gap:8px 14px;padding:12px 10px;font-size:10px}.mt-osm-help{width:100%}.mt-gradient-legend{font-size:9px;gap:7px 9px}.mt-gradient-legend strong{width:100%}.mt-live-leader-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.mt-cats{grid-template-columns:repeat(2,minmax(0,1fr))}.mt-rider{min-height:230px}.mt-rider-small{min-height:205px}.mt-profile svg{min-height:auto}.mt-osm-marker{width:30px;height:30px}.mt-osm-tooltip{max-width:220px;min-width:200px}}
+
+.mt-live-actions{display:flex;gap:8px;flex-wrap:wrap}.mt-live-actions .mt-refresh-btn:last-child{background:#d9fb74;color:#16352b;border-color:#d9fb74}.mt-live-actions .mt-refresh-btn:last-child:hover{filter:brightness(.93)}
+@media(max-width:660px){.mt-live-actions{width:100%;justify-content:space-between}.mt-live-actions .mt-refresh-btn{flex:1}}
+
+.mt-osm-start{position:absolute;z-index:4;transform:translate(-50%,-50%);pointer-events:none;background:#1a493d;color:white;border:2px solid white;border-radius:3px;padding:5px 7px;font-size:10px;line-height:1;font-weight:950;box-shadow:0 2px 6px #0005}

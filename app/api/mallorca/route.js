@@ -29,8 +29,8 @@ function cleanState(src){
   while(order.length&&!order[order.length-1])order.pop();
   if(order.length)results[cp.id]=order;
  }
- const combative={};for(const st of stages){if(validRider(input.combative[st.n]))combative[st.n]=input.combative[st.n];}
- return {results,combative,finalized:input.finalized};
+ const combative={},aura={};for(const st of stages){if(validRider(input.combative[st.n]))combative[st.n]=input.combative[st.n];if(validRider(input.aura[st.n]))aura[st.n]=input.aura[st.n];}
+ return {results,combative,aura,finalized:input.finalized};
 }
 export async function GET(){
  if(!isReady())return ok({shared:false,notice:'Mode demostració local. Cal configurar Supabase per compartir resultats en directe.'});
