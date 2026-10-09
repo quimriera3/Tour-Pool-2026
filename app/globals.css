@@ -146,3 +146,9 @@ button,input,select{font-family:inherit}
 @media(max-width:660px){.mt-live-actions{width:100%;justify-content:space-between}.mt-live-actions .mt-refresh-btn{flex:1}}
 
 .mt-osm-start{position:absolute;z-index:4;transform:translate(-50%,-50%);pointer-events:none;background:#1a493d;color:white;border:2px solid white;border-radius:3px;padding:5px 7px;font-size:10px;line-height:1;font-weight:950;box-shadow:0 2px 6px #0005}
+
+/* The map is independently fault-contained: race results stay available. */
+.mt-map-fallback{background:#e9efe5;color:#183d34;border:1px solid #aec5ae;min-height:230px;padding:35px 25px;display:flex;flex-direction:column;justify-content:center;gap:13px;line-height:1.55}
+.mt-map-fallback b{font-size:20px}.mt-map-fallback p{font-size:13px;max-width:650px;margin:0}
+.mt-map-fallback a{display:inline-block;align-self:flex-start;padding:12px 16px;background:#193e37;color:#e0fa92!important;font-size:12px;font-weight:900;text-decoration:none}
+.mt-map-fallback a:hover{background:#305d4c}

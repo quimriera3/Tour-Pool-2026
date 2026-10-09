@@ -1,3 +1,15 @@
+## Actualització v2.1 — correcció del mapa interactiu
+
+- S'ha corregit una condició de carrera dels gestos d'arrossegament: les actualitzacions pendents del mapa ja no llegeixen la referència de gest un cop finalitzat.
+- S'han limitat les actualitzacions de posició a un fotograma per animació, per reduir càrrega i evitar bloquejos en mòbil.
+- El mapa ara té un límit d'errors independent. Si fallés, la resta de la web (resultats, classificacions, direcció, etc.) continua operativa i s'ofereix la descàrrega GPX.
+- Evitem actualitzacions de mida redundants que provocaven renderitzats innecessaris.
+- No es modifiquen els punts, corredors, etapes, resultats ni la base de dades.
+
+**Instal·lació:** com sempre, desa una còpia de la web, substitueix les carpetes `app`, `components`, `lib` i `public` del repositori mantenint `.git`, `package.json`, `package-lock.json`, `next.config.mjs` i `.env.local`. Puja els canvis amb Git; no cal tornar a executar SQL.
+
+---
+
 # Mallorca Friends Tour 2026 · Live v2
 
 **Lloc:** https://www.grandtourpool.com/ · **mateix domini, repositori GitHub i projecte Vercel que abans.** Aquesta versió *substitueix tota la web*, no crea `/mallorca` ni cap subdomini.

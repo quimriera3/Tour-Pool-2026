@@ -1,5 +1,5 @@
 'use client';
-import {useEffect,useMemo,useRef,useState} from 'react';
+import {Component,useEffect,useMemo,useRef,useState} from 'react';
 
 // Slippy map using OpenStreetMap raster tiles and local GPX coordinates; no extra npm dependency.
 const TILE=256, MINZOOM=8, MAXZOOM=16;
@@ -9,21 +9,73 @@ const inv=(x,y,z)=>{const scale=TILE*2**z;return [Math.atan(Math.sinh(Math.PI*(1
 const mark=c=>c.kind==='mountain'?c.cat:c.kind==='sprint'?'S':'M';
 const zoomFor=(stage,w,h)=>{const coords=[...stage.route,...stage.checkpoints.map(c=>c.coord)];let z=MAXZOOM;for(;z>MINZOOM;z--){const pts=coords.map(p=>project(p,z));const xs=pts.map(p=>p[0]),ys=pts.map(p=>p[1]);if(Math.max(...xs)-Math.min(...xs)<w*.86 && Math.max(...ys)-Math.min(...ys)<h*.78)break;}return z;};
 const centerOf=(stage,z)=>{const xy=stage.route.map(p=>project(p,z));return [(Math.min(...xy.map(p=>p[0]))+Math.max(...xy.map(p=>p[0])))/2,(Math.min(...xy.map(p=>p[1]))+Math.max(...xy.map(p=>p[1])))/2];};
+/**
+ * A route-map rendering error must never take down live results or the race website.
+ * Remount the boundary when switching stages, so the next map still works.
+ */
+class RouteMapBoundary extends Component {
+ constructor(props){super(props);this.state={failed:false};}
+ static getDerivedStateFromError(){return {failed:true};}
+ componentDidCatch(error){console.error('No s’ha pogut mostrar el mapa de Mallorca:',error);}
+ render(){return this.state.failed ? <div className="mt-map-fallback" role="alert"><b>El mapa no està disponible ara mateix.</b><p>La resta de la web i les classificacions continuen funcionant. Pots consultar la ruta i els punts de control amb el GPX.</p><a href={`/gpx/etapa-${this.props.stageNumber}-controls.gpx`} download>Descarregar GPX amb ports i esprints</a></div> : this.props.children;}
+}
+
 export default function RouteMap({stage}){
- const container=useRef(null),drag=useRef(null);
+ return <RouteMapBoundary key={stage.n} stageNumber={stage.n}><InteractiveRouteMap stage={stage}/></RouteMapBoundary>;
+}
+
+function InteractiveRouteMap({stage}){
+ const container=useRef(null),drag=useRef(null),moveFrame=useRef(0),pendingMove=useRef(null);
  const [size,setSize]=useState([800,480]);const [view,setView]=useState({z:10,x:132000,y:99000});const [selected,setSelected]=useState(null);const [tileError,setTileError]=useState(false);
- useEffect(()=>{if(!container.current)return;const ro=new ResizeObserver(es=>{const r=es[0].contentRect;if(r.width&&r.height)setSize([r.width,r.height]);});ro.observe(container.current);return()=>ro.disconnect();},[]);
+ useEffect(()=>{
+  if(!container.current)return;
+  const ro=new ResizeObserver(es=>{
+   const r=es[0].contentRect;
+   if(r.width>0&&r.height>0)setSize(old=>Math.abs(old[0]-r.width)<1&&Math.abs(old[1]-r.height)<1?old:[r.width,r.height]);
+  });
+  ro.observe(container.current);
+  return ()=>ro.disconnect();
+ },[]);
+ useEffect(()=>()=>{if(moveFrame.current)cancelAnimationFrame(moveFrame.current);},[]);
  useEffect(()=>{const z=zoomFor(stage,...size);const [x,y]=centerOf(stage,z);setView({z,x,y});setSelected(null);setTileError(false);},[stage.n,size[0],size[1]]);
  const offset=[size[0]/2-view.x,size[1]/2-view.y];
  const route=useMemo(()=>stage.route.map((p,i)=>{const [x,y]=project(p,view.z);return `${i?'L':'M'}${(x+offset[0]).toFixed(1)},${(y+offset[1]).toFixed(1)}`}).join(' '),[stage,view,size]);
  const tiles=useMemo(()=>{const t=[];const x0=Math.floor((view.x-size[0]/2)/TILE)-1,x1=Math.ceil((view.x+size[0]/2)/TILE)+1,y0=Math.floor((view.y-size[1]/2)/TILE)-1,y1=Math.ceil((view.y+size[1]/2)/TILE)+1,n=2**view.z;
  for(let ty=y0;ty<=y1;ty++)for(let tx=x0;tx<=x1;tx++){if(ty<0||ty>=n)continue;t.push({x:tx,y:ty,src:`https://tile.openstreetmap.org/${view.z}/${((tx%n)+n)%n}/${ty}.png`,left:tx*TILE+offset[0],top:ty*TILE+offset[1]});}return t;},[view,size]);
  const zoom=delta=>{const z=clamp(view.z+delta,MINZOOM,MAXZOOM);if(z===view.z)return;const latlon=inv(view.x,view.y,view.z),[x,y]=project(latlon,z);setView({z,x,y});};
- const onDown=e=>{if(e.button!==0)return;drag.current={x:e.clientX,y:e.clientY,ox:view.x,oy:view.y,moved:false};e.currentTarget.setPointerCapture(e.pointerId);};
- const onMove=e=>{if(!drag.current)return;const dx=e.clientX-drag.current.x,dy=e.clientY-drag.current.y;setView(v=>({...v,x:drag.current.ox-dx,y:drag.current.oy-dy}));};
- const onUp=e=>{drag.current=null;if(e.currentTarget.hasPointerCapture(e.pointerId))e.currentTarget.releasePointerCapture(e.pointerId);};
- const reset=()=>{const z=zoomFor(stage,...size);const [x,y]=centerOf(stage,z);setView({z,x,y});};
- return <div className="mt-osm-wrap"><div className="mt-osm" ref={container} onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={()=>drag.current=null} role="group" aria-label={`Mapa interactiu de l'etapa ${stage.n}, amb carreteres d'OpenStreetMap, recorregut i punts de control`}>
+ // Use an immutable snapshot for each gesture. React can execute queued updates
+ // after pointerup; reading drag.current from inside setState would then throw.
+ const onDown=e=>{
+  if(e.button!==0||e.isPrimary===false||e.target.closest?.('button,a'))return;
+  drag.current={id:e.pointerId,x:e.clientX,y:e.clientY,ox:view.x,oy:view.y};
+  try{e.currentTarget.setPointerCapture(e.pointerId);}catch{/* Unsupported capture: ordinary drag still works. */}
+ };
+ const flushMove=()=>{
+  moveFrame.current=0;
+  const next=pendingMove.current;
+  pendingMove.current=null;
+  if(next)setView(prev=>({...prev,x:next.x,y:next.y}));
+ };
+ const onMove=e=>{
+  const d=drag.current;
+  if(!d||d.id!==e.pointerId)return;
+  const next={x:d.ox-(e.clientX-d.x),y:d.oy-(e.clientY-d.y)};
+  if(!Number.isFinite(next.x)||!Number.isFinite(next.y))return;
+  pendingMove.current=next;
+  if(!moveFrame.current)moveFrame.current=requestAnimationFrame(flushMove);
+ };
+ const onUp=e=>{
+  const d=drag.current;
+  if(!d||d.id!==e.pointerId)return;
+  drag.current=null;
+  if(moveFrame.current){cancelAnimationFrame(moveFrame.current);moveFrame.current=0;}
+  const finalMove=pendingMove.current;
+  pendingMove.current=null;
+  if(finalMove)setView(prev=>({...prev,x:finalMove.x,y:finalMove.y}));
+  try{if(e.currentTarget.hasPointerCapture(e.pointerId))e.currentTarget.releasePointerCapture(e.pointerId);}catch{}
+ };
+ const reset=()=>{drag.current=null;pendingMove.current=null;if(moveFrame.current){cancelAnimationFrame(moveFrame.current);moveFrame.current=0;}const z=zoomFor(stage,...size);const [x,y]=centerOf(stage,z);setView({z,x,y});};
+ return <div className="mt-osm-wrap"><div className="mt-osm" ref={container} onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onUp} onLostPointerCapture={onUp} role="group" aria-label={`Mapa interactiu de l'etapa ${stage.n}, amb carreteres d'OpenStreetMap, recorregut i punts de control`}>
   <div className="mt-osm-background"/>
   {tiles.map(t=><img loading="lazy" draggable="false" key={`${view.z}:${t.x}:${t.y}`} src={t.src} alt="" onError={()=>setTileError(true)} className="mt-osm-tile" style={{left:t.left,top:t.top}}/>)}
   <svg className="mt-osm-overlay" width="100%" height="100%" aria-hidden="true"><path d={route} fill="none" stroke="#ffffff" strokeWidth="7" strokeLinejoin="round" strokeLinecap="round"/><path d={route} fill="none" stroke="#d4ff47" strokeWidth="4.5" strokeLinejoin="round" strokeLinecap="round"/></svg>
