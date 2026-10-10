@@ -1,81 +1,67 @@
-## Actualització v2.1 — correcció del mapa interactiu
+# MALLORCA FRIENDS TOUR 2026 — LIVE v3.1 (desnivell revisat)
 
-- S'ha corregit una condició de carrera dels gestos d'arrossegament: les actualitzacions pendents del mapa ja no llegeixen la referència de gest un cop finalitzat.
-- S'han limitat les actualitzacions de posició a un fotograma per animació, per reduir càrrega i evitar bloquejos en mòbil.
-- El mapa ara té un límit d'errors independent. Si fallés, la resta de la web (resultats, classificacions, direcció, etc.) continua operativa i s'ofereix la descàrrega GPX.
-- Evitem actualitzacions de mida redundants que provocaven renderitzats innecessaris.
-- No es modifiquen els punts, corredors, etapes, resultats ni la base de dades.
+**Substitució completa de la web a `https://www.grandtourpool.com/`**. Reutilitza el mateix repositori GitHub, projecte Vercel, variables d'entorn i taula `mallorca_tour_state` de Supabase. **No és una porra.**
 
-**Instal·lació:** com sempre, desa una còpia de la web, substitueix les carpetes `app`, `components`, `lib` i `public` del repositori mantenint `.git`, `package.json`, `package-lock.json`, `next.config.mjs` i `.env.local`. Puja els canvis amb Git; no cal tornar a executar SQL.
+## Correcció v3.1
 
----
+- Desnivell de l’etapa 2 corregit de +2.787 m a **+3.061 m**, calculat directament del GPX Strava sense suavitzat; perfil gràfic i punts de control idèntics a la v3. No afecta resultats ni classificacions.
 
-# Mallorca Friends Tour 2026 · Live v2
+## Canvis de v3
 
-**Lloc:** https://www.grandtourpool.com/ · **mateix domini, repositori GitHub i projecte Vercel que abans.** Aquesta versió *substitueix tota la web*, no crea `/mallorca` ni cap subdomini.
+- Nova etapa 2 segons el GPX `Mallorca TC day 2 (1).gpx`: **132,6 km, +3.061 m** (suma dels increments positius d’altitud del GPX original de Strava; xifra coherent amb els ~3.000 m de Strava). La distància total passa a **381,9 km**. Per comparar: suavitzat de 50 m → 2.970 m, de 100 m → 2.888 m i de 200 m → 2.787 m. La xifra visible és la de l’arxiu original, no un valor homologat.
+- L'ordre dels controls de l'etapa 2 canvia completament: **esprint al km 11,0** (pendent al voltant del 0,3% a 1 km), **Coll d'Orient (km 27,0 · 2a), Coll d'Honor (km 32,5 · 3a), Coll de Sóller (km 47,8 · 2a), Puig Major (km 72,5 · HC), Coll dels Reis (km 103,2 · HC) i meta a Búger (km 132,6)**. Els km són estimacions del track, les categories són pròpies del joc i poden canviar per acord del grup.
+- Primera passada pel Coll dels Reis (km ~82,9) **marcada com a pas sense puntuació perquè és de baixada**. Només puntua la pujada de retorn des de Sa Calobra.
+- L'esprint previst de l'etapa 3 s'avança al **km 20,0**, abans de la muntanya, sobre un tram de poc desnivell. El de l'etapa 1 no es modifica perquè la jornada ja s'ha disputat i no s'han de reescriure resultats passats.
+- Nous GPX de les etapes 2 i 3 amb **waypoints de ports, esprints, metes i sortida**. L'etapa 2 conserva el GPX original proporcionat com a fitxer `etapa-2.gpx`; `etapa-2-controls.gpx` és la mateixa traça amb marques.
+- Mapa interactiu més robust amb **pantalla completa**, moviments de ratolí/tàctils i marcadors de passos no puntuables; protecció d'errors independent de la resta de la web.
+- Perfil i punts de control recalculats amb el GPX nou. Colors de pendent en les pujades, vista de cada etapa i font consultable per als ports.
+- Panell de Direcció amb selecció inicial del dia actual i **control de versions**: si algú ha desat resultats en un altre dispositiu mentre editaves, evita que els sobreescriguis sense voler (cal actualitzar la pàgina i tornar a entrar-los).
+- Textos, gramàtica, navegació, avisos de canvis sense desar, accessibilitat de controls i sumaris de recorregut revisats.
 
-## Què inclou
+### Com interpretar els sprints
 
-- **8 corredors, sense sobrenoms:** Martí Álvarez, Albert Balcells, Lucas Iñigo, Jordi Pérez, Jan Álvarez, Víctor Heredero, Quim Riera i Uri.
-- **3 etapes, 16 controls puntuables**, extrets dels tres GPX aportats. Tres GPX nous amb **19 waypoints** (16 controls + 3 sortides), a `public/gpx/etapa-{n}-controls.gpx`. El track original de cada etapa s'ha conservat íntegrament.
-- **Mapa interactiu sobre carreteres OpenStreetMap:** traçat de l'etapa, categoria de cada port, esprint i meta. Conté botons d'ampliació, arrossegar i informació dels controls al tocar-los. © OpenStreetMap contributors.
-- **Perfils de carretera** amb segments colorejats per pendent estimat: verd (0–3 %), groc (3–5 %), taronja (5–7 %), vermell (7–9 %) i granat (≥9 %). Calculats des de les elevacions del GPX amb suavitzat aproximat a 600 metres; no són dades oficials IGN per tram ni classificació UCI.
-- Classificació general (mallot groc), punts (verd), muntanya (lunars), joves (blanc, ≤26), premi de la combativitat i **Aurímetre**.
-- Combativitat i Aurímetre: **una persona premiada per etapa i categoria, 6 punts per premi a la general**. La votació es fa entre els corredors i Direcció publica el guanyador. No hi ha votació electrònica identificada, ni porra.
-- Resultats compartits a Supabase quan està configurat, consulta de novetats cada 20 segons, informació d'etapa i mapa i descàrregues.
+Els llocs estan **proposats geogràficament sobre el GPX; NO és possible confirmar a distància que la carretera sigui segura, recta, lliure de trànsit, sense obstacles o cruïlles**. Abans de l'etapa inspeccioneu el punt i decidiu si el feu, el moveu a un sector segur o el neutralitzeu. No disputeu esprints massius en carreteres obertes amb trànsit ni amb manca de visibilitat. Respecteu les normes de circulació i prioritzeu la seguretat.
 
-## INSTAL·LACIÓ: MATEIX MÈTODE DEL FINDER
+### Com publicar resultats
 
-1. **Guarda una còpia** de la carpeta actual `tour-pool` en una altra ubicació, fora de GitHub.
-2. Descomprimeix aquest ZIP en una carpeta temporal i comprova que a l'arrel hi ha `app`, `components`, `lib`, `public`, `README.md` i `mallorca-supabase.sql`.
-3. A la teva carpeta **original** `tour-pool` connectada amb GitHub, **elimina només** les quatre carpetes `app`, `components`, `lib` i `public`.
-4. Copia les quatre noves carpetes al projecte. Copia també `README.md` i `mallorca-supabase.sql` substituint-los si ja existeixen.
-5. **NO ELIMINIS**: `.git`, `.env.local`, `next.config.mjs`, `package.json`, `package-lock.json`, les configuracions ocultes o les altres dades que vulguis conservar.
-6. Terminal: obre la carpeta del repositori i executa:
+1. Entra a `https://www.grandtourpool.com/#direccio`.
+2. Selecciona el port, esprint o meta. Tria els corredors en ordre d'arribada en els desplegables.
+3. Escriu la contrasenya de Direcció que ja tenies a Vercel (`ADMIN_PASSWORD`).
+4. Prem **Publicar al directe**. Si és correcte, les altres pantalles rebran el canvi aproximadament en 20 segons quan estan obertes.
+5. Després de cada jornada, publiqueu els dos premis votats: combativitat i Aurímetre (6 punts cadascun a la general).
+6. Si la web avisa que hi ha una versió nova dels resultats, **no forcis la publicació**: refresca i torna a introduir el que encara no estava publicat.
+
+La general és **per punts, NO per temps**, com ja es va acordar. Les classificacions són general/groc, punts/verd, muntanya/lunars, joves/blanc (≤26 anys), combativitat i Aurímetre. Les dades compartides es guarden al servidor quan Supabase està configurat; si es mostra «Mode local / demo», **no es comparteixen entre dispositius**.
+
+## Instal·lació al Mac, mateix mètode de sempre
+
+1. **Fes una còpia de seguretat** de tota la carpeta `tour-pool` actual en una ubicació separada.
+2. Descomprimeix el ZIP de v3 fora del repositori.
+3. Dins la teva carpeta de GitHub `tour-pool`, elimina **només** les carpetes antigues `app`, `components`, `lib`, `public` i substitueix-les per les quatre del ZIP. Copia també `README.md` i `mallorca-supabase.sql` si vols mantenir-los al projecte.
+4. **Conserva** `.git`, `package.json`, `package-lock.json`, `next.config.mjs`, `.env.local` i les configuracions ocultes. No enganxis el ZIP com una carpeta interior.
+5. Executa al Terminal (tota una sola línia):
 
 ```bash
-cd "/Users/quimriera/Desktop/Tour Pool 2026/GitHub/tour-pool" && git add -A app components lib public README.md mallorca-supabase.sql && git commit -m "Mallorca Live v2 - etapes, perfils i premis" && git push origin main
+cd "/Users/quimriera/Desktop/Tour Pool 2026/GitHub/tour-pool" && git add -A app components lib public README.md mallorca-supabase.sql && git commit -m "Mallorca Live v3.1 - desnivell etapa 2" && git push origin main
 ```
 
-7. Espera que **Vercel** acabi el desplegament a `www.grandtourpool.com` (el mateix projecte).
+6. Revisa l'estat del desplegament a Vercel. No cal canviar ni DNS ni el domini. **No cal tornar a executar SQL** si la taula de Mallorca ja existeix.
 
-## Com introduir i publicar resultats
+## Fitxers i dependències
 
-1. Entra a `https://www.grandtourpool.com/#direccio` des del mòbil (o pestanya **Direcció de cursa**).
-2. Tria **l'etapa i punt de control** (port, esprint, meta) i selecciona el nom del primer, segon, tercer, etc. Les places sense punts poden quedar buides.
-3. Posa la contrasenya de Direcció (el valor **ADMIN_PASSWORD** ja configurat a Vercel).
-4. Prem **PUBLICAR AL DIRECTE**. Els altres navegadors ho veuran al cap d'uns 20 segons com a màxim, si la web està activa i Supabase respon.
-5. Després del dia, els **8 corredors voten entre ells** el més combatiu i el guanyador de l'**Aurímetre**. Trieu el guanyador de cada etapa als desplegables de les seccions 02 i 03 de Direcció i torneu a publicar.
-6. Si t'equivoques, corregeix l'ordre o el premi i torna a publicar. **No cal entrar a Supabase per carregar resultats.**
-7. Després de les tres metes, pots marcar la classificació com a definitiva i publicar.
+L'arrel del ZIP té: `app/`, `components/`, `lib/`, `public/`, `README.md`, `mallorca-supabase.sql`. Aquesta versió pressuposa la instal·lació de **Next.js 14 i React** que ja hi ha al repositori: no modifica `package.json`. Mapes sobre rajoles OpenStreetMap, sense dependència de Mapbox, Leaflet ni claus noves. Els fitxers GPX de control estan a `/public/gpx/etapa-N-controls.gpx`.
 
-## Supabase i seguretat
+## Fonts dels ports
 
-- La versió **reutilitza la mateixa taula** `public.mallorca_tour_state` de la versió anterior. Si ja vas executar `mallorca-supabase.sql` correctament **NO cal tornar-lo a executar**.
-- Si encara no existeix la taula, executa `mallorca-supabase.sql` al SQL Editor del mateix projecte de Supabase. El fitxer és idempotent i no elimina dades.
-- La web fa la lectura pública del directe a través de `/api/mallorca`, i les escriptures estan protegides per la contrasenya de Direcció al servidor.
-- Es requereixen les variables ja existents `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` (mai pública) i `ADMIN_PASSWORD` a Vercel. Si falten, la pàgina mostra mode local/demostració i les dades **NO** es comparteixen.
-- La general d'aquesta volta és **per punts** i **NO per temps**, malgrat mantenir els noms dels mallots del Tour de França.
+El desnivell del perfil i les coordenades de cada control provenen del GPX. Per validar els noms dels ascensos i el vessant de pujada s'han contrastat amb els perfils de MallorcaVelo:
+- https://mallorcavelo.com/climbs/coll-d-orient-alaro/
+- https://mallorcavelo.com/climbs/coll-d-honor-orient/
+- https://mallorcavelo.com/climbs/coll-de-soller-bunyola/
+- https://mallorcavelo.com/climbs/puig-major-soller/
+- https://mallorcavelo.com/climbs/sa-calobra/
 
-## Font de les altimetries
+Aquests perfils externs no són resultats oficials UCI i els seus desnivells poden diferir dels calculats sobre el vostre track. Els trams per colors del perfil es calculen amb altituds del vostre GPX, no amb el model oficial de l'IGN.
 
-- Distància, recorregut, cotes, waypoints i perfil de les etapes: **GPX del grup**, sense fingir que són registres oficials o trams de l'IGN.
-- Els trams acolorits representen la inclinació aproximada derivada del desnivell del GPX en finestres de ~600 m. Els inicis dels ports són estimats d'acord amb el traçat.
-- Fitxes de contrast dels ports (no autoritat oficial UCI):
-  - Coll de sa Batalla (Caimari): https://mallorcavelo.com/climbs/coll-de-sa-batalla-caimari/
-  - Formentor / Coll de la Creueta: https://mallorcavelo.com/climbs/formentor-port-de-pollenca/
-  - Sa Calobra, Puig Major i Coll de Sóller: https://www.mallorcacyclingcenter.com/routes/sa-calobra/
-  - Coll d'Honor: https://www.mallorcacyclingcenter.com/routes/alcudia-puig-major/
-  - Coll de sa Gramola: https://mallorcavelo.com/climbs/coll-de-sa-gramola-estellencs/
-  - Coll de sa Creu: https://www.mallorcacyclingcenter.com/routes/sant-elm/
-- **Les categories HC, 1a, 2a i 3a són escollides per aquesta volta, no oficials.** En particular, Coll d'en Claret i el Coll de sa Gramola es classifiquen 3a al reglament intern.
-- **Esprints intermedis provisionals**: comprova que el punt és segur abans de disputar-lo. En cas de dubte, neutralitza'l i no concedeixis els punts. Respecteu senyals, trànsit i altres usuaris; mai s'ha de competir en baixada ni a les cruïlles.
+## Verificació
 
-## Verificació abans de publicar
-
-- Sintaxi dels fitxers JSX/JS comprovada (sense errors de parseig).
-- Lògica de punts provada amb resultats ficticis: premi d'etapa, muntanya, verd, combativitat i Aurímetre.
-- GPX comprovats: 3 tracks originals i els 19 punts waypoint previstos.
-- **No s'ha executat un `next build` real ni un desplegament Vercel en aquest entorn**; comprova l'estat final a Vercel després de fer el push.
-
-Per recuperar la web anterior, tens la còpia guardada al Finder i l'historial de GitHub.
+Comprovats per codi els 3 GPX, la posició dels waypoints, el nombre de punts de control, les ordenacions i la sintaxi dels fitxers JSX/JS. També s'ha provat el càlcul de punts amb resultats ficticis. **No s'ha pogut executar un `next build` real per manca de dependències i accés al registre npm en aquest entorn.** Cal comprovar que el desplegament de Vercel finalitzi sense errors.

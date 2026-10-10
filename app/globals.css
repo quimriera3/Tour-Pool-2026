@@ -152,3 +152,14 @@ button,input,select{font-family:inherit}
 .mt-map-fallback b{font-size:20px}.mt-map-fallback p{font-size:13px;max-width:650px;margin:0}
 .mt-map-fallback a{display:inline-block;align-self:flex-start;padding:12px 16px;background:#193e37;color:#e0fa92!important;font-size:12px;font-weight:900;text-decoration:none}
 .mt-map-fallback a:hover{background:#305d4c}
+
+/* Mallorca Live v3 — refinaments finals de mapes i edició */
+.mt-osm-wrap.mt-osm-fullscreen{position:fixed;inset:0;z-index:10000;display:flex;flex-direction:column;background:#132f2e;padding:12px;box-shadow:0 0 0 200vw #001b16c7}
+.mt-osm-fullscreen .mt-osm{height:auto;flex:1;min-height:0}
+.mt-osm-fullscreen .mt-osm-legend{flex:none}
+.mt-map-dot.passage{background:#95a8ad}
+.mt-stage-safety{font-size:12px;line-height:1.7;background:#ecf5e9;padding:12px 14px;border-left:3px solid #79a358;color:#21483e}
+.mt-unsaved-banner{background:#fff4d6;border:1px solid #e0bf68;color:#51400f;padding:12px 16px;font-size:12px;font-weight:800;margin-bottom:15px;line-height:1.6}
+.mt-osm-controls button:focus-visible,.mt-osm-marker:focus-visible,.mt-nav button:focus-visible,.mt-admin button:focus-visible{outline:3px solid #e6f991;outline-offset:3px}
+@media(max-width:700px){.mt-osm-wrap.mt-osm-fullscreen{padding:0}.mt-osm-fullscreen .mt-osm{height:auto;flex:1}.mt-osm-fullscreen .mt-osm-legend{max-height:90px;overflow:auto}.mt-stage-safety{font-size:11px}}
+@media(prefers-reduced-motion:reduce){.mt-page *{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important}}

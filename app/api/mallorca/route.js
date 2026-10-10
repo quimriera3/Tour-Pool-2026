@@ -47,6 +47,9 @@ export async function POST(request){
  try{
   if(body?.action==='admin'){
    if(!equal(body.password,password))return fail('Contrasenya de direcció incorrecta.',401);
+   const existing=await db('mallorca_tour_state?select=updated_at&id=eq.2026&limit=1');
+   const savedRevision=existing[0]?.updated_at||null;
+   if((body.expectedUpdatedAt||null)!==savedRevision)return fail('Hi ha resultats més recents desats des d’un altre dispositiu. Actualitza la pàgina abans de publicar per no sobreescriure’ls.',409);
    const state=cleanState(body.state);
    if(state.finalized&&!stages.every(st=>state.results[`e${st.n}-finish`]?.[0]))return fail('No es pot homologar la general sense completar les tres metes.');
    await db('mallorca_tour_state?on_conflict=id',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify([{id:'2026',state,updated_at:new Date().toISOString()}])});
