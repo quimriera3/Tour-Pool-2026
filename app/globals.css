@@ -163,3 +163,15 @@ button,input,select{font-family:inherit}
 .mt-osm-controls button:focus-visible,.mt-osm-marker:focus-visible,.mt-nav button:focus-visible,.mt-admin button:focus-visible{outline:3px solid #e6f991;outline-offset:3px}
 @media(max-width:700px){.mt-osm-wrap.mt-osm-fullscreen{padding:0}.mt-osm-fullscreen .mt-osm{height:auto;flex:1}.mt-osm-fullscreen .mt-osm-legend{max-height:90px;overflow:auto}.mt-stage-safety{font-size:11px}}
 @media(prefers-reduced-motion:reduce){.mt-page *{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important}}
+
+/* Etapa 3: dues rutes GPS i controls comuns (Mallorca Live v4) */
+.mt-route-versions{border:1px solid #bdcdbd;background:#edf2e9;padding:17px 19px;margin:16px 0 19px;color:#1f463d}
+.mt-route-versions p{margin:12px 0 0;font-size:12px;line-height:1.7;color:#436252}
+.mt-route-version-buttons{display:flex;flex-wrap:wrap;gap:8px}
+.mt-route-version-buttons button{border:1px solid #9ab5a2;background:white;color:#345344;padding:12px 17px;cursor:pointer;font-size:12px;font-weight:850}
+.mt-route-version-buttons button.active{background:#204c42;border-color:#204c42;color:#f2ffba}
+.mt-gpx-downloads{display:flex;flex-direction:column;align-items:flex-start;gap:8px;margin-top:14px}
+.mt-gpx-downloads .mt-gpx-btn{margin:0}
+.mt-cp-other{font-weight:800;color:#2c6552!important;font-size:10px!important}
+.mt-osm-alt-start{background:#70cce9!important;color:#122c32!important;transform:translate(-50%,-50%) translateY(20px)}
+@media(max-width:650px){.mt-route-versions{padding:12px}.mt-route-version-buttons button{width:100%;text-align:center}}
